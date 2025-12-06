@@ -39,6 +39,7 @@ def main():
     # ---------------- Project configuration ----------------
     DATASET = 'HDFS'
     DATASETS_FOLDER = 'datasets'
+    Round=1
 
     # Paths
     ALL_DATASET_LOG_PATH = f'../{DATASETS_FOLDER}/{DATASET}/{DATASET}.LOG'
@@ -63,7 +64,7 @@ def main():
     # ---------------- Dataset Splitting ----------------
     print(f"{GRAY}Splitting dataset into training, validation, and test sets...{RESET}")
     train_df, validate_df, test_df, df_features = utilities_obj.dataset_splitting(
-        ALL_DATASET_CSV_PATH, DATASET
+        ALL_DATASET_CSV_PATH, DATASET, Round
     )
 
     # ---------------- Process normal data ----------------
