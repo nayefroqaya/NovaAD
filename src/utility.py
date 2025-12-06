@@ -3,6 +3,7 @@ from datetime import datetime
 import colorama
 import numpy as np
 import pandas as pd
+import os
 
 # Suppress warnings
 warnings.filterwarnings('ignore')
@@ -76,7 +77,7 @@ class Utilities:
 
        # elif dataset in ['HDFS' ,'BGL', 'TH']:
         
-        if dataset == ['HDFS' ,'BGL', 'TH']:
+        if dataset in ['HDFS' ,'BGL', 'TH']:
             # Shuffle and split
             shuffled_ids = np.random.permutation(unique_ids)
             train_size, val_size = int(0.6 * total_ids), int(0.1 * total_ids)
@@ -106,19 +107,20 @@ class Utilities:
         val_df['Type_ds'] = 'Validation'
         test_df = df_features[df_features['Node_block_id'].isin(test_ids)].copy()
         test_df['Type_ds'] = 'Test'
-<<<<<<< HEAD
+        
         df_features.info()
-=======
+        #=======
         # Create folder to save splits
-        save_path = os.path.join(All_dataset_path_as_csv, round + '_'+ dataset + "_Splitted_Datasets")
+        save_path = os.path.join(f"../datasets/{dataset}", f"{round}_{dataset}_Splitted_Datasets")
         os.makedirs(save_path, exist_ok=True)
+        #save_path = os.path.join('../datasets/{dataset}/', round + '_'+ dataset + "_Splitted_Datasets")
+        #os.makedirs(save_path, exist_ok=True)
         
         # Save each dataframe as PKL
         train_df.to_pickle(os.path.join(save_path, "train_df.pkl"))
         val_df.to_pickle(os.path.join(save_path, "val_df.pkl"))
         test_df.to_pickle(os.path.join(save_path, "test_df.pkl"))
 
->>>>>>> 4c4f3d98c5b212d4493f0e073c6e4675612c2cdc
         # Display split info
         print(GREEN + f"[INFO] Dataset split complete. Sizes -> Train: {len(train_df)}, Validation: {len(val_df)}, Test: {len(test_df)}" + RESET)
         exit()
