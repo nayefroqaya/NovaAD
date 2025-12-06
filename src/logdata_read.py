@@ -220,8 +220,12 @@ class LogdataRead:
             print(f"Unique normal blocks: {len(df3):,}")  # 49,247
             print(f"Unique anomaly blocks: {len(df4):,}")  # 36,251
             print(f"All unique blocks: {len(df_block):,}")
-
-            df = df.drop(columns=['Node_block_id', 'Label'])
+            df = df.drop(columns=['Node_block_id'])
+            df = df.rename(columns={'Label': 'Original_Label'})
+            #-----------------------------------------------
+            #df = df.drop(columns=['Node_block_id', 'Label'])
+            #df = df.rename(columns={'Block': 'Node_block_id', 'Updated_Label': 'Label'})
+            #-----------------------------------------------
             df = df.rename(columns={'Block': 'Node_block_id', 'Updated_Label': 'Label'})
             df.info()
             print(' save as csv file ....')
@@ -308,6 +312,10 @@ class LogdataRead:
             # Select Relevant Columns Only (Reduce Memory Usage)
             df = df[['Timestamp', 'Date', 'Time', 'Content',
                      'processed_EventTemplate', 'Node_block_id', 'Label']]
+            
+            df = df.rename(columns={'Label': 'Original_Label'})
+            # Create a new column 'updated_Label' with the same values as 'Original_Label'
+            df['Label'] = df['Original_Label']
 
             nan_count = df['processed_EventTemplate'].isna().sum()
 
