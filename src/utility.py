@@ -104,9 +104,10 @@ class Utilities:
         val_df['Type_ds'] = 'Validation'
         test_df = df_features[df_features['Node_block_id'].isin(test_ids)].copy()
         test_df['Type_ds'] = 'Test'
-
+        df_features.info()
         # Display split info
         print(GREEN + f"[INFO] Dataset split complete. Sizes -> Train: {len(train_df)}, Validation: {len(val_df)}, Test: {len(test_df)}" + RESET)
+        exit()
         return train_df, val_df, test_df, df_features
 
     @staticmethod

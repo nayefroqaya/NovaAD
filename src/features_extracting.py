@@ -2,8 +2,8 @@ import warnings
 from collections import Counter
 
 import colorama
-import cudf
-import cupy as cp
+#import cudf
+#import cupy as cp
 import numpy as np
 import pandas as pd
 import scipy.sparse as sp
