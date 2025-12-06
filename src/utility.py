@@ -107,7 +107,7 @@ class Utilities:
         test_df = df_features[df_features['Node_block_id'].isin(test_ids)].copy()
         test_df['Type_ds'] = 'Test'
         # Create folder to save splits
-        save_path = os.path.join(All_dataset_path_as_csv, dataset + "_Splitted_Datasets")
+        save_path = os.path.join(All_dataset_path_as_csv, round + '_'+ dataset + "_Splitted_Datasets")
         os.makedirs(save_path, exist_ok=True)
         
         # Save each dataframe as PKL
