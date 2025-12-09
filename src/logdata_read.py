@@ -335,7 +335,7 @@ class LogdataRead:
             #  Save Processed Dataset Efficiently
             df.to_csv(All_dataset_path_as_csv, index=False)
 
-        elif dataset == 'TH_10M':
+        elif dataset == 'TH_1G' or dataset == 'TH_2G' :
             #  Define dtype mapping for efficient memory usage
             dtype_mapping = {"User": "str", "EventTemplate": "category", "Content": "str", "Date": "str", "Time": "str",
                              "Component": "category", "EventId": "str", "Label": "category"}
@@ -450,7 +450,7 @@ class LogdataRead:
             df = fill_unknown_node_block_id(df)
 
             #  Parse Timestamp Correctly (Format: YYYY-MM-DD-HH.MM.SS.ffffff)
-            df["Timestamp"] = pd.to_datetime(df["Date"] + " " + df["Time"], format="%Y.%m.%d %H:%M:%S")
+            df["Timestamp"] = pd.to_datetime(df["Date"] + " " + df["Time"], format="%Y-%m-%d %H:%M:%S.%f")
 
             nan_count = df['Content'].isna().sum()
             print(f"Number of NaN values in 'log_message': {nan_count}")
