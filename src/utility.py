@@ -61,9 +61,12 @@ class Utilities:
         df_features['Timestamp'] = df_features['Timestamp'].apply(update_timestamp)
         df_features.sort_values(by=['Node_block_id', 'Timestamp'], inplace=True)
         df_features.reset_index(drop=True, inplace=True)
-        df_features = df_features[['Timestamp', 'Date', 'Time', 'Content',
-                                   'processed_EventTemplate', 'Node_block_id', 'Label']]
+        df_features = df_features[['Timestamp', 'Date', 'Time', 'Content','Original_Label',
+                                       'EventId','EventTemplate' ,'processed_EventTemplate', 'Node_block_id', 'Label']]
+        df_features.info()
         print(GREEN + "[INFO] Dataset timestamps standardized and sorted." + RESET)
+#        exit()
+
 
         # Split dataset based on dataset type
         unique_ids = df_features['Node_block_id'].unique()

@@ -168,7 +168,7 @@ class LogdataRead:
 
             df['processed_EventTemplate'] = df['processed_EventTemplate'].astype(str)
             # Select only required columns (memory efficiency)
-            df = df[['Timestamp', 'Date', 'Time', 'Content',
+            df = df[['Timestamp', 'Date', 'Time', 'Content','EventId','EventTemplate',
                      'processed_EventTemplate', 'Node_block_id', 'Label']]
 
             print(' length df before windows ' + str(len(df)))
@@ -310,7 +310,7 @@ class LogdataRead:
                 print(f"1_Number of NaN values in 'processed_EventTemplate': {nan_count}")
                 exit()
             # Select Relevant Columns Only (Reduce Memory Usage)
-            df = df[['Timestamp', 'Date', 'Time', 'Content',
+            df = df[['Timestamp', 'Date', 'Time', 'Content','EventId','EventTemplate',
                      'processed_EventTemplate', 'Node_block_id', 'Label']]
             
             df = df.rename(columns={'Label': 'Original_Label'})
