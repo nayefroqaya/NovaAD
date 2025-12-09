@@ -80,7 +80,7 @@ class Utilities:
 
        # elif dataset in ['HDFS' ,'BGL', 'TH']:
         
-        if dataset in ['HDFS' ,'BGL', 'TH']:
+        if dataset in ['HDFS' ,'BGL', 'TH_1G', 'TH_2G', 'OS']:
             # Shuffle and split
             shuffled_ids = np.random.permutation(unique_ids)
             train_size, val_size = int(0.6 * total_ids), int(0.1 * total_ids)
