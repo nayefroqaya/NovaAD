@@ -130,23 +130,47 @@ class Utilities:
         return train_df, val_df, test_df, df_features
 
     @staticmethod
-    def processing_data_portion(train_df, validate_df, test_df, df_features):
+    def processing_data_portion(train_df, validate_df, test_df, save_path , round):
         """Create labeled and unlabeled portions for training and mark test set."""
-        unique_normal = train_df[train_df['Label'] == 'Normal']['Node_block_id'].unique()
-        unique_anomaly = train_df[train_df['Label'] == 'Anomaly']['Node_block_id'].unique()
 
-        print(GREEN + f"[INFO] Total unique normal Node_block_ids: {len(unique_normal)}" + RESET)
-        print(GREEN + f"[INFO] Total unique anomaly Node_block_ids: {len(unique_anomaly)}" + RESET)
+        # Seq count  Train
+        unique_normal_train = train_df[train_df['Label'] == 'Normal']['Node_block_id'].unique()
+        unique_anomaly_train = train_df[train_df['Label'] == 'Anomaly']['Node_block_id'].unique()
+        # Logs count Train 
+        train_normal_logs = (train_df['Label'] == 'Normal').sum()
+        train_anomaly_logs = (train_df['Label'] == 'Anomaly').sum()
+
+
+        # Seq count  Test
+        unique_normal_test = test_df[test_df['Label'] == 'Normal']['Node_block_id'].unique()
+        unique_anomaly_test = test_df[test_df['Label'] == 'Anomaly']['Node_block_id'].unique()
+        # Logs count Test 
+        test_normal_logs = (test_df['Label'] == 'Normal').sum()
+        test_anomaly_logs = (test_df['Label'] == 'Anomaly').sum()
+
+
+
+        print(GREEN + f"[INFO] Training data : Total Seq  unique normal Node_block_ids: {len(unique_normal_train)}" + RESET)
+        print(GREEN + f"[INFO] Training data : Total Seq  unique anomaly Node_block_ids: {len(unique_anomaly_train)}" + RESET)
+        print(GREEN + f"[INFO] Training data : Total  normal logs: {train_normal_logs}" + RESET)
+        print(GREEN + f"[INFO] Training data :Total  anomaly  logs: {train_anomaly_logs}" + RESET)
+
+        print(GREEN + f"[INFO] Testing data : Total Seq  unique normal Node_block_ids: {len(unique_normal_test)}" + RESET)
+        print(GREEN + f"[INFO] Testing data : Total Seq  unique anomaly Node_block_ids: {len(unique_anomaly_test)}" + RESET)
+        print(GREEN + f"[INFO] Testing data : Total  normal logs: {test_normal_logs}" + RESET)   
+        print(GREEN + f"[INFO] Testing data : Total  anomaly  logs: {test_anomaly_logs}" + RESET)
+        
+
 
         # Select 50% of normal blocks for labeled training
-        selected_normal_50 = np.random.choice(unique_normal, size=len(unique_normal) // 2, replace=False)
+        selected_normal_50 = np.random.choice(unique_normal_train, size=len(unique_normal_train) // 2, replace=False)
         df_train_normal_50 = train_df[train_df['Node_block_id'].isin(selected_normal_50)].copy()
         df_train_normal_50['Temp_label'] = 0
 
         # Remaining normal + all anomaly blocks are unlabeled
-        remaining_normal = set(unique_normal) - set(selected_normal_50)
+        remaining_normal = set(unique_normal_train) - set(selected_normal_50)
         df_train_unlabeled = train_df[
-            train_df['Node_block_id'].isin(remaining_normal) | train_df['Node_block_id'].isin(unique_anomaly)
+            train_df['Node_block_id'].isin(remaining_normal) | train_df['Node_block_id'].isin(unique_anomaly_train)
         ].copy()
         df_train_unlabeled['Temp_label'] = 999
 

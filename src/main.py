@@ -3,6 +3,7 @@ import warnings
 import colorama
 import pandas as pd
 import torch
+import os
 
 from utility import Utilities
 from anomaly_detection import AnomalyDetector
@@ -39,7 +40,8 @@ def main():
     # ---------------- Project configuration ----------------
     DATASET = 'TH_2G'
     DATASETS_FOLDER = 'datasets'
-    Round=1
+    Round= '3'
+
 
     # Paths
     ALL_DATASET_LOG_PATH = f'../{DATASETS_FOLDER}/{DATASET}/{DATASET}.LOG'
@@ -57,21 +59,27 @@ def main():
     utilities_obj = Utilities()
 
     # ---------------- Data as CSV ----------------
-    logdata_read_obj.read_original_data_log_from_log_to_csv(DATASET, ALL_DATASET_CSV_PATH)
-    print(' Reading the file was done successfully ')
-    exit()
+    #logdata_read_obj.read_original_data_log_from_log_to_csv(DATASET, ALL_DATASET_CSV_PATH)
+    #print(' Reading the file was done successfully ')
+    #exit()
 
     # ---------------- Dataset Splitting ----------------
-    print(f"{GRAY}Splitting dataset into training, validation, and test sets...{RESET}")
-    train_df, validate_df, test_df, df_features = utilities_obj.dataset_splitting(
-        ALL_DATASET_CSV_PATH, DATASET, Round
-    )
+    #print(f"{GRAY}Splitting dataset into training, validation, and test sets...{RESET}")
+    #train_df, validate_df, test_df, df_features = utilities_obj.dataset_splitting(
+    #    ALL_DATASET_CSV_PATH, DATASET, Round
+    #)
 
     # ---------------- Process normal data ----------------
     print(f"{GRAY}Processing normal data portion in the dataset...{RESET}")
+    save_path = os.path.join(f"../datasets/{DATASET}", f"{Round}_{DATASET}_Splitted_Datasets")
+    train_df = pd.read_pickle(os.path.join(save_path, "train_df.pkl"))
+    val_df = pd.read_pickle(os.path.join(save_path, "val_df.pkl"))
+    test_df = pd.read_pickle(os.path.join(save_path, "test_df.pkl"))
+
     final_train_with_test = utilities_obj.processing_data_portion(
-        train_df, validate_df, test_df, df_features
+        train_df, val_df, test_df, save_path , Round
     )
+    exit()
 
     # ---------------- Features Extracting ----------------
     print(f"{GRAY}Extracting features for training and test datasets...{RESET}")
