@@ -3,3 +3,25 @@ datasets/HDFS/
 datasets/Hadoop/
 datasets/OpenStack/
 datasets/TH/
+
+# Ignore dataset folders
+datasets/OS/
+datasets/TH_1G/
+datasets/TH_2G/
+
+# Ignore evaluation CSV files
+src/BGL_evaluation_mi_scores.csv
+src/HDFS_evaluation_mi_scores.csv
+src/OS_evaluation_mi_scores.csv
+src/TH_1G_evaluation_mi_scores.csv
+src/TH_2G_evaluation_mi_scores.csv
+
+# Ignore Python cache
+src/__pycache__/
+**/__pycache__/
+*.pyc
+
+# Ignore saved models / vectorizer files
+src/pca_model_from_train.pkl
+src/scaler_model_from_train_for_pca.pkl
+src/tf_vectorizer.pkl
