@@ -113,7 +113,7 @@ class LogdataRead:
             return None  # Returning None allows the calling code to handle the error
 
     def read_original_data_log_from_log_to_csv(self, dataset, All_dataset_path_as_csv):
-
+        '''
         def fill_unknown_node_block_id(df):
             prev_valid_id = None  # Store the last valid Node_block_id
             prev_label = None  # Store the last Label
@@ -128,6 +128,24 @@ class LogdataRead:
                     prev_label = df.loc[i, 'Label']  # Update previous Label
 
             return df
+        '''
+        def fill_unknown_node_block_id(df):
+
+              prev_valid_id = None
+
+              for i in tqdm(range(len(df)), desc="Processing Rows", unit="row"):
+                  current_id = df.loc[i, 'Node_block_id']
+
+                  if current_id != 'UNKNOWN':
+                      prev_valid_id = current_id
+                  else:
+                      if prev_valid_id is not None:
+                         df.loc[i, 'Node_block_id'] = prev_valid_id
+
+              return df
+
+
+
 
         if dataset == 'BGL':
 
@@ -144,6 +162,24 @@ class LogdataRead:
             # Step 1: Replace NaN with "UNKNOWN"
             df['Node_block_id'] = df['Node_block_id'].fillna('UNKNOWN')
             df = fill_unknown_node_block_id(df)
+#            unknown_blocks = df[df['Node_block_id'] == "UNKNOWN"]
+#           print("Total rows where Node_block_id = UNKNOWN:", len(unknown_blocks))
+#            exit()
+#            unknown_blocks = df[df['Node_block_id'].astype(str).str.contains("UNKNOWN", case=False, na=False)]
+#            print("Total rows where Node_block_id contains UNKNOWN:", len(unknown_blocks))
+#            print(unknown_blocks.head(5))
+
+#            exit()
+            df = df[~df['Node_block_id'].astype(str).str.contains("UNKNOWN", case=False, na=False)].reset_index(drop=True)
+            total_rows = len(df)
+            print("Total rows in df :", total_rows)
+
+            counts_per_block = df.groupby('Node_block_id').size()
+            empty_blocks = counts_per_block[counts_per_block == 0].index.tolist()
+            print("Node_block_id with 0 rows:", empty_blocks)
+            print("Number of empty Node_block_id groups:", len(empty_blocks))
+            #exit()
+
 
             #  Parse Timestamp Correctly (Format: YYYY-MM-DD-HH.MM.SS.ffffff)
             df['Timestamp'] = pd.to_datetime(df['Time'], format="%Y-%m-%d-%H.%M.%S.%f", errors='coerce')
@@ -195,6 +231,11 @@ class LogdataRead:
             df = process_logs(df, window_size=120)  # Block , Updated_Label
             # print(df_processed.head())
             print(' length df after windows ' + str(len(df)))
+
+            unknown_blocks = df[df['Node_block_id'].astype(str).str.contains("UNKNOWN", case=False, na=False)]
+
+            print("Total rows where Node_block_id contains UNKNOWN:", len(unknown_blocks))
+#            exit()
 
             print('check....')
             # Separate Normal & Anomaly Logs

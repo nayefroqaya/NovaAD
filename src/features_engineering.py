@@ -27,28 +27,100 @@ class FeaturesEngineering:
         df_train_with_test = df_train_with_test.reset_index(drop=True)
 
         # ------- Train/Test dataset: --------------------------------------------------------------------------
-        log_normal_labelled = df_train_with_test[(df_train_with_test['Temp_label'] == 0)]  # Normals logs - labeled
+#        log_normal_labelled = df_train_with_test[(df_train_with_test['Temp_label'] == 0)]  # Normals logs - labeled
+
+        # Only keep blocks that actually have rows with Temp_label=0
+        #log_normal_labelled = df_train_with_test[df_train_with_test['Temp_label'] == 0].copy()
+        #valid_blocks = log_normal_labelled['Node_block_id'].unique()
+
+        # Optional: filter the full dataset for aggregation
+        #df_filtered = df_train_with_test[df_train_with_test['Node_block_id'].isin(valid_blocks)].copy()
+
+
+
+
+
+
+        #total_rows = len(log_normal_labelled)
+        #print("Total rows in log_normal_labelled:", total_rows)
+
+
+
+        #counts_per_block = log_normal_labelled.groupby('Node_block_id').size()
+        #empty_blocks = counts_per_block[counts_per_block == 0].index.tolist()
+        #print("Node_block_id with 0 rows:", empty_blocks)
+        #print("Number of empty Node_block_id groups:", len(empty_blocks))
+        #exit()
+
+
+        #print("Total rows in log_normal_labelled:", len(log_normal_labelled))
+        #missing_features = log_normal_labelled[log_normal_labelled['features'].isna()]
+        #print("Rows with NaN features:", len(missing_features))
+        #print(missing_features.head())
+
+
+       # empty_features = log_normal_labelled[log_normal_labelled['features'].map(lambda x: isinstance(x, (list, np.ndarray)) and len(x) == 0)]
+       # print("Rows with empty feature lists:", len(empty_features))
+       # print(empty_features.head())
+       # exit()
+
+
+       #Define safe aggregation function
+        def safe_stack(feature_list):
+          arrays = [np.asarray(f, dtype=np.float32) for f in feature_list if f is not None and len(f) > 0]
+          if len(arrays) == 0:
+
+              first = feature_list.iloc[0] if len(feature_list) > 0 else np.zeros(50, dtype=np.float32)
+              return np.zeros(len(first), dtype=np.float32) if first is not None else np.zeros(50, dtype=np.float32)
+
+              # Return zeros with the same length as any feature vector
+#              return np.zeros(len(feature_list[0]), dtype=np.float32)
+          return np.mean(np.stack(arrays), axis=0)
+
+
+
+        log_normal_labelled = df_train_with_test[df_train_with_test['Temp_label'] == 0].copy()
+        # 2️⃣ Remove UNKNOWN blocks (case-insensitive)
+        og_normal_labelled = log_normal_labelled[
+                ~log_normal_labelled['Node_block_id'].astype(str).str.contains("UNKNOWN", case=False, na=False)
+        ].reset_index(drop=True)
+
         log_remain_normal_anomaly_unlabelled = df_train_with_test[
-            (df_train_with_test['Temp_label'] == 999)]  # Normal/Anomaly logs - unlabeled train data
+            (df_train_with_test['Temp_label'] == 999)].copy()  # Normal/Anomaly logs - unlabeled train data
         log_test_unlabelled = df_train_with_test[
-            (df_train_with_test['Temp_label'] == 888)]  # Normal/Anomaly logs - unlabeled test data
+            (df_train_with_test['Temp_label'] == 888)].copy()  # Normal/Anomaly logs - unlabeled test data
 
         # (1) Train Normal logs labelled -----------------------------------------------------------------------
+        # 4️⃣ Aggregate features by Node_block_id
         summed_df_normal_labelled_train = log_normal_labelled.groupby('Node_block_id')['features'].apply(
-            lambda x: np.mean(np.stack([np.asarray(i, dtype=np.float32) for i in x]), axis=0)
-        ).reset_index()
+           safe_stack).reset_index()
+
+       # 5️⃣ Assign sequence labels (normal/anomaly) safely
+        sequence_labels_normal_labelled = log_normal_labelled.groupby('Node_block_id')['Label'].apply(
+           lambda x: 'anomaly' if any(lbl != 'Normal' for lbl in x) else 'normal').reset_index()
+
+       # 6️⃣ Merge features with labeel 
+        summed_df_normal_labelled_train = summed_df_normal_labelled_train.merge(sequence_labels_normal_labelled, on='Node_block_id')
+
+
+
+
+
+        #summed_df_normal_labelled_train = log_normal_labelled.groupby('Node_block_id')['features'].apply(
+        #    lambda x: np.mean(np.stack([np.asarray(i, dtype=np.float32) for i in x]), axis=0)
+        #).reset_index()
 
         # Assigning a label to each log_sequence_id
         #if dataset == 'HDFS':
-        sequence_labels_normal_labelled = log_normal_labelled.groupby('Node_block_id')['Label'].apply(
-                lambda x: 'anomaly' if any(lbl != 'Normal' for lbl in x) else 'normal').reset_index()
+        #sequence_labels_normal_labelled = log_normal_labelled.groupby('Node_block_id')['Label'].apply(
+        #        lambda x: 'anomaly' if any(lbl != 'Normal' for lbl in x) else 'normal').reset_index()
         #else:
         #    sequence_labels_normal_labelled = log_normal_labelled.groupby('Node_block_id')['Label'].apply(
         #        lambda x: 'anomaly' if any(lbl != 'Normal' for lbl in x) else 'normal').reset_index()
 
         # Merging the summed feature vectors with their respective labels
-        summed_df_normal_labelled_train = summed_df_normal_labelled_train.merge(sequence_labels_normal_labelled,
-                                                                                on='Node_block_id')
+        #summed_df_normal_labelled_train = summed_df_normal_labelled_train.merge(sequence_labels_normal_labelled,
+                                                                              #  on='Node_block_id')
         summed_df_normal_labelled_train['Temp_label'] = 0  # Normal
 
         # Validation checks
@@ -63,22 +135,41 @@ class FeaturesEngineering:
             print('Error: Length mismatch in normal labelled data')
             exit()
 
+
+
+
+
+
+#        exit()
         # (2) Train - Normal and Abnormal logs unlabelled ------------------------------------------------------
-        summed_df_combine_unlabelled_train = log_remain_normal_anomaly_unlabelled.groupby('Node_block_id')[
-            'features'].apply(
-            lambda x: np.mean(np.stack(x), axis=0)).reset_index()
+        summed_df_combine_unlabelled_train = log_remain_normal_anomaly_unlabelled.groupby('Node_block_id')['features'].apply(
+           safe_stack).reset_index()
+
+       # 5️⃣ Assign sequence labels (normal/anomaly) safely
+        sequence_labels_combine_unlabelled  = log_remain_normal_anomaly_unlabelled.groupby('Node_block_id')['Label'].apply(
+           lambda x: 'anomaly' if any(lbl != 'Normal' for lbl in x) else 'normal').reset_index()
+
+       # 6️⃣ Merge features with labeel 
+        # Merging the summed feature vectors with their respective labels
+        summed_df_combine_unlabelled_train = summed_df_combine_unlabelled_train.merge(
+            sequence_labels_combine_unlabelled,
+            on='Node_block_id')
+
+        #summed_df_combine_unlabelled_train = log_remain_normal_anomaly_unlabelled.groupby('Node_block_id')[
+        #    'features'].apply(
+        #    lambda x: np.mean(np.stack(x), axis=0)).reset_index()
 
         #if dataset == 'HDFS':
-        sequence_labels_combine_unlabelled = log_remain_normal_anomaly_unlabelled.groupby('Node_block_id')[
-                'Label'].apply(lambda x: 'anomaly' if any(lbl != 'Normal' for lbl in x) else 'normal').reset_index()
+        #sequence_labels_combine_unlabelled = log_remain_normal_anomaly_unlabelled.groupby('Node_block_id')[
+        #        'Label'].apply(lambda x: 'anomaly' if any(lbl != 'Normal' for lbl in x) else 'normal').reset_index()
         #else:
         #    sequence_labels_combine_unlabelled = log_remain_normal_anomaly_unlabelled.groupby('Node_block_id')[
         #        'Label'].apply(lambda x: 'anomaly' if any(lbl != 'Normal' for lbl in x) else 'normal').reset_index()
 
         # Merging the summed feature vectors with their respective labels
-        summed_df_combine_unlabelled_train = summed_df_combine_unlabelled_train.merge(
-            sequence_labels_combine_unlabelled,
-            on='Node_block_id')
+       # summed_df_combine_unlabelled_train = summed_df_combine_unlabelled_train.merge(
+       #     sequence_labels_combine_unlabelled,
+       #     on='Node_block_id')
         summed_df_combine_unlabelled_train['Temp_label'] = 999  # Normal and anomaly unlabeled
 
         # Validation checks
@@ -93,7 +184,10 @@ class FeaturesEngineering:
 
         # (3) Test dataset: ------------------------------------------------------------------------------------
         summed_df_combine_unlabelled_test = log_test_unlabelled.groupby('Node_block_id')['features'].apply(
-            lambda x: np.mean(np.stack(x), axis=0)).reset_index()
+           safe_stack).reset_index()
+
+#        summed_df_combine_unlabelled_test = log_test_unlabelled.groupby('Node_block_id')['features'].apply(
+#            lambda x: np.mean(np.stack(x), axis=0)).reset_index()
 
         #if dataset == 'UU_HDFS':
         sequence_labels_combine_unlabelled_test = log_test_unlabelled.groupby('Node_block_id')[
@@ -118,6 +212,7 @@ class FeaturesEngineering:
         summ_train_test_combine = summ_train_test_combine.reset_index(drop=True)
 
         print('Feature aggregation completed successfully')
+#        exit()
         return summ_train_test_combine
 
     @staticmethod
@@ -201,7 +296,7 @@ class FeaturesEngineering:
 
         best_params = None
         best_score = -np.inf  # Higher LOF separation score is better
-
+        
         # Grid Search Over Gamma & Nu
         for gamma, nu in product(gamma_values, nu_values):
             print(f'Testing parameters: Gamma={gamma}, Nu={nu}')
@@ -232,9 +327,11 @@ class FeaturesEngineering:
                 best_params = (gamma, nu)
 
         print(f"Optimal parameters found: Gamma={best_params[0]}, Nu={best_params[1]}")
-
+        
         # Train final model with optimal parameters
         oc_svm = OneClassSVM(kernel='rbf', gamma=best_params[0], nu=best_params[1])
+        #oc_svm = OneClassSVM(kernel='rbf', gamma= 0.2, nu=0.01)
+
         oc_svm.fit(X_train_normal_labelled)
 
         # Make predictions

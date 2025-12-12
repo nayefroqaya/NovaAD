@@ -126,7 +126,7 @@ class Utilities:
 
         # Display split info
         print(GREEN + f"[INFO] Dataset split complete. Sizes -> Train: {len(train_df)}, Validation: {len(val_df)}, Test: {len(test_df)}" + RESET)
-        exit()
+#        exit()
         return train_df, val_df, test_df, df_features
 
     @staticmethod
