@@ -68,52 +68,57 @@ ABNORMAL = {
 }
 
 # ================= PATH =================
-ROOT_FOLDER = "/datasets/Hadoop"  # <- change this to your dataset path
+def main():
 
-# Regex to extract application IDs from folder names
-APP_PATTERN = re.compile(r"application_\d+_\d+")
+            ROOT_FOLDER = "/datasets/Hadoop"  # <- change this to your dataset path
 
-# Output files
-normal_out = open("normal.log", "w", encoding="utf-8")
-abnormal_out = open("abnormal.log", "w", encoding="utf-8")
-# ================= WALK THROUGH DATASET =================
-for folder_name in os.listdir(ROOT_FOLDER):
-    folder_path = os.path.join(ROOT_FOLDER, folder_name)
+            # Regex to extract application IDs from folder names
+            APP_PATTERN = re.compile(r"application_\d+_\d+")
 
-    # Skip non-folders
-    if not os.path.isdir(folder_path):
-        continue
+            # Output files
+            normal_out = open("normal.log", "w", encoding="utf-8")
+            abnormal_out = open("abnormal.log", "w", encoding="utf-8")
+            # ================= WALK THROUGH DATASET =================
+            for folder_name in os.listdir(ROOT_FOLDER):
+                folder_path = os.path.join(ROOT_FOLDER, folder_name)
 
-    # Match application ID
-    app_match = APP_PATTERN.match(folder_name)
-    if not app_match:
-        continue
+                # Skip non-folders
+                if not os.path.isdir(folder_path):
+                    continue
 
-    app_id = app_match.group(0)
+                # Match application ID
+                app_match = APP_PATTERN.match(folder_name)
+                if not app_match:
+                    continue
 
-    # Decide if normal or abnormal
-    if app_id in NORMAL:
-        outfile = normal_out
-    elif app_id in ABNORMAL:
-        outfile = abnormal_out
-    else:
-        # Skip unknown apps
-        continue
+                app_id = app_match.group(0)
 
-    print(f"Processing {app_id} → {'Normal' if app_id in NORMAL else 'Abnormal'}")
+                # Decide if normal or abnormal
+                if app_id in NORMAL:
+                    outfile = normal_out
+                elif app_id in ABNORMAL:
+                    outfile = abnormal_out
+                else:
+                    # Skip unknown apps
+                    continue
 
-    # Read all .log files in this folder
-    for fname in os.listdir(folder_path):
-        if not fname.endswith(".log"):
-            continue
-        fpath = os.path.join(folder_path, fname)
-        with open(fpath, "r", encoding="utf-8", errors="ignore") as f:
-            for line in f:
-                outfile.write(line)
-# ================= CLOSE FILES =================
-normal_out.close()
-abnormal_out.close()
+                print(f"Processing {app_id} → {'Normal' if app_id in NORMAL else 'Abnormal'}")
 
-print("Finished! Files created:")
-print(" → normal.log")
-print(" → abnormal.log")
+                # Read all .log files in this folder
+                for fname in os.listdir(folder_path):
+                    if not fname.endswith(".log"):
+                        continue
+                    fpath = os.path.join(folder_path, fname)
+                    with open(fpath, "r", encoding="utf-8", errors="ignore") as f:
+                        for line in f:
+                            outfile.write(line)
+            # ================= CLOSE FILES =================
+            normal_out.close()
+            abnormal_out.close()
+
+            print("Finished! Files created:")
+            print(" → normal.log")
+            print(" → abnormal.log")
+# ================= ENTRY POINT =================
+if __name__ == "__main__":
+    main()
