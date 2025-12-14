@@ -267,7 +267,7 @@ class AnomalyDetector:
             # -------------------------
             start_fit = time.time()
 
-            if mode == "tuned":
+            if mode == "S":
 
                 param_grid = {"n_estimators": [300, 500, 800], "max_depth": [None, 10, 20, 30],
                     "min_samples_leaf": [1, 3, 5, 10], "min_samples_split": [2, 5, 10],
