@@ -14,6 +14,11 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import precision_recall_curve
 from sklearn.model_selection import RandomizedSearchCV, StratifiedKFold
 from xgboost import XGBClassifier
+import numpy as np
+import time
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.model_selection import RandomizedSearchCV
+from sklearn.metrics import average_precision_score
 
 warnings.filterwarnings('ignore')
 colorama.init()
@@ -183,6 +188,8 @@ class AnomalyDetector:
 
                     return y_test_truth, y_pred_adjusted , fit_time, predict_time
         elif mode=='S':
+
+            '''
             anomaly_percentile = 99
             """
             Isolation Forest anomaly detector (data already scaled).
@@ -240,6 +247,63 @@ class AnomalyDetector:
             # -------------------------
             if y_test_truth is not None:
                 pr_auc = average_precision_score(y_test_truth, test_scores)
+                print(f"PR-AUC: {pr_auc:.4f}")
+
+            # -------------------------
+            # 5. REQUIRED return
+            # -------------------------
+            return y_test_truth, y_pred_adjusted, fit_time, predict_time
+            '''
+            # -------------------------
+            # 1. Base model (important!)
+            # -------------------------
+            base_model = RandomForestClassifier(n_estimators=500, max_depth=None, min_samples_leaf=5,
+                # prevents overfitting
+                class_weight="balanced",  # CRITICAL for imbalance
+                n_jobs=-1, random_state=42)
+
+            # -------------------------
+            # 2. Model training
+            # -------------------------
+            start_fit = time.time()
+
+            if mode == "tuned":
+
+                param_grid = {"n_estimators": [300, 500, 800], "max_depth": [None, 10, 20, 30],
+                    "min_samples_leaf": [1, 3, 5, 10], "min_samples_split": [2, 5, 10],
+                    "max_features": ["sqrt", "log2", 0.7]}
+
+                search = RandomizedSearchCV(estimator=base_model, param_distributions=param_grid, n_iter=20,
+                    scoring="average_precision",  # PR-AUC
+                    cv=3, n_jobs=-1, random_state=42, verbose=0)
+
+                search.fit(X_train, y_train)
+                model = search.best_estimator_
+
+            else:
+                model = base_model
+                model.fit(X_train, y_train)
+
+            fit_time = time.time() - start_fit
+
+            # -------------------------
+            # 3. Prediction
+            # -------------------------
+            start_predict = time.time()
+
+            # Probabilities are IMPORTANT
+            y_prob = model.predict_proba(X_test)[:, 1]
+
+            # Default threshold = 0.5 (adjust later!)
+            y_pred_adjusted = (y_prob >= 0.5).astype(int)
+
+            predict_time = time.time() - start_predict
+
+            # -------------------------
+            # 4. Optional evaluation log
+            # -------------------------
+            if y_test_truth is not None:
+                pr_auc = average_precision_score(y_test_truth, y_prob)
                 print(f"PR-AUC: {pr_auc:.4f}")
 
             # -------------------------
