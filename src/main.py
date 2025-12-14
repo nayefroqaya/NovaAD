@@ -41,6 +41,7 @@ def main():
     DATASET = 'SP_100MB'
     DATASETS_FOLDER = 'datasets'
     Round= '1'
+    mode='M'  # M multi classifier - S single classifier
 
 
     # Paths
@@ -131,7 +132,7 @@ def main():
     # ---------------- Anomaly Detection ----------------
     print(f"{GRAY}Running anomaly detection on test dataset...{RESET}")
     y_test_truth, y_test_pred, fit_time, predict_time = anomaly_detection_obj.anomaly_detector(
-        x_train, y_train, x_test, y_test_truth
+        x_train, y_train, x_test, y_test_truth,mode
     )
 
     # ---------------- Model Evaluation ----------------
