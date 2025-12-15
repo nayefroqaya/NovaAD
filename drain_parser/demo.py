@@ -5,11 +5,11 @@ sys.path.append('../../')
 from Drain import LogParser
 #==========================================SP
 # This part is for SP dataset includes : Input dir, output dir, name of log file, log format(all formats in Benchmark file).
-input_dir  = '../datasets/SP/' # The input directory of log file
-output_dir = '../datasets/SP/'  # The output directory of parsing results
-log_file   = 'SP_200MB.log'  # The input log file name
+input_dir  = '../datasets/SP_150MB/' # The input directory of log file
+output_dir = '../datasets/SP_150MB/'  # The output directory of parsing results
+log_file   = 'SP_150MB.log'  # The input log file name
 log_format = '<Label> <Timestamp> <Date> <User> <Month> <Day> <Time> <Host> <Component>: <Content>'  # BGL log format
-# Regular expression list for optional preprocessing (default: [])
+# Regular expression list for optional preprocessing (default: [])#
 regex = [r"(\d+\.){3}\d+"] #[r"\b\d+\b"]
 st         = 0.5  # Similarity threshold
 depth      = 4  # Depth of all leaf nodes

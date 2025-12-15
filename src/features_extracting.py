@@ -169,12 +169,18 @@ class FeaturesExtractor:
 
         # Calculate topic distributions and dominant topics
         doc_topic_df['list_topics_distribution'] = doc_topic_df[list_topic].values.tolist()
-        doc_topic_df['Dominant_Topic'] = doc_topic_df['list_topics_distribution'].apply(lambda x: max(x))
+       # doc_topic_df['Dominant_Topic'] = doc_topic_df['list_topics_distribution'].apply(lambda x: max(x))
+        #doc_topic_df['Dominant_Topic'] = doc_topic_df['list_topics_distribution'].apply(np.argmax)
 
         # Map results back to original dataset
+
+        #doc_topic_dict = {
+        #   msg: topic
+        #   for msg, topic in zip(unique_texts, doc_topic_df['Dominant_Topic'])
+        #}
         doc_topic_dict = {msg: row for msg, row in zip(unique_texts, doc_topic_df['list_topics_distribution'])}
         df_features['list_topics_distribution'] = df_features['processed_EventTemplate'].map(doc_topic_dict)
-        df_features['Dominant_Topic'] = df_features['list_topics_distribution'].apply(lambda x: max(x))
+        df_features['Dominant_Topic'] = df_features['list_topics_distribution'].apply(np.argmax)
 
         # Expand topic distributions into individual columns
         for i, col in enumerate(list_topic):
@@ -185,8 +191,9 @@ class FeaturesExtractor:
         df_features.info()
         print('[SUCCESS] Topic modeling completed successfully')
         print('[DEBUG] Sample topic distributions:')
-        print(df_features[list_topic].head(20))
-
+        print(df_features[list_topic].head(5))
+        print(df_features[['list_topics_distribution', 'Dominant_Topic']].head(20))
+#        exit()
         return best_topic_number_val
 
     @staticmethod

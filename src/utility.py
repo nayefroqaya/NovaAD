@@ -126,7 +126,18 @@ class Utilities:
 
         # Display split info
         print(GREEN + f"[INFO] Dataset split complete. Sizes -> Train: {len(train_df)}, Validation: {len(val_df)}, Test: {len(test_df)}" + RESET)
-#        exit()
+        df_block_train  =train_df.drop_duplicates(subset=['Node_block_id']).reset_index(drop=True)  # Unique Normal Blocks
+        df3 = df_block_train.query("Label == 'Normal'").reset_index(drop=True)
+        df4 = df_block_train.query("Label == 'Anomaly'").reset_index(drop=True)
+        print(' Normal seq Train : '  +str(len(df3)))
+        print(' Anomaly seq Train : '  +str(len(df4)))
+        df_block_test  =test_df.drop_duplicates(subset=['Node_block_id']).reset_index(drop=True)  # Unique Normal Blocks
+        df3 = df_block_test.query("Label == 'Normal'").reset_index(drop=True)
+        df4 = df_block_test.query("Label == 'Anomaly'").reset_index(drop=True)
+        print(' Normal seq Test : '  +str(len(df3)))
+        print(' Anomaly seq Test : '  +str(len(df4)))
+
+        exit()
         return train_df, val_df, test_df, df_features
 
     @staticmethod

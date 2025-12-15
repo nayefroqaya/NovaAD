@@ -38,7 +38,7 @@ def main():
     pd.set_option("display.max_colwidth", None)
 
     # ---------------- Project configuration ----------------
-    DATASET = 'SP_100MB'
+    DATASET = 'BGL'
     DATASETS_FOLDER = 'datasets'
     Round= '1'
     mode='M'  # M multi classifier - S single classifier
@@ -60,15 +60,15 @@ def main():
     utilities_obj = Utilities()
 
     # ---------------- Data as CSV ----------------
-#    logdata_read_obj.read_original_data_log_from_log_to_csv(DATASET, ALL_DATASET_CSV_PATH)
-#    print(' Reading the file was done successfully ')
-#    exit()
+    #logdata_read_obj.read_original_data_log_from_log_to_csv(DATASET, ALL_DATASET_CSV_PATH)
+    #print(' Reading the file was done successfully ')
+    #exit()
 
     # ---------------- Dataset Splitting ----------------
-    print(f"{GRAY}Splitting dataset into training, validation, and test sets...{RESET}")
-    train_df, validate_df, test_df, df_features = utilities_obj.dataset_splitting(
-        ALL_DATASET_CSV_PATH, DATASET, Round
-    )
+#    print(f"{GRAY}Splitting dataset into training, validation, and test sets...{RESET}")
+#    train_df, validate_df, test_df, df_features = utilities_obj.dataset_splitting(
+#        ALL_DATASET_CSV_PATH, DATASET, Round
+#    )
 #    exit()
     # ---------------- Process normal data ----------------
     print(f"{GRAY}Processing normal data portion in the dataset...{RESET}")
@@ -92,16 +92,13 @@ def main():
         PRE_FINAL_GLOBAL_FEATURES_PKL_PATH,
         final_train_with_test
     )
-
     final_train_with_test = pd.read_pickle(PRE_FINAL_GLOBAL_FEATURES_PKL_PATH)
-
     # ---------------- Features Engineering: Aggregation/Transformation ----------------
     print(f"{GRAY}Aggregating and transforming features...{RESET}")
     sequences_df, x_sequences_df, y_sequences_df = features_engineering_obj.features_aggregation_transformation(
         final_train_with_test,
         DATASET
     )
-
     # ---------------- Prepare datasets ----------------
     print(f"{GRAY}Preparing training and evaluation datasets...{RESET}")
     x_train_normal_labelled = x_sequences_df[y_sequences_df == 0]

@@ -30,12 +30,13 @@ class ModelEvaluation:
                 [
                     # Text features
                     'sentiment',
-                    'dominant_topic',
+                    'Dominant_Topic',
                     'word_count',
                     'character_count',
                     'entropy',
 
                     # Temporal features
+                    'year'
                     'month',
                     'day',
                     'hour',

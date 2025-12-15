@@ -156,6 +156,7 @@ class LogdataRead:
 
             df = pd.read_csv(f'../datasets/{dataset}/{dataset}.log_structured.csv', dtype=dtype_mapping)
             df.info()
+            x=len(df)
             #  Rename columns for consistency
             df = df.rename(columns={"Node": "Node_block_id"})
 
@@ -246,6 +247,7 @@ class LogdataRead:
             df4 = df_block.query("Updated_Label == 'Anomaly'").reset_index(drop=True)
 
             # Print Dataset Statistics
+            print(f" logs Messages : {x:,}")
             print(f"Normal logs: {len(df1):,}")  # 4,365,033
             print(f"Anomaly logs: {len(df2):,}")  # 348,460
             print(f"Unique normal blocks: {len(df3):,}")  # 49,247
@@ -275,7 +277,7 @@ class LogdataRead:
                 'ParameterList': 'str'}
             df = pd.read_csv(dataset_path, dtype=dtype_mapping)
             df.info()
-
+            x=len(df)
             # Extract Block ID
             df["Node_block_id"] = df["Content"].apply(self.get_block_id_hdfs)
             df_missing = df[df['Node_block_id'].isna()]
@@ -365,6 +367,7 @@ class LogdataRead:
                 d.reset_index(drop=True, inplace=True)
 
             #  Print Dataset Statistics
+            print(f"All logs: {x:,}") 
             print(f"Normal logs: {len(df1):,}")  # 10,887,379
             print(f"Anomaly logs: {len(df2):,}")  # 288,250
             print(f"Unique normal blocks: {len(df3):,}")  # 558,223
@@ -383,6 +386,8 @@ class LogdataRead:
 
             df = pd.read_csv(f'../datasets/{dataset}/{dataset}.log_structured.csv', dtype=dtype_mapping)
             df.info()
+            x=len(df)
+
             #  Rename columns for consistency
             df = df.rename(columns={"User": "Node_block_id"})
 
@@ -450,6 +455,7 @@ class LogdataRead:
             df4 = df_block.query("Updated_Label == 'Anomaly'").reset_index(drop=True)
 
             # Print Dataset Statistics
+            print(f"All logs: {x:,}") 
             print(f"Normal logs: {len(df1):,}")  # 4,365,033
             print(f"Anomaly logs: {len(df2):,}")  # 348,460
             print(f"Unique normal blocks: {len(df3):,}")  # 49,247
@@ -693,6 +699,8 @@ class LogdataRead:
 
             df = pd.read_csv(f'../datasets/{dataset}/{dataset}.log_structured.csv', dtype=dtype_mapping)
             df.info()
+            x=len(df)
+
             #  Rename columns for consistency
             df = df.rename(columns={"User": "Node_block_id"})
 
@@ -757,6 +765,7 @@ class LogdataRead:
             df_block = df.drop_duplicates(subset=['Block']).reset_index(drop=True)  # Unique Normal Blocks
             df3 = df_block.query("Updated_Label == 'Normal'").reset_index(drop=True)
             df4 = df_block.query("Updated_Label == 'Anomaly'").reset_index(drop=True)
+            print(f"All logs: {x:,}")  # 
 
             # Print Dataset Statistics
             print(f"Normal logs: {len(df1):,}")  # 4,365,033

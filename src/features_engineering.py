@@ -221,7 +221,7 @@ class FeaturesEngineering:
 
         # Append additional features to the feature vector
         feature_columns = ['sentiment_label', 'Dominant_Topic', 'num_words', 'Character_Count',
-                           'entropy', 'month', 'day', 'hour', 'minute', 'second']
+                           'entropy','year', 'month', 'day', 'hour', 'minute', 'second']
 
         for col in feature_columns:
             df_features_all_train_with_test_final['features'] = df_features_all_train_with_test_final.apply(
