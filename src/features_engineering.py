@@ -70,8 +70,8 @@ class FeaturesEngineering:
           arrays = [np.asarray(f, dtype=np.float32) for f in feature_list if f is not None and len(f) > 0]
           if len(arrays) == 0:
 
-              first = feature_list.iloc[0] if len(feature_list) > 0 else np.zeros(50, dtype=np.float32)
-              return np.zeros(len(first), dtype=np.float32) if first is not None else np.zeros(50, dtype=np.float32)
+              first = feature_list.iloc[0] if len(feature_list) > 0 else np.zeros(51, dtype=np.float32)
+              return np.zeros(len(first), dtype=np.float32) if first is not None else np.zeros(51, dtype=np.float32)
 
               # Return zeros with the same length as any feature vector
 #              return np.zeros(len(feature_list[0]), dtype=np.float32)
