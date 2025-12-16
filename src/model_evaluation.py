@@ -7,7 +7,7 @@ class ModelEvaluation:
     """Class for evaluating model performance and feature importance."""
 
     @staticmethod
-    def evaluation(number_components, y_test_truth, y_test_pred, dataset, X_test):
+    def evaluation( Round, number_components, y_test_truth, y_test_pred, dataset, X_test):
         """
         Evaluate model performance and compute feature importance metrics.
 
@@ -36,7 +36,7 @@ class ModelEvaluation:
                     'entropy',
 
                     # Temporal features
-                    'year'
+                    'year',
                     'month',
                     'day',
                     'hour',
@@ -60,7 +60,7 @@ class ModelEvaluation:
         }).sort_values(by="MI_Score", ascending=False)
 
         # Save results to CSV
-        output_filename = f"{dataset}_evaluation_mi_scores.csv"
+        output_filename = f"{Round}_{dataset}_evaluation_mi_scores.csv"
         mi_df.to_csv(output_filename, index=False)
         print(f"Mutual Information scores saved to: {output_filename}")
 

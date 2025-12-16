@@ -418,10 +418,33 @@ class FeaturesExtractor:
         --------
         float: Entropy value of the distribution
         """
-        topic_distribution_cupy = cp.array(topic_distribution, dtype=cp.float32)
-        non_zero_probs = topic_distribution_cupy[topic_distribution_cupy > 0]
-        entropy = cp.sum(-non_zero_probs * cp.log2(non_zero_probs))
+       # def to_xp_array(x, dtype=None):
+       #     if torch.cuda.is_available():
+       #         #import cupy as cp
+       #         return cp.asarray(x, dtype=dtype)
+       #     else:
+       #         #import numpy as np
+       #         return np.asarray(x, dtype=dtype)
 
+#        topic_distribution_cupy = cp.array(topic_distribution, dtype=cp.float32)
+       # topic_distribution_arr = to_xp_array(topic_distribution, dtype=np.float32)
+       # non_zero_probs = topic_distribution_xp[topic_distribution_xp > 0]
+       # entropy = xp.sum(-non_zero_probs * xp.log2(non_zero_probs))
+        #non_zero_probs = topic_distribution_cupy[topic_distribution_cupy > 0]
+        #entropy = cp.sum(-non_zero_probs * cp.log2(non_zero_probs))
+        #def to_xp_array(x, dtype=None):
+            #import torch
+        if torch.cuda.is_available():
+                import cupy as xp
+        else:
+                import numpy as np
+                xp = np
+         #return xp.asarray(x, dtype=dtype)
+
+
+        topic_distribution_xp = xp.asarray(topic_distribution, dtype=xp.float32)
+        non_zero_probs = topic_distribution_xp[topic_distribution_xp > 0]
+        entropy = xp.sum(-non_zero_probs * xp.log2(non_zero_probs))
         return float(entropy)
 
     @staticmethod

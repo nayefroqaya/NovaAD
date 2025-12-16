@@ -1,5 +1,6 @@
+import os
+os.environ["CUDA_VISIBLE_DEVICES"] = ""   # ⛔ Disable GPU completely
 import warnings
-
 import colorama
 import pandas as pd
 import torch
@@ -25,12 +26,17 @@ YELLOW = colorama.Fore.YELLOW
 # ====================== Main ======================
 def main():
     # ---------------- Device check ------------------
-    if torch.cuda.is_available():
-        print(f"{GREEN}GPU detected. Using GPU for encoding.{RESET}")
-    else:
-        print(f"{YELLOW}No GPU detected. Using CPU for encoding. Exiting program.{RESET}")
-        exit()
-
+    #if torch.cuda.is_available():
+    #    print(f"{GREEN}GPU detected. Using GPU for encoding.{RESET}")
+    #else:
+    #    print(f"{YELLOW}No GPU detected. Using CPU for encoding. Exiting program.{RESET}")
+    #    exit()
+    # ---------------- Device setup (CPU ONLY) ----------------
+    device = torch.device("cpu")
+    torch.backends.cudnn.enabled = False
+    torch.backends.cuda.enabled = False
+    print(f"{YELLOW}Using device: CPU only{RESET}")
+    print(f"{YELLOW}Using device: CPU (GPU disabled){RESET}")
     # ---------------- Display options ----------------
     pd.set_option("display.max_columns", None)
     pd.set_option("display.max_rows", None)
@@ -40,7 +46,7 @@ def main():
     # ---------------- Project configuration ----------------
     DATASET = 'BGL'
     DATASETS_FOLDER = 'datasets'
-    Round= '1'
+    Round= '3'
     mode='M'  # M multi classifier - S single classifier
 
 
@@ -134,7 +140,7 @@ def main():
 
     # ---------------- Model Evaluation ----------------
     print(f"{GRAY}Evaluating model performance...{RESET}")
-    model_evaluation_obj.evaluation(
+    model_evaluation_obj.evaluation( Round,
         number_component, y_test_truth, y_test_pred, DATASET, x_test
     )
 
