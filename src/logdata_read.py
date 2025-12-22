@@ -415,6 +415,8 @@ class LogdataRead:
             print(' length df before windows ' + str(len(df)))
 
             def process_logs(df, window_size=120):
+
+
                 df = df.copy()
                 df.sort_values(by=['Node_block_id', 'Timestamp'], inplace=True)  # Ensure order
 

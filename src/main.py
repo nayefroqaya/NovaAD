@@ -44,9 +44,13 @@ def main():
     pd.set_option("display.max_colwidth", None)
 
     # ---------------- Project configuration ----------------
-    DATASET = 'BGL'
+#<<<<<<< HEAD
+#    DATASET = 'BGL'
+#=======
+    DATASET = 'TH_1G'
+#>>>>>>> 42c37e9 (update input name)
     DATASETS_FOLDER = 'datasets'
-    Round= '3'
+    Round= '1'
     mode='M'  # M multi classifier - S single classifier
 
 
@@ -66,9 +70,15 @@ def main():
     utilities_obj = Utilities()
 
     # ---------------- Data as CSV ----------------
+<<<<<<< HEAD
     #logdata_read_obj.read_original_data_log_from_log_to_csv(DATASET, ALL_DATASET_CSV_PATH)
     #print(' Reading the file was done successfully ')
     #exit()
+=======
+    logdata_read_obj.read_original_data_log_from_log_to_csv(DATASET, ALL_DATASET_CSV_PATH)
+    print(' Reading the file was done successfully ')
+    exit()
+>>>>>>> 42c37e9 (update input name)
 
     # ---------------- Dataset Splitting ----------------
 #    print(f"{GRAY}Splitting dataset into training, validation, and test sets...{RESET}")
