@@ -70,15 +70,15 @@ def main():
     utilities_obj = Utilities()
 
     # ---------------- Data as CSV ----------------
-<<<<<<< HEAD
+#<<<<<<< HEAD
     #logdata_read_obj.read_original_data_log_from_log_to_csv(DATASET, ALL_DATASET_CSV_PATH)
     #print(' Reading the file was done successfully ')
     #exit()
-=======
+#=======
     logdata_read_obj.read_original_data_log_from_log_to_csv(DATASET, ALL_DATASET_CSV_PATH)
     print(' Reading the file was done successfully ')
     exit()
->>>>>>> 42c37e9 (update input name)
+#>>>>>>> 42c37e9 (update input name)
 
     # ---------------- Dataset Splitting ----------------
 #    print(f"{GRAY}Splitting dataset into training, validation, and test sets...{RESET}")
