@@ -47,10 +47,10 @@ def main():
 #<<<<<<< HEAD
 #    DATASET = 'BGL'
 #=======
-    DATASET = 'HDFS'
+    DATASET = 'BGL'
 #>>>>>>> 42c37e9 (update input name)
     DATASETS_FOLDER = 'datasets'
-    Round= '3'
+    Round= '1'
     mode='M'  # M multi classifier - S single classifier
 
 
@@ -81,11 +81,11 @@ def main():
 #>>>>>>> 42c37e9 (update input name)
 
     # ---------------- Dataset Splitting ----------------
-    print(f"{GRAY}Splitting dataset into training, validation, and test sets...{RESET}")
-    train_df, validate_df, test_df, df_features = utilities_obj.dataset_splitting(
-        ALL_DATASET_CSV_PATH, DATASET, Round
-    )
-    exit()
+    #print(f"{GRAY}Splitting dataset into training, validation, and test sets...{RESET}")
+    #train_df, validate_df, test_df, df_features = utilities_obj.dataset_splitting(
+    #    ALL_DATASET_CSV_PATH, DATASET, Round
+    #)
+    #exit()
     # ---------------- Process normal data ----------------
     print(f"{GRAY}Processing normal data portion in the dataset...{RESET}")
     save_path = os.path.join(f"../datasets/{DATASET}", f"{Round}_{DATASET}_Splitted_Datasets")
@@ -94,9 +94,8 @@ def main():
     test_df = pd.read_pickle(os.path.join(save_path, "test_df.pkl"))
 
     final_train_with_test_with_val = utilities_obj.processing_data_portion(
-        train_df, val_df, test_df, save_path , Round
-    )
-    exit()
+        train_df, val_df, test_df )
+    #exit()
 
     # ---------------- Features Extracting ----------------
     print(f"{GRAY}Extracting features for training and test datasets...{RESET}")

@@ -141,7 +141,7 @@ class Utilities:
         return train_df, val_df, test_df, df_features
 
     @staticmethod
-    def processing_data_portion(train_df, validate_df, test_df, save_path , round):
+    def processing_data_portion(train_df, validate_df, test_df):
         """Create labeled and unlabeled portions for training and mark test set."""
 
         # Seq count  Train
