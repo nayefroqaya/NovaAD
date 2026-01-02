@@ -75,9 +75,9 @@ def main():
     #print(' Reading the file was done successfully ')
     #exit()
 #=======
-    logdata_read_obj.read_original_data_log_from_log_to_csv(DATASET, ALL_DATASET_CSV_PATH)
-    print(' Reading the file was done successfully ')
-    exit()
+    #logdata_read_obj.read_original_data_log_from_log_to_csv(DATASET, ALL_DATASET_CSV_PATH)
+    #print(' Reading the file was done successfully ')
+    #exit()
 #>>>>>>> 42c37e9 (update input name)
 
     # ---------------- Dataset Splitting ----------------
@@ -93,7 +93,7 @@ def main():
     val_df = pd.read_pickle(os.path.join(save_path, "val_df.pkl"))
     test_df = pd.read_pickle(os.path.join(save_path, "test_df.pkl"))
 
-    final_train_with_test = utilities_obj.processing_data_portion(
+    final_train_with_test_with_val = utilities_obj.processing_data_portion(
         train_df, val_df, test_df, save_path , Round
     )
 #    exit()
@@ -106,13 +106,13 @@ def main():
         SENTIMENT_DF_PATH,
         DATASET,
         PRE_FINAL_GLOBAL_FEATURES_PKL_PATH,
-        final_train_with_test
+        final_train_with_test_with_val
     )
-    final_train_with_test = pd.read_pickle(PRE_FINAL_GLOBAL_FEATURES_PKL_PATH)
+    final_train_with_test_with_val = pd.read_pickle(PRE_FINAL_GLOBAL_FEATURES_PKL_PATH)
     # ---------------- Features Engineering: Aggregation/Transformation ----------------
     print(f"{GRAY}Aggregating and transforming features...{RESET}")
     sequences_df, x_sequences_df, y_sequences_df = features_engineering_obj.features_aggregation_transformation(
-        final_train_with_test,
+        final_train_with_test_with_val,
         DATASET
     )
     # ---------------- Prepare datasets ----------------
@@ -133,25 +133,26 @@ def main():
     unlabeled_df_from_test = sequences_df[sequences_df['Temp_label'] == 888]
     ground_truth_unlabeled_data_from_test = unlabeled_df_from_test['Label']
 
+    labeled_df_from_val = sequences_df[sequences_df['Temp_label'] == 777]
+    ground_truth_labeled_data_from_val = labeled_df_from_val['Label']
+
     # ---------------- Novelty detection and label establishment ----------------
     print(f"{GRAY}Performing novelty detection and establishing labels...{RESET}")
-    x_train, y_train, x_test, y_test_truth = features_engineering_obj.novelty_detection_label_establishment(
+    X_train, y_train, X_test, y_test_truth, X_val, y_val_truth = features_engineering_obj.novelty_detection_label_establishment(
         sequences_df,
         x_train_normal_labelled,
         x_unlabeled_from_train,
         ground_truth_unlabeled_data_from_train
     )
-
     # ---------------- Anomaly Detection ----------------
     print(f"{GRAY}Running anomaly detection on test dataset...{RESET}")
-    y_test_truth, y_test_pred, fit_time, predict_time = anomaly_detection_obj.anomaly_detector(
-        x_train, y_train, x_test, y_test_truth,mode
-    )
+    y_test_truth, y_test_pred, fit_time, predict_time = anomaly_detection_obj.anomaly_detector(X_train, y_train, X_test,
+        y_test_truth, X_val, y_val_truth, mode)
 
     # ---------------- Model Evaluation ----------------
     print(f"{GRAY}Evaluating model performance...{RESET}")
-    model_evaluation_obj.evaluation( Round,
-        number_component, y_test_truth, y_test_pred, DATASET, x_test
+    model_evaluation_obj.evaluation( Round,X_train, y_train ,
+        number_component, y_test_truth, y_test_pred, DATASET, X_test
     )
 
     print(f"Model training completed in {fit_time:.2f} minutes")

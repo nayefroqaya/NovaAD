@@ -22,48 +22,9 @@ YELLOW = colorama.Fore.YELLOW
 class FeaturesEngineering:
 
     @staticmethod
-    def summing_Train_test_together(dataset, df_train_with_test):
-        df_train_with_test = df_train_with_test.dropna(how='all')
-        df_train_with_test = df_train_with_test.reset_index(drop=True)
-
-        # ------- Train/Test dataset: --------------------------------------------------------------------------
-#        log_normal_labelled = df_train_with_test[(df_train_with_test['Temp_label'] == 0)]  # Normals logs - labeled
-
-        # Only keep blocks that actually have rows with Temp_label=0
-        #log_normal_labelled = df_train_with_test[df_train_with_test['Temp_label'] == 0].copy()
-        #valid_blocks = log_normal_labelled['Node_block_id'].unique()
-
-        # Optional: filter the full dataset for aggregation
-        #df_filtered = df_train_with_test[df_train_with_test['Node_block_id'].isin(valid_blocks)].copy()
-
-
-
-
-
-
-        #total_rows = len(log_normal_labelled)
-        #print("Total rows in log_normal_labelled:", total_rows)
-
-
-
-        #counts_per_block = log_normal_labelled.groupby('Node_block_id').size()
-        #empty_blocks = counts_per_block[counts_per_block == 0].index.tolist()
-        #print("Node_block_id with 0 rows:", empty_blocks)
-        #print("Number of empty Node_block_id groups:", len(empty_blocks))
-        #exit()
-
-
-        #print("Total rows in log_normal_labelled:", len(log_normal_labelled))
-        #missing_features = log_normal_labelled[log_normal_labelled['features'].isna()]
-        #print("Rows with NaN features:", len(missing_features))
-        #print(missing_features.head())
-
-
-       # empty_features = log_normal_labelled[log_normal_labelled['features'].map(lambda x: isinstance(x, (list, np.ndarray)) and len(x) == 0)]
-       # print("Rows with empty feature lists:", len(empty_features))
-       # print(empty_features.head())
-       # exit()
-
+    def summing_Train_test_val_together(dataset, df_train_with_test_with_val):
+        df_train_with_test_with_val = df_train_with_test_with_val.dropna(how='all')
+        df_train_with_test_with_val = df_train_with_test_with_val.reset_index(drop=True)
 
        #Define safe aggregation function
         def safe_stack(feature_list):
@@ -79,16 +40,19 @@ class FeaturesEngineering:
 
 
 
-        log_normal_labelled = df_train_with_test[df_train_with_test['Temp_label'] == 0].copy()
+        log_normal_labelled = df_train_with_test_with_val[df_train_with_test_with_val['Temp_label'] == 0].copy()
         # 2️⃣ Remove UNKNOWN blocks (case-insensitive)
-        og_normal_labelled = log_normal_labelled[
+        log_normal_labelled = log_normal_labelled[
                 ~log_normal_labelled['Node_block_id'].astype(str).str.contains("UNKNOWN", case=False, na=False)
         ].reset_index(drop=True)
 
-        log_remain_normal_anomaly_unlabelled = df_train_with_test[
-            (df_train_with_test['Temp_label'] == 999)].copy()  # Normal/Anomaly logs - unlabeled train data
-        log_test_unlabelled = df_train_with_test[
-            (df_train_with_test['Temp_label'] == 888)].copy()  # Normal/Anomaly logs - unlabeled test data
+        log_remain_normal_anomaly_unlabelled = df_train_with_test_with_val[
+            (df_train_with_test_with_val['Temp_label'] == 999)].copy()  # Normal/Anomaly logs - unlabeled train data
+        log_test_unlabelled = df_train_with_test_with_val[
+            (df_train_with_test_with_val['Temp_label'] == 888)].copy()  # Normal/Anomaly logs - unlabeled test data
+        log_val_labeled = df_train_with_test_with_val[
+            (df_train_with_test_with_val['Temp_label'] == 777)].copy()  # Normal/Anomaly logs - unlabeled test data
+
 
         # (1) Train Normal logs labelled -----------------------------------------------------------------------
         # 4️⃣ Aggregate features by Node_block_id
@@ -101,26 +65,6 @@ class FeaturesEngineering:
 
        # 6️⃣ Merge features with labeel 
         summed_df_normal_labelled_train = summed_df_normal_labelled_train.merge(sequence_labels_normal_labelled, on='Node_block_id')
-
-
-
-
-
-        #summed_df_normal_labelled_train = log_normal_labelled.groupby('Node_block_id')['features'].apply(
-        #    lambda x: np.mean(np.stack([np.asarray(i, dtype=np.float32) for i in x]), axis=0)
-        #).reset_index()
-
-        # Assigning a label to each log_sequence_id
-        #if dataset == 'HDFS':
-        #sequence_labels_normal_labelled = log_normal_labelled.groupby('Node_block_id')['Label'].apply(
-        #        lambda x: 'anomaly' if any(lbl != 'Normal' for lbl in x) else 'normal').reset_index()
-        #else:
-        #    sequence_labels_normal_labelled = log_normal_labelled.groupby('Node_block_id')['Label'].apply(
-        #        lambda x: 'anomaly' if any(lbl != 'Normal' for lbl in x) else 'normal').reset_index()
-
-        # Merging the summed feature vectors with their respective labels
-        #summed_df_normal_labelled_train = summed_df_normal_labelled_train.merge(sequence_labels_normal_labelled,
-                                                                              #  on='Node_block_id')
         summed_df_normal_labelled_train['Temp_label'] = 0  # Normal
 
         # Validation checks
@@ -128,19 +72,12 @@ class FeaturesEngineering:
         yy_normal = summed_df_normal_labelled_train[(summed_df_normal_labelled_train['Label'] == 'normal')]
 
         if len(xx_anomaly) != 0 or len(yy_normal) == 0:
-            print('Error in summing_Train_test_together function: Normal data validation failed')
+            print('Error in summing_Train_test_val_together function: Normal data validation failed')
             exit()
 
         if len(yy_normal) != len(summed_df_normal_labelled_train):
             print('Error: Length mismatch in normal labelled data')
             exit()
-
-
-
-
-
-
-#        exit()
         # (2) Train - Normal and Abnormal logs unlabelled ------------------------------------------------------
         summed_df_combine_unlabelled_train = log_remain_normal_anomaly_unlabelled.groupby('Node_block_id')['features'].apply(
            safe_stack).reset_index()
@@ -154,22 +91,6 @@ class FeaturesEngineering:
         summed_df_combine_unlabelled_train = summed_df_combine_unlabelled_train.merge(
             sequence_labels_combine_unlabelled,
             on='Node_block_id')
-
-        #summed_df_combine_unlabelled_train = log_remain_normal_anomaly_unlabelled.groupby('Node_block_id')[
-        #    'features'].apply(
-        #    lambda x: np.mean(np.stack(x), axis=0)).reset_index()
-
-        #if dataset == 'HDFS':
-        #sequence_labels_combine_unlabelled = log_remain_normal_anomaly_unlabelled.groupby('Node_block_id')[
-        #        'Label'].apply(lambda x: 'anomaly' if any(lbl != 'Normal' for lbl in x) else 'normal').reset_index()
-        #else:
-        #    sequence_labels_combine_unlabelled = log_remain_normal_anomaly_unlabelled.groupby('Node_block_id')[
-        #        'Label'].apply(lambda x: 'anomaly' if any(lbl != 'Normal' for lbl in x) else 'normal').reset_index()
-
-        # Merging the summed feature vectors with their respective labels
-       # summed_df_combine_unlabelled_train = summed_df_combine_unlabelled_train.merge(
-       #     sequence_labels_combine_unlabelled,
-       #     on='Node_block_id')
         summed_df_combine_unlabelled_train['Temp_label'] = 999  # Normal and anomaly unlabeled
 
         # Validation checks
@@ -185,35 +106,37 @@ class FeaturesEngineering:
         # (3) Test dataset: ------------------------------------------------------------------------------------
         summed_df_combine_unlabelled_test = log_test_unlabelled.groupby('Node_block_id')['features'].apply(
            safe_stack).reset_index()
-
-#        summed_df_combine_unlabelled_test = log_test_unlabelled.groupby('Node_block_id')['features'].apply(
-#            lambda x: np.mean(np.stack(x), axis=0)).reset_index()
-
-        #if dataset == 'UU_HDFS':
         sequence_labels_combine_unlabelled_test = log_test_unlabelled.groupby('Node_block_id')[
                 'Label'].apply(lambda x: 'anomaly' if any(lbl != 'Normal' for lbl in x) else 'normal').reset_index()
-        #else:
-        #    sequence_labels_combine_unlabelled_test = log_test_unlabelled.groupby('Node_block_id')[
-        #        'Label'].apply(lambda x: 'anomaly' if any(lbl != 'Normal' for lbl in x) else 'normal').reset_index()
-
         # Merging the summed feature vectors with their respective labels
         summed_df_combine_unlabelled_test = summed_df_combine_unlabelled_test.merge(
             sequence_labels_combine_unlabelled_test,
             on='Node_block_id')
         summed_df_combine_unlabelled_test['Temp_label'] = 888  # Test normal and anomaly unlabeled
-
         summed_df_test = summed_df_combine_unlabelled_test
+
+        # (4) Val dataset: ------------------------------------------------------------------------------------
+        summed_df_val_dataset= log_val_labeled.groupby('Node_block_id')['features'].apply(
+           safe_stack).reset_index()
+        sequence_labels_val = log_val_labeled.groupby('Node_block_id')[
+                'Label'].apply(lambda x: 'anomaly' if any(lbl != 'Normal' for lbl in x) else 'normal').reset_index()
+        # Merging the summed feature vectors with their respective labels
+        summed_df_val = summed_df_val_dataset.merge(
+            sequence_labels_val,
+            on='Node_block_id')
+        summed_df_val['Temp_label'] = 777  # Test normal and anomaly unlabeled
+
 
         # Final processing and combination
         summed_df_train = summed_df_train.reset_index(drop=True)
         summed_df_test = summed_df_test.reset_index(drop=True)
+        summed_df_val = summed_df_val.reset_index(drop=True)
 
-        summ_train_test_combine = pd.concat([summed_df_train, summed_df_test])
-        summ_train_test_combine = summ_train_test_combine.reset_index(drop=True)
+        summ_train_test_val_combine = pd.concat([summed_df_train, summed_df_test, summed_df_val])
+        summ_train_test_val_combine = summ_train_test_val_combine.reset_index(drop=True)
 
         print('Feature aggregation completed successfully')
-#        exit()
-        return summ_train_test_combine
+        return summ_train_test_val_combine
 
     @staticmethod
     def preparing_features_training_combined_labeled_unlabeled(dataset, df_features_all_train_with_test_final):
@@ -230,7 +153,7 @@ class FeaturesEngineering:
         return df_features_all_train_with_test_final
 
     @staticmethod
-    def features_aggregation_transformation(final_train_with_test, dataset):
+    def features_aggregation_transformation(final_train_with_test_with_val, dataset):
         # Function to handle replacement of None, NaN, or other values
         def replace_none_or_nan(x):
             if x is None:
@@ -241,33 +164,33 @@ class FeaturesEngineering:
                 return np.nan
             return x
 
-        final_train_with_test = final_train_with_test.applymap(replace_none_or_nan)
-        final_train_with_test = final_train_with_test.dropna(how='all')
-        final_train_with_test = final_train_with_test.reset_index(drop=True)
+        final_train_with_test_with_val = final_train_with_test_with_val.applymap(replace_none_or_nan)
+        final_train_with_test_with_val = final_train_with_test_with_val.dropna(how='all')
+        final_train_with_test_with_val = final_train_with_test_with_val.reset_index(drop=True)
 
         # Optimize data types
-        final_train_with_test = final_train_with_test.astype(
-            {col: 'float32' if final_train_with_test[col].dtype == 'float64'
-            else 'int32' if final_train_with_test[col].dtype == 'int64'
-            else final_train_with_test[col].dtype for col in final_train_with_test.columns}
+        final_train_with_test_with_val = final_train_with_test_with_val.astype(
+            {col: 'float32' if final_train_with_test_with_val[col].dtype == 'float64'
+            else 'int32' if final_train_with_test_with_val[col].dtype == 'int64'
+            else final_train_with_test_with_val[col].dtype for col in final_train_with_test_with_val.columns}
         )
 
         # Encode sentiment labels
         label_encoder_sentiment = LabelEncoder()
-        final_train_with_test['sentiment_label'] = label_encoder_sentiment.fit_transform(
-            final_train_with_test['sentiment_label'])
+        final_train_with_test_with_val['sentiment_label'] = label_encoder_sentiment.fit_transform(
+            final_train_with_test_with_val['sentiment_label'])
 
         # Convert embeddings to lists
-        final_train_with_test['reduced_embedding'] = final_train_with_test['reduced_embedding'].apply(
+        final_train_with_test_with_val['reduced_embedding'] = final_train_with_test_with_val['reduced_embedding'].apply(
             lambda x: x.tolist())
 
         # Prepare features and aggregate
-        df_train_with_test = FeaturesEngineering.preparing_features_training_combined_labeled_unlabeled(
-            dataset, final_train_with_test)
-        sequences_df = FeaturesEngineering.summing_Train_test_together(dataset, df_train_with_test)
+        df_train_with_test_with_val = FeaturesEngineering.preparing_features_training_combined_labeled_unlabeled(
+            dataset, final_train_with_test_with_val)
+        sequences_df = FeaturesEngineering.summing_Train_test_val_together(dataset, df_train_with_test_with_val)
 
         # Apply Standard Scaler to the summed feature vectors
-        Train_Test_df_lst = np.vstack(sequences_df['features'].values)
+        Train_Test_val_df_lst = np.vstack(sequences_df['features'].values)
         sequences_df['Label'] = sequences_df['Label'].apply(lambda x: 0 if x == 'normal' else 1)
 
         # Validation checks
@@ -278,11 +201,11 @@ class FeaturesEngineering:
             exit()
 
         scaler_data = StandardScaler()
-        scaled_Train_Test_df = scaler_data.fit_transform(Train_Test_df_lst)
+        scaled_Train_Test_val_df = scaler_data.fit_transform(Train_Test_val_df_lst)
         print('Feature scaling completed')
 
         # Convert features into a NumPy array
-        X_sequences_df = scaled_Train_Test_df
+        X_sequences_df = scaled_Train_Test_val_df
         y_sequences_df = sequences_df['Temp_label']
 
         return sequences_df, X_sequences_df, y_sequences_df
@@ -371,6 +294,9 @@ class FeaturesEngineering:
         df_test = sequences_df[sequences_df['Temp_label'] == 888][['features', 'Temp_label', 'Label']].copy()
         df_test = df_test[['features', 'Temp_label', 'Label']]
 
+        df_val = sequences_df[sequences_df['Temp_label'] == 777][['features', 'Temp_label', 'Label']].copy()
+        df_val = df_val[['features', 'Temp_label', 'Label']]
+
         # Validation check
         xx_0 = df_test[(df_test['Label'] == 0)]
         xx_1 = df_test[(df_test['Label'] == 1)]
@@ -384,4 +310,7 @@ class FeaturesEngineering:
         X_test = df_test['features'].tolist()
         y_test_truth = df_test['Label'].values
 
-        return X_train, y_train, X_test, y_test_truth
+        X_val = df_val['features'].tolist()
+        y_val_truth = df_val['Label'].values
+        return X_train, y_train, X_test, y_test_truth, X_val, y_val_truth
+

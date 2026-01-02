@@ -7,7 +7,8 @@ class ModelEvaluation:
     """Class for evaluating model performance and feature importance."""
 
     @staticmethod
-    def evaluation( Round, number_components, y_test_truth, y_test_pred, dataset, X_test):
+    def evaluation( Round,X_train, y_train ,
+        number_component, y_test_truth, y_test_pred, DATASET, X_test):
         """
         Evaluate model performance and compute feature importance metrics.
 
@@ -23,45 +24,38 @@ class ModelEvaluation:
         print("\n StackingClassifier - Classification Report:")
         print(classification_report(y_test_truth, y_test_pred,
                                     target_names=["Class 0", "Class 1"], digits=3))
-
-        # Define feature names
+        # ========================
+        # 2. Feature Names
+        # ========================
         feature_names = (
-                [f"component_{i + 1}" for i in range(number_components)] +
-                [
-                    # Text features
-                    'sentiment',
-                    'Dominant_Topic',
-                    'word_count',
-                    'character_count',
-                    'entropy',
+                [f"component_{i + 1}" for i in range(number_component)] + ['sentiment', 'Dominant_Topic', 'word_count',
+            'character_count', 'entropy', 'year', 'month', 'day', 'hour', 'minute', 'second'])
 
-                    # Temporal features
-                    'year',
-                    'month',
-                    'day',
-                    'hour',
-                    'minute',
-                    'second'
-                ]
-        )
+        # ========================
+        # 3. Ensure X_train is DataFrame
+        # ========================
+        if not isinstance(X_train, pd.DataFrame):
+            X_train = pd.DataFrame(X_train, columns=feature_names[:X_train.shape[1]])
 
-        # Ensure X_test is a DataFrame
-        if not isinstance(X_test, pd.DataFrame):
-            X_test = pd.DataFrame(X_test)
+        # ========================
+        # 4. Mutual Information (TRAIN DATA ONLY) ✅
+        # ========================
+        print("Calculating feature importance using Mutual Information (training data)...")
 
-        # Compute Mutual Information scores
-        print("Calculating feature importance using Mutual Information...")
-        mi_scores = mutual_info_classif(X_test, y_test_truth)
+        mi_scores = mutual_info_classif(X_train, y_train, random_state=42)
 
-        # Create and sort MI scores DataFrame
-        mi_df = pd.DataFrame({
-            "Feature": feature_names[:len(mi_scores)],  # Handle potential length mismatch
-            "MI_Score": mi_scores
-        }).sort_values(by="MI_Score", ascending=False)
+        # ========================
+        # 5. Create MI DataFrame
+        # ========================
+        mi_df = pd.DataFrame({"Feature": X_train.columns, "MI_Score": mi_scores}).sort_values(by="MI_Score",
+                                                                                              ascending=False)
 
-        # Save results to CSV
-        output_filename = f"{Round}_{dataset}_evaluation_mi_scores.csv"
+        # ========================
+        # 6. Save Results
+        # ========================
+        output_filename = f"{Round}_{DATASET}_evaluation_mi_scores.csv"
         mi_df.to_csv(output_filename, index=False)
+
         print(f"Mutual Information scores saved to: {output_filename}")
 
         return mi_df

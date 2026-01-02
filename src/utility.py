@@ -137,7 +137,7 @@ class Utilities:
         print(' Normal seq Test : '  +str(len(df3)))
         print(' Anomaly seq Test : '  +str(len(df4)))
 
-        exit()
+        #exit()
         return train_df, val_df, test_df, df_features
 
     @staticmethod
@@ -187,13 +187,16 @@ class Utilities:
 
         # Mark test set with Temp_label = 888
         test_df['Temp_label'] = 888
+        validate_df['Temp_label'] = 777
 
         # Combine all datasets
-        final_dataset = pd.concat([df_train_normal_50, df_train_unlabeled, test_df], ignore_index=True)
+        final_dataset = pd.concat([df_train_normal_50, df_train_unlabeled,validate_df, test_df], ignore_index=True)
 
         print(GREEN + f"[INFO] Labeled normal blocks: {df_train_normal_50['Node_block_id'].nunique()} (Temp_label=0)" + RESET)
         print(GREEN + f"[INFO] Unlabeled blocks (remaining normal + anomaly): {df_train_unlabeled['Node_block_id'].nunique()} (Temp_label=999)" + RESET)
         print(GREEN + f"[INFO] Test blocks: {test_df['Node_block_id'].nunique()} (Temp_label=888)" + RESET)
+        print(GREEN + f"[INFO] Test blocks: {validate_df['Node_block_id'].nunique()} (Temp_label=777)" + RESET)
+
         print(GREEN + f"[INFO] Final combined dataset size: {len(final_dataset)} rows" + RESET)
 
         final_dataset.info()
