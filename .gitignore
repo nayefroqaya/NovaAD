@@ -25,3 +25,15 @@ src/__pycache__/
 src/pca_model_from_train.pkl
 src/scaler_model_from_train_for_pca.pkl
 src/tf_vectorizer.pkl
+
+#datasets/HDO/ datasets/HDO_abnormal.log datasets/HDO_normal.log datasets/SP/ datasets/SP_100MB/ datasets/SP_150MB/ src/1_TH_1G_evaluation_mi_scores.csv src/2_TH_1G_evaluation_mi_scores.csv src/3_TH_1G_evaluation_mi_scores.csv
+        datasets/HDO/
+        datasets/HDO_abnormal.log
+        datasets/HDO_normal.log
+        datasets/SP/
+        datasets/SP_100MB/
+        datasets/SP_150MB/
+        src/1_TH_1G_evaluation_mi_scores.csv
+        src/2_TH_1G_evaluation_mi_scores.csv
+        src/3_TH_1G_evaluation_mi_scores.csv
+
