@@ -1,6 +1,7 @@
 import pandas as pd
 from sklearn.feature_selection import mutual_info_classif
 from sklearn.metrics import classification_report
+import numpy as np
 
 
 class ModelEvaluation:
@@ -35,6 +36,9 @@ class ModelEvaluation:
         # 3. Ensure X_train is DataFrame
         # ========================
         if not isinstance(X_train, pd.DataFrame):
+            #X_train = pd.DataFrame(X_train, columns=feature_names[:X_train.shape[1]])
+            X_train = np.asarray(X_train)
+
             X_train = pd.DataFrame(X_train, columns=feature_names[:X_train.shape[1]])
 
         # ========================

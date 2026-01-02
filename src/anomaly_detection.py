@@ -19,6 +19,14 @@ import time
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import RandomizedSearchCV
 from sklearn.metrics import average_precision_score
+import time
+import numpy as np
+from xgboost import XGBClassifier
+from sklearn.linear_model import LogisticRegression
+from sklearn.ensemble import VotingClassifier, StackingClassifier
+from sklearn.model_selection import RandomizedSearchCV, StratifiedKFold
+from sklearn.metrics import precision_recall_curve
+from scipy.stats import randint, uniform
 
 warnings.filterwarnings('ignore')
 colorama.init()
@@ -33,6 +41,112 @@ class AnomalyDetector:
     @staticmethod
     def anomaly_detector(X_train, y_train, X_test,
         y_test_truth, X_val, y_val_truth, mode):
+
+
+
+        print("Starting model training process...")
+        start_fit = time.time()
+
+        if mode != 'M':
+            raise ValueError("Unsupported mode")
+
+        # ========================
+        # 1. Base Model: XGBoost + Logistic Regression
+        # ========================
+        model_xgb_tuning = XGBClassifier(use_label_encoder=False, eval_metric='logloss', random_state=42, n_jobs=-1,
+            tree_method='hist',  # fast training
+            max_bin=256)
+
+        model_lr = LogisticRegression(max_iter=1000, class_weight='balanced')
+
+        # ========================
+        # 2. Hyperparameter Space (XGB only, reduced search)
+        # ========================
+        param_dist = {'max_depth': [3, 5, 7, 10], 'n_estimators': randint(200, 600),
+            'learning_rate': uniform(0.01, 0.2), 'subsample': uniform(0.7, 0.3), 'colsample_bytree': uniform(0.7, 0.3),
+            'min_child_weight': randint(1, 10), 'gamma': uniform(0, 5), 'reg_alpha': uniform(0, 1),
+            'reg_lambda': uniform(1, 5)}
+
+        cv_strategy = StratifiedKFold(n_splits=3, shuffle=True, random_state=42)
+
+        # ========================
+        # 3. Randomized Search – XGBoost
+        # ========================
+        random_search_xgb = RandomizedSearchCV(estimator=model_xgb_tuning, param_distributions=param_dist, n_iter=7,
+            # smaller search
+            cv=cv_strategy, scoring='average_precision',  # better for anomalies
+            n_jobs=-1, verbose=1, random_state=42)
+
+        random_search_xgb.fit(X_train, y_train)
+        best_params_xgb = random_search_xgb.best_params_
+        print("Best XGB params:", best_params_xgb)
+
+        model_final_xgb = XGBClassifier(**best_params_xgb, use_label_encoder=False, eval_metric='logloss',
+            random_state=42, n_jobs=-1, tree_method='hist', max_bin=256,
+            scale_pos_weight=(y_train == 0).sum() / (y_train == 1).sum())
+
+        # ========================
+        # 4. Voting Classifier
+        # ========================
+        voting_clf = VotingClassifier(estimators=[('xgb', model_final_xgb), ('lr', model_lr)], voting='soft')
+
+        # ========================
+        # 5. Stacking Classifier (XGB + LR only, RF removed for speed)
+        # ========================
+        stacking_clf = StackingClassifier(estimators=[('voting', voting_clf)],
+            final_estimator=LogisticRegression(class_weight='balanced', max_iter=1000), n_jobs=-1)
+
+        # ========================
+        # 6. Train Stacking Classifier
+        # ========================
+        stacking_clf.fit(X_train, y_train)
+        fit_time = (time.time() - start_fit) / 60
+        print(f"Training completed in {fit_time:.2f} minutes")
+
+        # ========================
+        # 7. Threshold Optimization on Validation Set (Recall-Constrained)
+        # ========================
+        print("Optimizing threshold on validation set...")
+
+        y_val_proba = stacking_clf.predict_proba(X_val)[:, 1]
+        precisions, recalls, thresholds = precision_recall_curve(y_val_truth, y_val_proba)
+
+        beta = 2
+        f_beta = (1 + beta ** 2) * (precisions * recalls) / (beta ** 2 * precisions + recalls + 1e-6)
+
+        # Recall-constrained optimization (e.g., min recall 0.85)
+        min_recall = 0.85
+        valid_idx = np.where(recalls >= min_recall)[0]
+
+        if len(valid_idx) == 0:
+            best_idx = np.argmax(f_beta)
+        else:
+            best_idx = valid_idx[np.argmax(f_beta[valid_idx])]
+
+        # Safe index
+        best_threshold = thresholds[min(best_idx, len(thresholds) - 1)]
+
+        print(f"Best threshold: {best_threshold:.4f}")
+        print(f"Val Precision: {precisions[best_idx]:.3f}, "
+              f"Recall: {recalls[best_idx]:.3f}, "
+              f"Fβ: {f_beta[best_idx]:.3f}")
+
+        # ========================
+        # 8. Final Test Prediction
+        # ========================
+        print("Evaluating on test set...")
+        start_predict = time.time()
+
+        y_test_proba = stacking_clf.predict_proba(X_test)[:, 1]
+        y_test_pred = (y_test_proba >= best_threshold).astype(int)
+
+        predict_time = (time.time() - start_predict) / 60
+        print(f"Prediction completed in {predict_time:.2f} minutes")
+
+        return y_test_truth, y_test_pred, fit_time, predict_time
+
+
+        '''
         print("Starting model training process...")
 
         start_fit = time.time()
@@ -152,7 +266,7 @@ class AnomalyDetector:
             print(f"Prediction completed in {predict_time:.2f} minutes")
 
             return y_test_truth, y_test_pred_adjusted, fit_time, predict_time
-
+        '''
         '''
         if mode=='M':
                     # ========================
