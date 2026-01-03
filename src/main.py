@@ -50,7 +50,7 @@ def main():
     DATASET = 'BGL'
 #>>>>>>> 42c37e9 (update input name)
     DATASETS_FOLDER = 'datasets'
-    Round= '1'
+    Round= '2'
     mode='M'  # M multi classifier - S single classifier
 
 
