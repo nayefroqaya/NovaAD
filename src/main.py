@@ -47,10 +47,10 @@ def main():
 #<<<<<<< HEAD
 #    DATASET = 'BGL'
 #=======
-    DATASET = 'BGL'
+    DATASET = 'SP_100MB'
 #>>>>>>> 42c37e9 (update input name)
     DATASETS_FOLDER = 'datasets'
-    Round= '2'
+    Round= '1'
     mode='M'  # M multi classifier - S single classifier
 
 
