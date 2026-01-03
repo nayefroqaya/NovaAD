@@ -47,10 +47,10 @@ def main():
 #<<<<<<< HEAD
 #    DATASET = 'BGL'
 #=======
-    DATASET = 'TH_2G'
+    DATASET = 'HDFS'
 #>>>>>>> 42c37e9 (update input name)
     DATASETS_FOLDER = 'datasets'
-    Round= '3'
+    Round= '1'
     mode='M'  # M multi classifier - S single classifier
 
 
