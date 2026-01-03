@@ -217,7 +217,7 @@ class FeaturesEngineering:
 
         best_params = None
         best_score = -np.inf  # Higher LOF separation score is better
-        
+        '''
         # Grid Search Over Gamma & Nu
         for gamma, nu in product(gamma_values, nu_values):
             print(f'Testing parameters: Gamma={gamma}, Nu={nu}')
@@ -248,10 +248,11 @@ class FeaturesEngineering:
                 best_params = (gamma, nu)
 
         print(f"Optimal parameters found: Gamma={best_params[0]}, Nu={best_params[1]}")
+        '''
         
         # Train final model with optimal parameters
-        oc_svm = OneClassSVM(kernel='rbf', gamma=best_params[0], nu=best_params[1])
-        #oc_svm = OneClassSVM(kernel='rbf', gamma= 0.2, nu=0.01)
+        #oc_svm = OneClassSVM(kernel='rbf', gamma=best_params[0], nu=best_params[1])
+        oc_svm = OneClassSVM(kernel='rbf', gamma= 0.425, nu=0.01)
 
         oc_svm.fit(X_train_normal_labelled)
 
