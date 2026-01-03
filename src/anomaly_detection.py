@@ -46,7 +46,7 @@ class AnomalyDetector:
 
         print("Starting model training process...")
         start_fit = time.time()
-
+        '''
         if mode != 'M':
             raise ValueError("Unsupported mode")
 
@@ -144,9 +144,10 @@ class AnomalyDetector:
         print(f"Prediction completed in {predict_time:.2f} minutes")
 
         return y_test_truth, y_test_pred, fit_time, predict_time
-
-
         '''
+
+
+
         print("Starting model training process...")
 
         start_fit = time.time()
@@ -266,7 +267,7 @@ class AnomalyDetector:
             print(f"Prediction completed in {predict_time:.2f} minutes")
 
             return y_test_truth, y_test_pred_adjusted, fit_time, predict_time
-        '''
+
         '''
         if mode=='M':
                     # ========================
