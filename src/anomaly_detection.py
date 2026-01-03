@@ -166,13 +166,13 @@ class AnomalyDetector:
             # ========================
             # 2. Hyperparameter Spaces
             # ========================
-            param_dist = {'xgb': {'max_depth': [3, 5, 7, 10, 15], 'n_estimators': randint(100, 500),
+            param_dist = {'xgb': {'max_depth': [3, 5, 7, 10], 'n_estimators': randint(100, 300), # 500
                 'learning_rate': uniform(0.01, 0.3), 'subsample': uniform(0.7, 0.3),
                 'colsample_bytree': uniform(0.7, 0.3), },
-                'rf': {'max_depth': [5, 10, 15, None], 'n_estimators': randint(100, 500),
+                'rf': {'max_depth': [5, 10, 15, None], 'n_estimators': randint(100, 300), # 500
                     'max_features': ['sqrt', 'log2'], 'min_samples_split': [2, 5, 10]}}
 
-            cv_strategy = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)
+            cv_strategy = StratifiedKFold(n_splits=3, shuffle=True, random_state=42)  # 5
 
             # ========================
             # 3. Randomized Search – XGBoost
@@ -205,7 +205,7 @@ class AnomalyDetector:
             model_final_rf = RandomForestClassifier(**best_params_rf, class_weight="balanced", random_state=42,
                 n_jobs=-1)
 
-            model_lr = LogisticRegression(max_iter=500, class_weight="balanced")
+            model_lr = LogisticRegression( class_weight="balanced") # max_iter=500
 
             # ========================
             # 6. Voting Classifier
