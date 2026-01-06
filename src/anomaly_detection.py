@@ -158,7 +158,7 @@ class AnomalyDetector:
             # ========================
             model_xgb_tuning = XGBClassifier(use_label_encoder=False, eval_metric='logloss',
                                              #n_jobs=-1, cpu
-                                             tree_method="hist",  # modern tree builder
+                                            # tree_method="hist",  # modern tree builder
                                              device="cuda",  # ✅ GPU
                                              n_jobs=4 , # ✅ avoid CPU oversubscription during GPU training
 
@@ -169,10 +169,10 @@ class AnomalyDetector:
             # ========================
             # 2. Hyperparameter Spaces
             # ========================
-            param_dist = {'xgb': {'max_depth': [3, 5, 7, 10], 'n_estimators': randint(100, 300), # 500
+            param_dist = {'xgb': {'max_depth': [ 5, 7, 10], 'n_estimators': randint(100, 250), # 500
                 'learning_rate': uniform(0.01, 0.3), 'subsample': uniform(0.7, 0.3),
                 'colsample_bytree': uniform(0.7, 0.3), },
-                'rf': {'max_depth': [5, 10, 15, None], 'n_estimators': randint(100, 300), # 500
+                'rf': {'max_depth': [ 10, 15, None], 'n_estimators': randint(100, 250), # 500
                     'max_features': ['sqrt', 'log2'], 'min_samples_split': [2, 5, 10]}}
 
             cv_strategy = StratifiedKFold(n_splits=3, shuffle=True, random_state=42)  # 5
@@ -204,7 +204,7 @@ class AnomalyDetector:
 
             model_final_xgb = XGBClassifier(**best_params_xgb, scale_pos_weight=scale_pos_weight, random_state=42,
                # n_jobs=-1,
-            tree_method="hist",
+           # tree_method="hist",
             device="cuda",     # ✅ GPU
             n_jobs=4   ,        # ✅ keep modest when using GPU
             use_label_encoder=False,
