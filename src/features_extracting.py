@@ -211,9 +211,9 @@ class FeaturesExtractor:
         dict: Mapping of sentences to their BERT embeddings
         """
         model = SentenceTransformer('bert-base-nli-mean-tokens')
-        device = torch.device('cpu')  # Force CPU usage
+        device_sent = torch.device('cpu')  # Force CPU usage
         print("[INFO] Using CPU for BERT encoding")
-        model.to(device)
+        model.to(device_sent)
 
         batch_size = 64
 
