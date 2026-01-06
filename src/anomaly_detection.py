@@ -152,14 +152,17 @@ class AnomalyDetector:
 
         start_fit = time.time()
 
-        print("Starting model training process...")
-        start_fit = time.time()
-
         if mode == 'M':
             # ========================
             # 1. Base Models Initialization
             # ========================
-            model_xgb_tuning = XGBClassifier(use_label_encoder=False, eval_metric='logloss', n_jobs=-1, random_state=42)
+            model_xgb_tuning = XGBClassifier(use_label_encoder=False, eval_metric='logloss',
+                                             #n_jobs=-1, cpu
+                                             tree_method="hist",  # modern tree builder
+                                             device="cuda",  # ✅ GPU
+                                             n_jobs=4 , # ✅ avoid CPU oversubscription during GPU training
+
+                                             random_state=42)
 
             model_rf_tuning = RandomForestClassifier(n_jobs=-1, random_state=42)
 
@@ -200,7 +203,12 @@ class AnomalyDetector:
             scale_pos_weight = len(y_train[y_train == 0]) / len(y_train[y_train == 1])
 
             model_final_xgb = XGBClassifier(**best_params_xgb, scale_pos_weight=scale_pos_weight, random_state=42,
-                n_jobs=-1, use_label_encoder=False, eval_metric='logloss')
+               # n_jobs=-1,
+            tree_method="hist",
+            device="cuda",     # ✅ GPU
+            n_jobs=4   ,        # ✅ keep modest when using GPU
+            use_label_encoder=False,
+            eval_metric='logloss')
 
             model_final_rf = RandomForestClassifier(**best_params_rf, class_weight="balanced", random_state=42,
                 n_jobs=-1)
