@@ -1,5 +1,5 @@
 import os
-os.environ["CUDA_VISIBLE_DEVICES"] = ""   # ⛔ Disable GPU completely
+#os.environ["CUDA_VISIBLE_DEVICES"] = ""   # ⛔ Disable GPU completely
 import warnings
 import colorama
 import pandas as pd
@@ -32,11 +32,17 @@ def main():
     #    print(f"{YELLOW}No GPU detected. Using CPU for encoding. Exiting program.{RESET}")
     #    exit()
     # ---------------- Device setup (CPU ONLY) ----------------
-    device = torch.device("cpu")
-    torch.backends.cudnn.enabled = False
-    torch.backends.cuda.enabled = False
-    print(f"{YELLOW}Using device: CPU only{RESET}")
-    print(f"{YELLOW}Using device: CPU (GPU disabled){RESET}")
+    #device = torch.device("cpu")
+#    device = torch.device("mps" if torch.backends.mps.is_available() else "cpu")
+
+ #   torch.backends.cudnn.enabled = False
+ #   torch.backends.cuda.enabled = False
+ #   print(f"{YELLOW}Using device: CPU only{RESET}")
+ #   print(f"{YELLOW}Using device: CPU (GPU disabled){RESET}")
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    # Enable cuDNN for GPU acceleration
+    torch.backends.cudnn.enabled = True
+
     # ---------------- Display options ----------------
     pd.set_option("display.max_columns", None)
     pd.set_option("display.max_rows", None)
