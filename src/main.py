@@ -53,7 +53,11 @@ def main():
 #<<<<<<< HEAD
 #    DATASET = 'BGL'
 #=======
+#<<<<<<< HEAD
     DATASET = 'TH_1G'
+#=======
+#    DATASET = 'HDFS'
+#>>>>>>> 66197ed (check label)
 #>>>>>>> 42c37e9 (update input name)
     DATASETS_FOLDER = 'datasets'
     Round= '1'
