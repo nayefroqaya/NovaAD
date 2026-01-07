@@ -217,7 +217,7 @@ class FeaturesEngineering:
 
         best_params = None
         best_score = -np.inf  # Higher LOF separation score is better
-        '''
+
         # Grid Search Over Gamma & Nu
         for gamma, nu in product(gamma_values, nu_values):
             print(f'Testing parameters: Gamma={gamma}, Nu={nu}')
@@ -248,8 +248,8 @@ class FeaturesEngineering:
                 best_params = (gamma, nu)
 
         print(f"Optimal parameters found: Gamma={best_params[0]}, Nu={best_params[1]}")
-        '''
-        #exit()
+
+        exit()
 
 
         
