@@ -369,7 +369,7 @@ class LogdataRead:
             stable_equal_subset_to_save = stable_equal_subset.drop(columns=['LogType'])
 
             # Save to CSV
-            mixed_subset_to_save.to_csv(f'../datasets/S_BGL/mixed_subset.csv', index=False)
+            mixed_subset_to_save.to_csv(f'../datasets/S_BGL/50_50_mixed_subset.csv', index=False)
             stable_equal_subset_to_save.to_csv('../datasets/S_BGL/stable_equal_subset.csv', index=False)
             print("CSV files saved: 'mixed_subset.csv' and 'stable_equal_subset.csv' (without LogType column).")
 
