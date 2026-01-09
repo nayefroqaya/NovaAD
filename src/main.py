@@ -81,16 +81,16 @@ def main():
     utilities_obj = Utilities()
 
     # ---------------- Data as CSV ----------------
-    logdata_read_obj.read_original_data_log_from_log_to_csv(DATASET, ALL_DATASET_CSV_PATH)
-    print(' Reading the file was done successfully ')
-    exit()
+    #logdata_read_obj.read_original_data_log_from_log_to_csv(DATASET, ALL_DATASET_CSV_PATH)
+    #print(' Reading the file was done successfully ')
+    #exit()
 
     # ---------------- Dataset Splitting ----------------
-    #print(f"{GRAY}Splitting dataset into training, validation, and test sets...{RESET}")
-    #train_df, validate_df, test_df, df_features = utilities_obj.dataset_splitting(
-    #    ALL_DATASET_CSV_PATH, DATASET, Round, Mix_or_stable
-    #)
-    #exit()
+    print(f"{GRAY}Splitting dataset into training, validation, and test sets...{RESET}")
+    train_df, validate_df, test_df, df_features = utilities_obj.dataset_splitting(
+        ALL_DATASET_CSV_PATH, DATASET, Round, Mix_or_stable
+    )
+    exit()
     # ---------------- Process normal data ----------------
 
     if Mix_or_stable == '0' and DATASET == 'S_BGL':  # Stable
