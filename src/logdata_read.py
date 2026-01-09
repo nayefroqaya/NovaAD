@@ -291,7 +291,7 @@ class LogdataRead:
 
             print("\nPercentages:")
             print(percentages.round(2))
-            subset_frac = 0.3  # 10% subset
+            subset_frac = 0.5  # 10% subset
             subset_df = (
                 df.groupby('LogType', group_keys=False).apply(lambda x: x.sample(frac=subset_frac, random_state=42)))
             # Verify
