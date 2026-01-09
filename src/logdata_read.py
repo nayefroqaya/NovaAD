@@ -272,6 +272,8 @@ class LogdataRead:
             num_templates = df['EventTemplate'].nunique()
             num_logs = len(df)
             stability_ratio = num_logs / num_templates
+            rare_ratio = (df['EventTemplate'].value_counts() < 10).mean()
+            print(f"Templates with <10 occurrences: {rare_ratio:.2%}")
             print(f"Each template appears on average {stability_ratio:.2f} times")
             exit()
 
