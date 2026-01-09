@@ -256,7 +256,7 @@ class FeaturesEngineering:
         
         # Train final model with optimal parameters
         #oc_svm = OneClassSVM(kernel='rbf', gamma=best_params[0], nu=best_params[1])
-        oc_svm = OneClassSVM(kernel='rbf', gamma= 0.35, nu=0.08)
+        oc_svm = OneClassSVM(kernel='rbf', gamma= 0.2, nu=0.0625)
 
         oc_svm.fit(X_train_normal_labelled)
 
