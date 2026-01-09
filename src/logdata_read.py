@@ -272,6 +272,7 @@ class LogdataRead:
             num_logs = len(df)
             stability_ratio = num_logs / num_templates
             print(f"Each template appears on average {stability_ratio:.2f} times")
+            exit()
 
 
 
