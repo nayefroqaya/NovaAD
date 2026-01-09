@@ -298,6 +298,65 @@ class LogdataRead:
             subset_df['LogType'].value_counts(normalize=True) * 100
             print(subset_df['LogType'].value_counts())
 
+            # Stable templates: ≥10 occurrences in subset_df
+            stable_templates = subset_df['EventTemplate'].value_counts()[lambda x: x >= 10].index
+
+            # Unstable templates: <10 occurrences in subset_df
+            unstable_templates = subset_df['EventTemplate'].value_counts()[lambda x: x < 10].index
+            stable_part = subset_df[subset_df['EventTemplate'].isin(stable_templates)]
+            unstable_part = subset_df[subset_df['EventTemplate'].isin(unstable_templates)]
+            total_size = len(subset_df)
+            stable_size = total_size // 2
+            unstable_size = total_size - stable_size
+            sampled_stable = stable_part.sample(n=stable_size, random_state=42)
+            sampled_unstable = unstable_part.sample(n=unstable_size, random_state=42)
+
+
+            mixed_subset = pd.concat([sampled_stable, sampled_unstable]).sample(frac=1, random_state=42)
+            stable_percentage = mixed_subset['EventTemplate'].value_counts()[lambda x: x >= 10].sum() / len(
+                mixed_subset) * 100
+            unstable_percentage = mixed_subset['EventTemplate'].value_counts()[lambda x: x < 10].sum() / len(
+                mixed_subset) * 100
+
+            print(f"Stable templates: {stable_percentage:.2f}%")
+            print(f"Unstable templates: {unstable_percentage:.2f}%")
+            print(mixed_subset['LogType'].value_counts(normalize=True).mul(100).round(2))
+            # Count of Normal / Anomaly in mixed_subset
+            counts = mixed_subset['LogType'].value_counts()
+            normal_ratio = counts['Normal'] / len(mixed_subset)
+            anomaly_ratio = counts['Anomaly'] / len(mixed_subset)
+
+            # Sample stable-only rows from subset_df to match count & ratio
+            stable_templates = subset_df['EventTemplate'].value_counts()[lambda x: x >= 10].index
+            stable_only_df = subset_df[subset_df['EventTemplate'].isin(stable_templates)]
+
+            stable_normal_count = int(normal_ratio * len(mixed_subset))
+            stable_anomaly_count = int(anomaly_ratio * len(mixed_subset))
+
+            stable_normal_sample = stable_only_df[stable_only_df['LogType'] == 'Normal'].sample(n=stable_normal_count,
+                random_state=42)
+            stable_anomaly_sample = stable_only_df[stable_only_df['LogType'] == 'Anomaly'].sample(
+                n=stable_anomaly_count, random_state=42)
+
+            stable_equal_subset = pd.concat([stable_normal_sample, stable_anomaly_sample]).sample(frac=1,
+                random_state=42)
+            #-----------
+            print(f"Rows in stable_equal_subset: {len(stable_equal_subset)}")
+            print(f"Rows in mixed_subset: {len(mixed_subset)}")
+
+            stable_equal_subset = pd.concat([stable_normal_sample, stable_anomaly_sample]).sample(frac=1,
+                random_state=42)
+
+            print('---------------------------------')
+            print("stable_equal_subset Normal/Anomaly:")
+            print(stable_equal_subset['LogType'].value_counts(normalize=True).mul(100).round(2))
+
+            print("\nmixed_subset Normal/Anomaly:")
+            print(mixed_subset['LogType'].value_counts(normalize=True).mul(100).round(2))
+
+
+
+
             exit()
 
 
