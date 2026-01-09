@@ -372,11 +372,6 @@ class LogdataRead:
             mixed_subset_to_save.to_csv(f'../datasets/S_BGL/mixed_subset.csv', index=False)
             stable_equal_subset_to_save.to_csv('../datasets/S_BGL/stable_equal_subset.csv', index=False)
             print("CSV files saved: 'mixed_subset.csv' and 'stable_equal_subset.csv' (without LogType column).")
-            exit()
-
-
-
-
 
         elif dataset == 'HDFS':  # 11.170.033
             # new ---------
