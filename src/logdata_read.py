@@ -265,6 +265,18 @@ class LogdataRead:
             # Save Processed Dataset Efficiently
             df.to_csv(All_dataset_path_as_csv, escapechar='\\', index=False)
 
+        elif dataset == 'S_BGL':
+            df = pd.read_csv(All_dataset_path_as_csv, escapechar='\\')
+            df.info()
+            num_templates = df['EventTemplate'].nunique()
+            num_logs = len(df)
+            stability_ratio = num_logs / num_templates
+            print(f"Each template appears on average {stability_ratio:.2f} times")
+
+
+
+
+
         elif dataset == 'HDFS':  # 11.170.033
             # new ---------
             # File paths
