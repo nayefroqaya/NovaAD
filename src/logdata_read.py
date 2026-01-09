@@ -275,6 +275,9 @@ class LogdataRead:
             rare_ratio = (df['EventTemplate'].value_counts() < 10).mean()
             print(f"Templates with <10 occurrences: {rare_ratio:.2%}")
             print(f"Each template appears on average {stability_ratio:.2f} times")
+            vc = df['EventTemplate'].value_counts()
+            coverage = vc[vc >= 10].sum() / vc.sum()
+            print(f"Log coverage by templates with ≥10 occurrences: {coverage:.2%}")
             exit()
 
 
