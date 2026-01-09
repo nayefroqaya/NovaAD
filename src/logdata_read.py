@@ -282,6 +282,15 @@ class LogdataRead:
             df['LogType'] = df['Original_Label'].apply(lambda x: 'Normal' if x == '-' else 'Anomaly')
             df['LogType'].value_counts(normalize=True) * 100
             print(df['LogType'].value_counts())
+            # Percentages
+            percentages = df['LogType'].value_counts(normalize=True) * 100
+            counts = df['LogType'].value_counts()
+
+            print("Counts:")
+            print(counts)
+
+            print("\nPercentages:")
+            print(percentages.round(2))
 
             exit()
 
