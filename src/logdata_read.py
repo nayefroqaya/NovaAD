@@ -364,7 +364,14 @@ class LogdataRead:
 
             print("\nmixed_subset Normal/Anomaly:")
             print(mixed_subset['LogType'].value_counts(normalize=True).mul(100).round(2))
+            # Drop 'LogType' column before saving
+            mixed_subset_to_save = mixed_subset.drop(columns=['LogType'])
+            stable_equal_subset_to_save = stable_equal_subset.drop(columns=['LogType'])
 
+            # Save to CSV
+            mixed_subset_to_save.to_csv(f'../datasets/S_BGL/mixed_subset.csv', index=False)
+            stable_equal_subset_to_save.to_csv('../datasets/S_BGL/stable_equal_subset.csv', index=False)
+            print("CSV files saved: 'mixed_subset.csv' and 'stable_equal_subset.csv' (without LogType column).")
             exit()
 
 
