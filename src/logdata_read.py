@@ -278,6 +278,9 @@ class LogdataRead:
             vc = df['EventTemplate'].value_counts()
             coverage = vc[vc >= 10].sum() / vc.sum()
             print(f"Log coverage by templates with ≥10 occurrences: {coverage:.2%}")
+
+            label_counts = df['Original_Label'].value_counts(normalize=True) * 100
+            print(label_counts)
             exit()
 
 
