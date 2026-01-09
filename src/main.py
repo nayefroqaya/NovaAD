@@ -62,6 +62,7 @@ def main():
     DATASETS_FOLDER = 'datasets'
     Round= '1'
     mode='M'  # M multi classifier - S single classifier
+    Mix_or_stable='0'  # 0 Full stable subset  / 1 mix subset
 
 
     # Paths
@@ -80,19 +81,33 @@ def main():
     utilities_obj = Utilities()
 
     # ---------------- Data as CSV ----------------
-    logdata_read_obj.read_original_data_log_from_log_to_csv(DATASET, ALL_DATASET_CSV_PATH)
-    print(' Reading the file was done successfully ')
-    exit()
+    #logdata_read_obj.read_original_data_log_from_log_to_csv(DATASET, ALL_DATASET_CSV_PATH)
+    #print(' Reading the file was done successfully ')
+    #exit()
 
     # ---------------- Dataset Splitting ----------------
-    #print(f"{GRAY}Splitting dataset into training, validation, and test sets...{RESET}")
-    #train_df, validate_df, test_df, df_features = utilities_obj.dataset_splitting(
-    #    ALL_DATASET_CSV_PATH, DATASET, Round
-    #)
-    #exit()
+    print(f"{GRAY}Splitting dataset into training, validation, and test sets...{RESET}")
+    train_df, validate_df, test_df, df_features = utilities_obj.dataset_splitting(
+        ALL_DATASET_CSV_PATH, DATASET, Round, Mix_or_stable
+    )
+    exit()
     # ---------------- Process normal data ----------------
-    print(f"{GRAY}Processing normal data portion in the dataset...{RESET}")
-    save_path = os.path.join(f"../datasets/{DATASET}", f"{Round}_{DATASET}_Splitted_Datasets")
+
+    if Mix_or_stable == '0' and DATASET == 'S_BGL':  # Stable
+        # Create folder to save splits
+        print(f"{GRAY}Processing normal data portion in the dataset...{RESET}")
+        save_path = os.path.join(f"../datasets/{DATASET}", f"{Round}_{DATASET}_'Stable'_Splitted_Datasets")
+    elif Mix_or_stable == '1' and DATASET == 'S_BGL':  # Mix
+        # Create folder to save splits
+        print(f"{GRAY}Processing normal data portion in the dataset...{RESET}")
+        save_path = os.path.join(f"../datasets/{DATASET}", f"{Round}_{DATASET}_'Mix'_Splitted_Datasets")
+    else:
+
+        print(f"{GRAY}Processing normal data portion in the dataset...{RESET}")
+        save_path = os.path.join(f"../datasets/{DATASET}", f"{Round}_{DATASET}_Splitted_Datasets")
+
+
+
     train_df = pd.read_pickle(os.path.join(save_path, "train_df.pkl"))
     val_df = pd.read_pickle(os.path.join(save_path, "val_df.pkl"))
     test_df = pd.read_pickle(os.path.join(save_path, "test_df.pkl"))

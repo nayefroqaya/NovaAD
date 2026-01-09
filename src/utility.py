@@ -36,11 +36,23 @@ class Utilities:
         return df_features
 
     @staticmethod
-    def dataset_splitting(All_dataset_path_as_csv, dataset, round ):
-        """Load dataset CSV and split into train, validation, and test sets."""
-        print(GREEN + f"[INFO] Preparing dataset '{dataset}'..." + RESET)
-        df_features = pd.read_csv(All_dataset_path_as_csv, escapechar='\\')
-        df_features.info()
+    def dataset_splitting(All_dataset_path_as_csv, dataset, round, Mix_or_stable ):
+
+        if Mix_or_stable=='0' and dataset=='S_BGL': # Stable
+            print(GREEN + f"[INFO] Preparing dataset '{dataset}'..." + RESET)
+            df_features = pd.read_csv('../datasets/S_BGL/stable_equal_subset.csv', escapechar='\\')
+            df_features.info()
+
+        elif Mix_or_stable=='1' and dataset=='S_BGL': # Mix
+            print(GREEN + f"[INFO] Preparing dataset '{dataset}'..." + RESET)
+            df_features = pd.read_csv('../datasets/S_BGL/50_50_mixed_subset.csv', escapechar='\\')
+            df_features.info()
+
+        else:
+            """Load dataset CSV and split into train, validation, and test sets."""
+            print(GREEN + f"[INFO] Preparing dataset '{dataset}'..." + RESET)
+            df_features = pd.read_csv(All_dataset_path_as_csv, escapechar='\\')
+            df_features.info()
 
         # Clean data
         df_features = Utilities.clean_up_df(df_features)
@@ -113,16 +125,35 @@ class Utilities:
         
         df_features.info()
         #=======
-        # Create folder to save splits
-        save_path = os.path.join(f"../datasets/{dataset}", f"{round}_{dataset}_Splitted_Datasets")
-        os.makedirs(save_path, exist_ok=True)
-        #save_path = os.path.join('../datasets/{dataset}/', round + '_'+ dataset + "_Splitted_Datasets")
-        #os.makedirs(save_path, exist_ok=True)
-        
-        # Save each dataframe as PKL
-        train_df.to_pickle(os.path.join(save_path, "train_df.pkl"))
-        val_df.to_pickle(os.path.join(save_path, "val_df.pkl"))
-        test_df.to_pickle(os.path.join(save_path, "test_df.pkl"))
+        if Mix_or_stable=='0' and dataset=='S_BGL': # Stable
+            # Create folder to save splits
+            save_path = os.path.join(f"../datasets/{dataset}", f"{round}_{dataset}_'Stable'_Splitted_Datasets")
+            os.makedirs(save_path, exist_ok=True)
+            # Save each dataframe as PKL
+            train_df.to_pickle(os.path.join(save_path, "train_df.pkl"))
+            val_df.to_pickle(os.path.join(save_path, "val_df.pkl"))
+            test_df.to_pickle(os.path.join(save_path, "test_df.pkl"))
+
+        elif Mix_or_stable == '1' and dataset == 'S_BGL':  # Mix
+            # Create folder to save splits
+            save_path = os.path.join(f"../datasets/{dataset}", f"{round}_{dataset}_'Mix'_Splitted_Datasets")
+            os.makedirs(save_path, exist_ok=True)
+            # Save each dataframe as PKL
+            train_df.to_pickle(os.path.join(save_path, "train_df.pkl"))
+            val_df.to_pickle(os.path.join(save_path, "val_df.pkl"))
+            test_df.to_pickle(os.path.join(save_path, "test_df.pkl"))
+
+
+
+        else:
+            # Create folder to save splits
+            save_path = os.path.join(f"../datasets/{dataset}", f"{round}_{dataset}_Splitted_Datasets")
+            os.makedirs(save_path, exist_ok=True)
+            # Save each dataframe as PKL
+            train_df.to_pickle(os.path.join(save_path, "train_df.pkl"))
+            val_df.to_pickle(os.path.join(save_path, "val_df.pkl"))
+            test_df.to_pickle(os.path.join(save_path, "test_df.pkl"))
+
 
         # Display split info
         print(GREEN + f"[INFO] Dataset split complete. Sizes -> Train: {len(train_df)}, Validation: {len(val_df)}, Test: {len(test_df)}" + RESET)
