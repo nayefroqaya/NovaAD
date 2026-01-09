@@ -54,13 +54,13 @@ def main():
 #    DATASET = 'BGL'
 #=======
 #<<<<<<< HEAD
-    DATASET = 'TH_1G'
+    DATASET = 'SP_100MB'
 #=======
 #    DATASET = 'HDFS'
 #>>>>>>> 66197ed (check label)
 #>>>>>>> 42c37e9 (update input name)
     DATASETS_FOLDER = 'datasets'
-    Round= '1'
+    Round= '3'
     mode='M'  # M multi classifier - S single classifier
 
 
