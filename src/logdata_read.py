@@ -266,7 +266,8 @@ class LogdataRead:
             df.to_csv(All_dataset_path_as_csv, escapechar='\\', index=False)
 
         elif dataset == 'S_BGL':
-            df = pd.read_csv(All_dataset_path_as_csv, escapechar='\\')
+            path= f'../datasets/BGL/BGL.csv'
+            df = pd.read_csv(path, escapechar='\\')
             df.info()
             num_templates = df['EventTemplate'].nunique()
             num_logs = len(df)
