@@ -266,7 +266,7 @@ class LogdataRead:
             df.to_csv(All_dataset_path_as_csv, escapechar='\\', index=False)
 
         elif dataset == 'S_BGL':
-            path= f'../datasets/BGL/BGL.csv'
+            path= f'../datasets/TH_1G/TH_1G.csv'
             df = pd.read_csv(path, escapechar='\\')
             df.info()
             num_templates = df['EventTemplate'].nunique()

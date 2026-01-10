@@ -62,7 +62,7 @@ def main():
     DATASETS_FOLDER = 'datasets'
     Round= '1'
     mode='M'  # M multi classifier - S single classifier
-    Mix_or_stable='1'  # 0 Full stable subset  / 1 mix subset
+    Mix_or_stable='0'  # 0 Full stable subset  / 1 mix subset
 
 
     # Paths
@@ -81,9 +81,9 @@ def main():
     utilities_obj = Utilities()
 
     # ---------------- Data as CSV ----------------
-    #logdata_read_obj.read_original_data_log_from_log_to_csv(DATASET, ALL_DATASET_CSV_PATH)
-    #print(' Reading the file was done successfully ')
-    #exit()
+    logdata_read_obj.read_original_data_log_from_log_to_csv(DATASET, ALL_DATASET_CSV_PATH)
+    print(' Reading the file was done successfully ')
+    exit()
 
     # ---------------- Dataset Splitting ----------------
     #print(f"{GRAY}Splitting dataset into training, validation, and test sets...{RESET}")
