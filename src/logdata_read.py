@@ -266,7 +266,7 @@ class LogdataRead:
             df.to_csv(All_dataset_path_as_csv, escapechar='\\', index=False)
 
         elif dataset == 'S_BGL':
-            path= f'../datasets/TH_1G/TH_1G.csv'
+            path= f'../datasets/BGL/BGL.csv'
             df = pd.read_csv(path, escapechar='\\')
             df.info()
             num_templates = df['EventTemplate'].nunique()
@@ -307,8 +307,12 @@ class LogdataRead:
             stable_part = subset_df[subset_df['EventTemplate'].isin(stable_templates)]
             unstable_part = subset_df[subset_df['EventTemplate'].isin(unstable_templates)]
 
+            #total_size = len(subset_df)
+            #stable_size = total_size // 2
+            #unstable_size = total_size - stable_size
+
             total_size = len(subset_df)
-            stable_size = total_size // 2
+            stable_size = int(total_size * 0.75)
             unstable_size = total_size - stable_size
 
             # Ensure we never sample more than available rows
