@@ -312,7 +312,7 @@ class LogdataRead:
             #unstable_size = total_size - stable_size
 
             total_size = len(subset_df)
-            stable_size = int(total_size * 0.75)
+            stable_size = int(total_size * 0.25)
             unstable_size = total_size - stable_size
 
             # Ensure we never sample more than available rows
