@@ -61,7 +61,7 @@ def main():
 #>>>>>>> 42c37e9 (update input name)
     DATASETS_FOLDER = 'datasets'
     Round= '1'
-    mode='M'  # M multi classifier - S single classifier
+    mode='S'  # M multi classifier - S single classifier
     Mix_or_stable='0'  # 0 Full stable subset  / 1 mix subset
 
 
