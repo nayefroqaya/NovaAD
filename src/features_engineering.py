@@ -218,7 +218,7 @@ class FeaturesEngineering:
         best_params = None
         best_score = -np.inf  # Higher LOF separation score is better
         # Grid Search Over Gamma & Nu
-        '''
+
         for gamma, nu in product(gamma_values, nu_values):
             print(f'Testing parameters: Gamma={gamma}, Nu={nu}')
 
@@ -240,7 +240,7 @@ class FeaturesEngineering:
                 silhouette = -1  # Invalid case (all one class)
 
             # Hybrid Metric = Weighted Sum of LOF & Silhouette
-            hybrid_score = 0.5 * np.mean(lof_scores) + 0.5 * silhouette
+            hybrid_score = 0.75 * np.mean(lof_scores) + 0.25 * silhouette
 
             # Select Best Gamma & Nu
             if hybrid_score > best_score:
@@ -248,15 +248,10 @@ class FeaturesEngineering:
                 best_params = (gamma, nu)
 
         print(f"Optimal parameters found: Gamma={best_params[0]}, Nu={best_params[1]}")
-        '''
 
-
-
-
-        
         # Train final model with optimal parameters
-        #oc_svm = OneClassSVM(kernel='rbf', gamma=best_params[0], nu=best_params[1])
-        oc_svm = OneClassSVM(kernel='rbf', gamma= 0.425, nu=0.01)
+        oc_svm = OneClassSVM(kernel='rbf', gamma=best_params[0], nu=best_params[1])
+        #oc_svm = OneClassSVM(kernel='rbf', gamma= 0.425, nu=0.01)
 
         oc_svm.fit(X_train_normal_labelled)
 

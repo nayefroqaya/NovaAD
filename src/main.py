@@ -54,7 +54,7 @@ def main():
 #    DATASET = 'BGL'
 #=======
 #<<<<<<< HEAD
-    DATASET = 'S_BGL'
+    DATASET = 'SP_100MB'
 #=======
 #    DATASET = 'HDFS'
 #>>>>>>> 66197ed (check label)
