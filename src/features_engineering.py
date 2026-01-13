@@ -10,6 +10,7 @@ from sklearn.neighbors import LocalOutlierFactor
 from sklearn.preprocessing import LabelEncoder
 from sklearn.preprocessing import StandardScaler
 from sklearn.svm import OneClassSVM
+from sklearn.metrics import f1_score, classification_report
 
 warnings.filterwarnings('ignore')
 colorama.init()
