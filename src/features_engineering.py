@@ -290,6 +290,8 @@ class FeaturesEngineering:
         y_pred = df_final['Final_Label'].values
         print("\nFull Training Data Classification Report (One-Class SVM):")
         print(classification_report(y_true, y_pred, target_names=["Normal", "Anomaly"]))
+        exit()
+
 
         # Prepare test data
         df_test = sequences_df[sequences_df['Temp_label'] == 888][['features', 'Temp_label', 'Label']].copy()
