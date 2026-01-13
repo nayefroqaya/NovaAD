@@ -222,51 +222,7 @@ class FeaturesEngineering:
         best_score = -np.inf  # Higher LOF separation score is better
         # Grid Search Over Gamma & Nu
 
-        # Grid Search Over Gamma & Nu
-        for gamma, nu in product(gamma_values, nu_values):
-            print(f'Testing parameters: Gamma={gamma}, Nu={nu}')
 
-            # Train One-Class SVM on Normal Data
-            oc_svm = OneClassSVM(kernel="rbf", gamma=gamma, nu=nu)
-            oc_svm.fit(X_train_normal_labelled)
-
-            # Predict on Unlabeled Data
-            preds = oc_svm.predict(X_unlabeled_train)
-
-            # Convert predictions to pseudo-labels
-            # -1 → anomaly (1), 1 → normal (0)
-            pseudo_labels = np.where(preds == -1, 1, 0)
-
-            # Compute F1 score (focus on anomaly detection)
-            f1 = f1_score(ground_truth_unlabeled_data_from_train, pseudo_labels, pos_label=1)
-
-            print(f"F1 Score: {f1:.4f}")
-
-            # Select best parameters
-            if f1 > best_f1:
-                best_f1 = f1
-                best_params = (gamma, nu)
-
-        print(f"\nOptimal parameters found: Gamma={best_params[0]}, Nu={best_params[1]} (F1={best_f1:.4f})")
-
-        # Train final model with optimal parameters
-        oc_svm = OneClassSVM(kernel='rbf', gamma=best_params[0], nu=best_params[1])
-        oc_svm.fit(X_train_normal_labelled)
-
-        # Final predictions
-        y_pred = oc_svm.predict(X_unlabeled_train)
-        pseudo_labels = np.where(y_pred == -1, 1, 0)
-
-        # Sanity check
-        if len(ground_truth_unlabeled_data_from_train) != len(pseudo_labels):
-            print("Error: Length mismatch between ground truth and predictions")
-            return None
-
-        # Final classification report
-        print("\nPseudo-Labeling Classification Report (One-Class SVM):")
-        print(classification_report(ground_truth_unlabeled_data_from_train, pseudo_labels,
-            target_names=["Normal", "Anomaly"]))
-        '''
         for gamma, nu in product(gamma_values, nu_values):
             print(f'Testing parameters: Gamma={gamma}, Nu={nu}')
 
@@ -288,7 +244,7 @@ class FeaturesEngineering:
                 silhouette = -1  # Invalid case (all one class)
 
             # Hybrid Metric = Weighted Sum of LOF & Silhouette
-            hybrid_score = 0.5 * np.mean(lof_scores) + 0.5 * silhouette
+            hybrid_score = 0.75 * np.mean(lof_scores) + 0.25 * silhouette
 
             # Select Best Gamma & Nu
             if hybrid_score > best_score:
@@ -317,7 +273,7 @@ class FeaturesEngineering:
         print("\nPseudo-Labeling Classification Report (One-Class SVM):")
         print(classification_report(ground_truth_unlabeled_data_from_train, pseudo_labels,
                                     target_names=["Normal", "Anomaly"]))
-        '''
+
 
         # Prepare the Training Data ----------------------------------------------------------------------------
         df_train_normal = sequences_df[sequences_df['Temp_label'] == 0][['features', 'Temp_label', 'Label']].copy()
