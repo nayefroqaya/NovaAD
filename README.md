@@ -1,4 +1,4 @@
-# **LogSSAD**
+# **NovaAD**
 This is the basic implementation of our submission in EDBT 2026. LogSSAD: Semi-Supervised Anomaly Detection in Log Series
 
 ## 📌 Description
@@ -25,10 +25,15 @@ LogSSAD attains the highest F1 score on the HDFS dataset and a competitive F1 sc
 ## 📊 Datasets
 We used two open-source log datasets (more will be added in the future):
 
-| Software System | Description                          | Time Span  | # Messages   | Data Size | Link |
-|-----------------|--------------------------------------|------------|--------------|-----------|------|
-| HDFS            | Hadoop Distributed File System log   | 38.7 hours | 11,175,629   | 1.47 GB   | [LogHub](https://github.com/logpai/loghub) |
-| BGL             | Blue Gene/L supercomputer log        | 214.7 days | 4,747,963    | 708.76 MB | [LogHub](https://github.com/logpai/loghub)  |
+| Software System     | Description                          | Data Size| Link|
+|--------------------|--------------------------------------|-----------|------|
+| HDFS               | Hadoop Distributed File System log   | 1.47 GB   | [LogHub](https://github.com/logpai/loghub) |
+| BGL                | Blue Gene/L supercomputer log        | 708.76 MB | [LogHub](https://github.com/logpai/loghub) |
+| Thunderbird (1G)   | Thunderbird supercomputer log        | 1 GB      | [LogHub](https://github.com/logpai/loghub) |
+| Thunderbird (2G)   | Thunderbird supercomputer log        | 2 GB      | [LogHub](https://github.com/logpai/loghub) |
+| Spirit (SP_100MB)  | Blue Gene/L supercomputer log        | 100 MB    | [Figshare](https://figshare.com/s/6d3c6a83f4828d17be79?file=27775929) |
+| Spirit (SP_150MB)  | Blue Gene/L supercomputer log        | 150 MB    | [Figshare](https://figshare.com/s/6d3c6a83f4828d17be79?file=27775929) |
+
 
 ---
 
@@ -77,9 +82,10 @@ We are happy to answer your questions:
 ## 📬 Citation
 ```bibtex
 @inproceedings{roqaya2025LogSSAD,
-  title={LogSSAD: Semi-Supervised Anomaly Detection in Log Series},
+  title={NovaAD: Semi-Supervised Anomaly Detection in Log Series},
   author={Roqaya, Nayef and Papenbrock, Thorsten and Jabeen, Hajira},
-  booktitle={Proceedings of annual International Conference on Extending Database Technology (EDBT)},
+  booktitle={Proceedings of 34th ACM International Conference on
+User Modeling, Adaptation and Personalization (UMAP2026)},
   year={2026},
   publisher={EDBT26}
 }
