@@ -36,4 +36,5 @@ src/tf_vectorizer.pkl
         src/1_TH_1G_evaluation_mi_scores.csv
         src/2_TH_1G_evaluation_mi_scores.csv
         src/3_TH_1G_evaluation_mi_scores.csv
+        datasets/S_BGL/
 
