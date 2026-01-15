@@ -50,15 +50,9 @@ def main():
     pd.set_option("display.max_colwidth", None)
 
     # ---------------- Project configuration ----------------
-#<<<<<<< HEAD
-#    DATASET = 'BGL'
-#=======
-#<<<<<<< HEAD
+
     DATASET = 'SP_150MB'
-#=======
-#    DATASET = 'HDFS'
-#>>>>>>> 66197ed (check label)
-#>>>>>>> 42c37e9 (update input name)
+
     DATASETS_FOLDER = 'datasets'
     Round= '1'
     mode='M'  # M multi classifier - S single classifier
@@ -81,15 +75,15 @@ def main():
     utilities_obj = Utilities()
 
     # ---------------- Data as CSV ----------------
-    #logdata_read_obj.read_original_data_log_from_log_to_csv(DATASET, ALL_DATASET_CSV_PATH)
-    #print(' Reading the file was done successfully ')
+    logdata_read_obj.read_original_data_log_from_log_to_csv(DATASET, ALL_DATASET_CSV_PATH)
+    print(' Reading the file was done successfully ')
     #exit()
 
     # ---------------- Dataset Splitting ----------------
-    #print(f"{GRAY}Splitting dataset into training, validation, and test sets...{RESET}")
-    #train_df, validate_df, test_df, df_features = utilities_obj.dataset_splitting(
-    #    ALL_DATASET_CSV_PATH, DATASET, Round, Mix_or_stable
-    #)
+    print(f"{GRAY}Splitting dataset into training, validation, and test sets...{RESET}")
+    train_df, validate_df, test_df, df_features = utilities_obj.dataset_splitting(
+        ALL_DATASET_CSV_PATH, DATASET, Round, Mix_or_stable
+    )
     #exit()
     # ---------------- Process normal data ----------------
 
