@@ -244,7 +244,7 @@ class FeaturesEngineering:
                 silhouette = -1  # Invalid case (all one class)
 
             # Hybrid Metric = Weighted Sum of LOF & Silhouette
-            hybrid_score = 0.75 * np.mean(lof_scores) + 0.25 * silhouette
+            hybrid_score = 0.5 * np.mean(lof_scores) + 0.5 * silhouette
 
             # Select Best Gamma & Nu
             if hybrid_score > best_score:
