@@ -214,6 +214,8 @@ class FeaturesEngineering:
     @staticmethod
     def novelty_detection_label_establishment(sequences_df, X_train_normal_labelled, X_unlabeled_train,
                                               ground_truth_unlabeled_data_from_train):
+
+        '''
         # Parameter grid for One-Class SVM
         gamma_values = np.linspace(0.2, 0.5, 5)
         nu_values = np.linspace(0.01, 0.08, 5)
@@ -259,9 +261,63 @@ class FeaturesEngineering:
         #oc_svm = OneClassSVM(kernel='rbf', gamma= 0.2, nu=0.0625)
 
         oc_svm.fit(X_train_normal_labelled)
+        '''
 
+        # Parameter grid for One-Class SVM
+        gamma_values = np.linspace(0.2, 0.5, 5)
+        nu_values = np.linspace(0.01, 0.08, 5)
+
+        # Candidate alpha values for hybrid score
+        alpha_values = np.linspace(0, 1, 11)  # 0.0, 0.1, ..., 1.0
+
+        best_params = None
+        best_alpha = None
+        best_score = -np.inf  # Higher hybrid score is better
+
+        # Grid Search Over Gamma, Nu, and Alpha
+        for gamma, nu in product(gamma_values, nu_values):
+            print(f'Testing parameters: Gamma={gamma}, Nu={nu}')
+
+            # Train One-Class SVM on normal labeled data
+            oc_svm = OneClassSVM(kernel="rbf", gamma=gamma, nu=nu)
+            oc_svm.fit(X_train_normal_labelled)
+
+            # Predict labels on unlabeled data (1 = normal, -1 = anomaly)
+            preds = oc_svm.predict(X_unlabeled_train)
+
+            # Compute LOF scores for predicted normal points
+            if np.sum(preds == 1) > 1:  # At least 2 points to compute LOF
+                lof = LocalOutlierFactor(n_neighbors=20)
+                lof_scores = -lof.fit_predict(X_unlabeled_train[preds == 1])
+                lof_mean = np.mean(lof_scores)
+            else:
+                lof_mean = 0  # fallback if no normal points
+
+            # Compute Silhouette score
+            if len(set(preds)) > 1:
+                silhouette = silhouette_score(X_unlabeled_train, preds)
+            else:
+                silhouette = -1  # fallback if only one cluster
+
+            # Sweep over alpha to compute hybrid score
+            for alpha in alpha_values:
+                hybrid_score = alpha * lof_mean + (1 - alpha) * silhouette
+
+                if hybrid_score > best_score:
+                    best_score = hybrid_score
+                    best_params = (gamma, nu)
+                    best_alpha = alpha
+
+        print(f"Optimal parameters found: Gamma={best_params[0]}, Nu={best_params[1]}, Alpha={best_alpha}")
+        exit()
+
+        # Train final model with optimal Gamma & Nu
+        oc_svm_final = OneClassSVM(kernel='rbf', gamma=best_params[0], nu=best_params[1])
+        #oc_svm_final = OneClassSVM(kernel='rbf', gamma= 0.2, nu=0.0625)
+
+        oc_svm_final.fit(X_train_normal_labelled)
         # Make predictions
-        y_pred = oc_svm.predict(X_unlabeled_train)
+        y_pred = oc_svm_final.predict(X_unlabeled_train)
         pseudo_labels = np.where(y_pred == -1, 1, 0)  # Map -1 (outliers) to 1 (anomaly), 1 (inliers) to 0 (normal)
 
         # Ensure matching lengths
@@ -273,7 +329,6 @@ class FeaturesEngineering:
         print("\nPseudo-Labeling Classification Report (One-Class SVM):")
         print(classification_report(ground_truth_unlabeled_data_from_train, pseudo_labels,
                                     target_names=["Normal", "Anomaly"]))
-
 
         # Prepare the Training Data ----------------------------------------------------------------------------
         df_train_normal = sequences_df[sequences_df['Temp_label'] == 0][['features', 'Temp_label', 'Label']].copy()
