@@ -37,8 +37,8 @@ class FeaturesEngineering:
 
               # Return zeros with the same length as any feature vector
 #              return np.zeros(len(feature_list[0]), dtype=np.float32)
-          return np.mean(np.stack(arrays), axis=0)
-          #return np.max(np.stack(arrays), axis=0)
+          #return np.mean(np.stack(arrays), axis=0)
+          return np.max(np.stack(arrays), axis=0)
           #return np.sum(np.stack(arrays), axis=0)
 
         log_normal_labelled = df_train_with_test_with_val[df_train_with_test_with_val['Temp_label'] == 0].copy()
@@ -268,7 +268,7 @@ class FeaturesEngineering:
         nu_values = np.linspace(0.01, 0.08, 5)
 
         # Candidate alpha values for hybrid score
-        alpha_values = np.linspace(0, 1, 11)  # 0.0, 0.1, ..., 1.0
+        alpha_values = np.linspace(0.1, 1, 10)  # 0.0, 0.1, ..., 1.0
 
         best_params = None
         best_alpha = None
