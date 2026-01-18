@@ -273,7 +273,7 @@ class FeaturesEngineering:
         best_params = None
         best_alpha = None
         best_score = -np.inf  # Higher hybrid score is better
-
+        '''
         # Grid Search Over Gamma, Nu, and Alpha
         for gamma, nu in product(gamma_values, nu_values):
             print(f'Testing parameters: Gamma={gamma}, Nu={nu}')
@@ -309,12 +309,13 @@ class FeaturesEngineering:
                     best_alpha = alpha
 
         print(f"Optimal parameters found: Gamma={best_params[0]}, Nu={best_params[1]}, Alpha={best_alpha}")
-        exit()
+        '''
+        #exit()
 
 
         # Train final model with optimal Gamma & Nu
         #oc_svm_final = OneClassSVM(kernel='rbf', gamma=best_params[0], nu=best_params[1])
-        oc_svm_final = OneClassSVM(kernel='rbf', gamma= 0.35, nu=0.08)
+        oc_svm_final = OneClassSVM(kernel='rbf', gamma= 0.5, nu=0.0450)
 
         oc_svm_final.fit(X_train_normal_labelled)
         # Make predictions
@@ -349,7 +350,7 @@ class FeaturesEngineering:
         y_pred = df_final['Final_Label'].values
         print("\nFull Training Data Classification Report (One-Class SVM):")
         print(classification_report(y_true, y_pred, target_names=["Normal", "Anomaly"]))
-        #exit()
+        exit()
 
 
         # Prepare test data
