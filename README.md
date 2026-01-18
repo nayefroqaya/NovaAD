@@ -2,7 +2,7 @@
 This is the basic implementation of our submission in ACM UMAP 2026. NovaAD: Semi-Supervised Anomaly Detection in Log Series
 
 ## 📌 Description
-NovaAD is a novel approach for log-based anomaly detection, i.e., textual event series. We conducted empirical evaluations on two open-source datasets, HDFS and BGL, and achieved the following results:  
+NovaAD is a novel approach for log-based anomaly detection, i.e., textual event series. We conducted empirical evaluations on four open-source datasets, HDFS, BGL, Thunderbird , and Spirit and achieved the following results:  
 NovaAD attains the highest F1 score on the HDFS dataset and a competitive F1 score on the BGL dataset. Additionally, it demonstrates efficient runtime performance during both training and testing, achieving the shortest runtime compared to baseline methods on both GPU and CPU.
 
 ---
@@ -25,13 +25,13 @@ NovaAD attains the highest F1 score on the HDFS dataset and a competitive F1 sco
 ## 📊 Datasets
 We used two open-source log datasets (more will be added in the future):
 
-| Software System     | Description                          | Data Size| Link|
-|--------------------|--------------------------------------|-----------|------|
-| HDFS               | Hadoop Distributed File System log   | 1.47 GB   | [LogHub](https://github.com/logpai/loghub) |
-| BGL                | Blue Gene/L supercomputer log        | 708.76 MB | [LogHub](https://github.com/logpai/loghub) |
-| Thunderbird (1G)   | Thunderbird supercomputer log        | 1 GB      | [LogHub](https://github.com/logpai/loghub) |
-| Thunderbird (2G)   | Thunderbird supercomputer log        | 2 GB      | [LogHub](https://github.com/logpai/loghub) |
-| Spirit (SP_150MB)  | Blue Gene/L supercomputer log        | 150 MB    | [Figshare](https://figshare.com/s/6d3c6a83f4828d17be79?file=27775929) |
+| Software System     | Description                        | Data Size| Link                                         |
+|--------------------|------------------------------------|-----------|----------------------------------------|
+| HDFS               | Hadoop Distributed File System log | 1.47 GB   | [LogHub](https://github.com/logpai/loghub)   |
+| BGL                | Blue Gene/L supercomputer log      | 708.76 MB | [LogHub](https://github.com/logpai/loghub)   |
+| Thunderbird (1G)   | Thunderbird supercomputer log      | 1 GB      | [LogHub](https://github.com/logpai/loghub)   |
+| Thunderbird (2G)   | Thunderbird supercomputer log      | 2 GB      | [LogHub](https://github.com/logpai/loghub)   |
+| Spirit (SP_150MB)  | Supercomputing system log          | 150 MB    | [Figshare](https://figshare.com/s/6d3c6a83f4828d17be79?file=27775929) |
 
 
 ---
