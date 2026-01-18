@@ -51,7 +51,7 @@ def main():
 
     # ---------------- Project configuration ----------------
 
-    DATASET = 'BGL'
+    DATASET = 'SP_150MB'
 
     DATASETS_FOLDER = 'datasets'
     Round= '1'

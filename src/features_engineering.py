@@ -38,8 +38,8 @@ class FeaturesEngineering:
               # Return zeros with the same length as any feature vector
 #              return np.zeros(len(feature_list[0]), dtype=np.float32)
           #return np.mean(np.stack(arrays), axis=0)
-          return np.max(np.stack(arrays), axis=0)
-          #return np.sum(np.stack(arrays), axis=0)
+          #return np.max(np.stack(arrays), axis=0)
+          return np.sum(np.stack(arrays), axis=0)
 
         log_normal_labelled = df_train_with_test_with_val[df_train_with_test_with_val['Temp_label'] == 0].copy()
         # 2️⃣ Remove UNKNOWN blocks (case-insensitive)
@@ -273,7 +273,7 @@ class FeaturesEngineering:
         best_params = None
         best_alpha = None
         best_score = -np.inf  # Higher hybrid score is better
-        '''
+
         # Grid Search Over Gamma, Nu, and Alpha
         for gamma, nu in product(gamma_values, nu_values):
             print(f'Testing parameters: Gamma={gamma}, Nu={nu}')
@@ -311,7 +311,7 @@ class FeaturesEngineering:
         print(f"Optimal parameters found: Gamma={best_params[0]}, Nu={best_params[1]}, Alpha={best_alpha}")
 
         exit()
-        '''
+
 
         # Train final model with optimal Gamma & Nu
         #oc_svm_final = OneClassSVM(kernel='rbf', gamma=best_params[0], nu=best_params[1])
