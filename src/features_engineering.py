@@ -352,7 +352,7 @@ class FeaturesEngineering:
         y_pred = df_final['Final_Label'].values
         print("\nFull Training Data Classification Report (One-Class SVM):")
         print(classification_report(y_true, y_pred, target_names=["Normal", "Anomaly"]))
-        exit()
+        #exit()
 
 
         # Prepare test data

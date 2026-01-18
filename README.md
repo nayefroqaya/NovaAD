@@ -2,9 +2,8 @@
 This is the basic implementation of our submission in ACM UMAP 2026. NovaAD: Semi-Supervised Anomaly Detection in Log Series
 
 ## 📌 Description
-NovaAD is a novel approach for log-based anomaly detection, i.e., textual event series. We conducted empirical evaluations on four open-source datasets, HDFS, BGL, Thunderbird , and Spirit and achieved the following results:  
-NovaAD attains the highest F1 score on the HDFS dataset and a competitive F1 score on the BGL dataset. Additionally, it demonstrates efficient runtime performance during both training and testing, achieving the shortest runtime compared to baseline methods on both GPU and CPU.
-
+In this paper, we propose NovaAD, an end-to-end semi-supervised anomaly detection system for textual event series that requires only a small set of normal logs to be trained. NovaAD eliminates manual configuration with its universal feature representation approach and automatic self-configuration mechanisms. To address log instability and semantic variations in the event stream, the system integrates semantic embedding features and uses a hierarchical ensemble of voting and stacking classifiers.
+Extensive experiments on real-world datasets, including BGL, HDFS, Thunderbird, and Spirit, demonstrate that NovaAD consistently outperforms state-of-the-art baselines in F1 score, precision, and recall; it also  offers fast training and inference times on both CPU and GPU platforms.
 ---
 
 ## Project Structure
