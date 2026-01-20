@@ -169,15 +169,6 @@ class FeaturesExtractor:
 
         # Calculate topic distributions and dominant topics
         doc_topic_df['list_topics_distribution'] = doc_topic_df[list_topic].values.tolist()
-       # doc_topic_df['Dominant_Topic'] = doc_topic_df['list_topics_distribution'].apply(lambda x: max(x))
-        #doc_topic_df['Dominant_Topic'] = doc_topic_df['list_topics_distribution'].apply(np.argmax)
-
-        # Map results back to original dataset
-
-        #doc_topic_dict = {
-        #   msg: topic
-        #   for msg, topic in zip(unique_texts, doc_topic_df['Dominant_Topic'])
-        #}
         doc_topic_dict = {msg: row for msg, row in zip(unique_texts, doc_topic_df['list_topics_distribution'])}
         df_features['list_topics_distribution'] = df_features['processed_EventTemplate'].map(doc_topic_dict)
         df_features['Dominant_Topic'] = df_features['list_topics_distribution'].apply(np.argmax)
@@ -418,22 +409,7 @@ class FeaturesExtractor:
         --------
         float: Entropy value of the distribution
         """
-       # def to_xp_array(x, dtype=None):
-       #     if torch.cuda.is_available():
-       #         #import cupy as cp
-       #         return cp.asarray(x, dtype=dtype)
-       #     else:
-       #         #import numpy as np
-       #         return np.asarray(x, dtype=dtype)
-
-#        topic_distribution_cupy = cp.array(topic_distribution, dtype=cp.float32)
-       # topic_distribution_arr = to_xp_array(topic_distribution, dtype=np.float32)
-       # non_zero_probs = topic_distribution_xp[topic_distribution_xp > 0]
-       # entropy = xp.sum(-non_zero_probs * xp.log2(non_zero_probs))
-        #non_zero_probs = topic_distribution_cupy[topic_distribution_cupy > 0]
-        #entropy = cp.sum(-non_zero_probs * cp.log2(non_zero_probs))
-        #def to_xp_array(x, dtype=None):
-            #import torch
+        #import torch
         if torch.cuda.is_available():
                 import cupy as xp
         else:

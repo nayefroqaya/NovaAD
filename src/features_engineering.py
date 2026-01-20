@@ -215,55 +215,7 @@ class FeaturesEngineering:
     def novelty_detection_label_establishment(sequences_df, X_train_normal_labelled, X_unlabeled_train,
                                               ground_truth_unlabeled_data_from_train):
 
-        '''
-        # Parameter grid for One-Class SVM
-        gamma_values = np.linspace(0.2, 0.5, 5)
-        nu_values = np.linspace(0.01, 0.08, 5)
-
-        best_params = None
-        best_score = -np.inf  # Higher LOF separation score is better
-        # Grid Search Over Gamma & Nu
-
-
-        for gamma, nu in product(gamma_values, nu_values):
-            print(f'Testing parameters: Gamma={gamma}, Nu={nu}')
-
-            # Train One-Class SVM ONLY on Normal Labeled Data
-            oc_svm = OneClassSVM(kernel="rbf", gamma=gamma, nu=nu)
-            oc_svm.fit(X_train_normal_labelled)
-
-            # Predict Labels on Unlabeled Data (1 = normal, -1 = anomaly)
-            preds = oc_svm.predict(X_unlabeled_train)
-
-            # Compute LOF Scores (Only for Points Classified as Normal)
-            lof = LocalOutlierFactor(n_neighbors=20)
-            lof_scores = -lof.fit_predict(X_unlabeled_train[preds == 1])  # Higher values = anomalies
-
-            # Compute Silhouette Score
-            if len(set(preds)) > 1:
-                silhouette = silhouette_score(X_unlabeled_train, preds)
-            else:
-                silhouette = -1  # Invalid case (all one class)
-
-            # Hybrid Metric = Weighted Sum of LOF & Silhouette
-            hybrid_score = 0.5 * np.mean(lof_scores) + 0.5 * silhouette
-
-            # Select Best Gamma & Nu
-            if hybrid_score > best_score:
-                best_score = hybrid_score
-                best_params = (gamma, nu)
-
-        print(f"Optimal parameters found: Gamma={best_params[0]}, Nu={best_params[1]}")
-
-
-        # Train final model with optimal parameters
-        oc_svm = OneClassSVM(kernel='rbf', gamma=best_params[0], nu=best_params[1])
-        #oc_svm = OneClassSVM(kernel='rbf', gamma= 0.2, nu=0.0625)
-
-        oc_svm.fit(X_train_normal_labelled)
-        '''
-
-        # Parameter grid for One-Class SVM
+         # Parameter grid for One-Class SVM
         gamma_values = np.linspace(0.2, 0.5, 5)
         nu_values = np.linspace(0.01, 0.08, 5)
 
@@ -273,7 +225,7 @@ class FeaturesEngineering:
         best_params = None
         best_alpha = None
         best_score = -np.inf  # Higher hybrid score is better
-        '''
+
         # Grid Search Over Gamma, Nu, and Alpha
         for gamma, nu in product(gamma_values, nu_values):
             print(f'Testing parameters: Gamma={gamma}, Nu={nu}')
@@ -310,12 +262,10 @@ class FeaturesEngineering:
 
         print(f"Optimal parameters found: Gamma={best_params[0]}, Nu={best_params[1]}, Alpha={best_alpha}")
 
-        exit()
-        '''
 
         # Train final model with optimal Gamma & Nu
-        #oc_svm_final = OneClassSVM(kernel='rbf', gamma=best_params[0], nu=best_params[1])
-        oc_svm_final = OneClassSVM(kernel='rbf', gamma= 0.275, nu=0.01)
+        oc_svm_final = OneClassSVM(kernel='rbf', gamma=best_params[0], nu=best_params[1])
+        #oc_svm_final = OneClassSVM(kernel='rbf', gamma= 0.275, nu=0.01)
 
         oc_svm_final.fit(X_train_normal_labelled)
         # Make predictions
