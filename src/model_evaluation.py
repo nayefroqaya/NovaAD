@@ -12,7 +12,6 @@ class ModelEvaluation:
         number_component, y_test_truth, y_test_pred, DATASET, X_test):
         """
         Evaluate model performance and compute feature importance metrics.
-
         Parameters:
         number_components (int): Number of principal components used
         y_test_truth (array): Ground truth labels

@@ -2,7 +2,7 @@ import warnings
 from collections import Counter
 
 import colorama
-#import cudf
+# import cudf
 import cupy as cp
 import numpy as np
 import pandas as pd
@@ -43,10 +43,8 @@ class FeaturesExtractor:
     """
 
     @staticmethod
-    def features_extracting_configuring_tuning(features_extracting_obj,
-                                               doc_topic_df_path, sentiment_df_path,
-                                               Dataset_name, pre_final_global_features_pkl_path,
-                                               df_features):
+    def features_extracting_configuring_tuning(features_extracting_obj, doc_topic_df_path, sentiment_df_path,
+                                               Dataset_name, pre_final_global_features_pkl_path, df_features):
         """
         Main pipeline for feature extraction and configuration
 
@@ -80,8 +78,7 @@ class FeaturesExtractor:
 
         # ==================== ADDITIONAL FEATURE EXTRACTION ===================
         print("[INFO] Extracting additional features (temporal, statistical, entropy)...")
-        features_extracting_obj.features_extracted_different_features(best_topic_number,
-                                                                      doc_topic_df_path,
+        features_extracting_obj.features_extracted_different_features(best_topic_number, doc_topic_df_path,
                                                                       pre_final_global_features_pkl_path)
 
         # ==================== SEMANTIC FEATURE EXTRACTION =====================
@@ -184,7 +181,7 @@ class FeaturesExtractor:
         print('[DEBUG] Sample topic distributions:')
         print(df_features[list_topic].head(5))
         print(df_features[['list_topics_distribution', 'Dominant_Topic']].head(20))
-#        exit()
+        #        exit()
         return best_topic_number_val
 
     @staticmethod
@@ -299,14 +296,10 @@ class FeaturesExtractor:
         search_params = {'n_components': [2, 3, 5, 7, 9, 13, 15]}
 
         # Initialize LDA model
-        model = LatentDirichletAllocation(learning_method='online',
-                                          max_iter=100,
-                                          random_state=0)
+        model = LatentDirichletAllocation(learning_method='online', max_iter=100, random_state=0)
 
         # Perform grid search
-        gridsearch = GridSearchCV(model,
-                                  param_grid=search_params, error_score='raise',
-                                  verbose=4)
+        gridsearch = GridSearchCV(model, param_grid=search_params, error_score='raise', verbose=4)
         gridsearch.fit(cv_matrix)
 
         # Extract best model and parameters
@@ -386,12 +379,8 @@ class FeaturesExtractor:
         --------
         numpy array: Document-topic distribution matrix
         """
-        lda = LatentDirichletAllocation(
-            n_components=best_topic_number,
-            learning_method='online',
-            max_iter=100,
-            random_state=0
-        )
+        lda = LatentDirichletAllocation(n_components=best_topic_number, learning_method='online', max_iter=100,
+            random_state=0)
         doc_topic_matrix = lda.fit_transform(cv_matrix)
 
         return doc_topic_matrix
@@ -409,14 +398,13 @@ class FeaturesExtractor:
         --------
         float: Entropy value of the distribution
         """
-        #import torch
+        # import torch
         if torch.cuda.is_available():
-                import cupy as xp
+            import cupy as xp
         else:
-                import numpy as np
-                xp = np
-         #return xp.asarray(x, dtype=dtype)
-
+            import numpy as np
+            xp = np
+        # return xp.asarray(x, dtype=dtype)
 
         topic_distribution_xp = xp.asarray(topic_distribution, dtype=xp.float32)
         non_zero_probs = topic_distribution_xp[topic_distribution_xp > 0]
@@ -443,8 +431,7 @@ class FeaturesExtractor:
         print(f"[INFO] Analyzing {len(unique_texts)} unique texts from {len(df_features)} total rows")
 
         # Initialize sentiment analysis pipeline
-        sentiment_pipeline = pipeline("sentiment-analysis",
-                                      model="siebert/sentiment-roberta-large-english",
+        sentiment_pipeline = pipeline("sentiment-analysis", model="siebert/sentiment-roberta-large-english",
                                       device=-1)  # CPU execution
 
         # Prepare dataset for batch processing
@@ -466,8 +453,7 @@ class FeaturesExtractor:
 
         return lst_sentiment_label
 
-    def features_extracted_different_features(self, best_topic_number,
-                                              doc_topic_df_path,
+    def features_extracted_different_features(self, best_topic_number, doc_topic_df_path,
                                               pre_final_global_features_pkl_path):
         """
         Extract additional features including temporal, statistical, and entropy features
@@ -518,19 +504,14 @@ class FeaturesExtractor:
         # Calculate entropy for unique topic distributions
         unique_topic_lists = gdf_feature_full_dataset[list_topic].drop_duplicates()
         unique_topic_lists['entropy'] = unique_topic_lists.apply(
-            lambda row: FeaturesExtractor.calculation_entropy(row.values.tolist()),
-            axis=1
-        )
+            lambda row: FeaturesExtractor.calculation_entropy(row.values.tolist()), axis=1)
 
         # Create mapping for efficient entropy assignment
-        entropy_map = {
-            tuple(row[list_topic]): row['entropy'] for _, row in unique_topic_lists.iterrows()
-        }
+        entropy_map = {tuple(row[list_topic]): row['entropy'] for _, row in unique_topic_lists.iterrows()}
 
         # Apply entropy mapping to full dataset
-        gdf_feature_full_dataset['entropy'] = [
-            entropy_map[tuple(row)] for row in gdf_feature_full_dataset[list_topic].itertuples(index=False, name=None)
-        ]
+        gdf_feature_full_dataset['entropy'] = [entropy_map[tuple(row)] for row in
+            gdf_feature_full_dataset[list_topic].itertuples(index=False, name=None)]
 
         # Final data preparation and validation
         df_feature_full_dataset = gdf_feature_full_dataset

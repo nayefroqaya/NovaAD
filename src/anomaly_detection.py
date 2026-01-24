@@ -1,32 +1,30 @@
 import time
 import warnings
-import numpy as np
-import time
-from sklearn.ensemble import IsolationForest
-from sklearn.model_selection import RandomizedSearchCV
-from sklearn.metrics import average_precision_score
+
 import colorama
 import numpy as np
+import numpy as np
+import numpy as np
+import numpy as np
+from scipy.stats import randint, uniform
 from scipy.stats import randint, uniform
 from sklearn.calibration import CalibratedClassifierCV
-from sklearn.ensemble import RandomForestClassifier, VotingClassifier, StackingClassifier
-from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import precision_recall_curve
-from sklearn.model_selection import RandomizedSearchCV, StratifiedKFold
-from xgboost import XGBClassifier
-import numpy as np
-import time
+from sklearn.ensemble import IsolationForest
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.model_selection import RandomizedSearchCV
-from sklearn.metrics import average_precision_score
-import time
-import numpy as np
-from xgboost import XGBClassifier
-from sklearn.linear_model import LogisticRegression
+from sklearn.ensemble import RandomForestClassifier, VotingClassifier, StackingClassifier
 from sklearn.ensemble import VotingClassifier, StackingClassifier
-from sklearn.model_selection import RandomizedSearchCV, StratifiedKFold
+from sklearn.linear_model import LogisticRegression
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import average_precision_score
+from sklearn.metrics import average_precision_score
 from sklearn.metrics import precision_recall_curve
-from scipy.stats import randint, uniform
+from sklearn.metrics import precision_recall_curve
+from sklearn.model_selection import RandomizedSearchCV
+from sklearn.model_selection import RandomizedSearchCV
+from sklearn.model_selection import RandomizedSearchCV, StratifiedKFold
+from sklearn.model_selection import RandomizedSearchCV, StratifiedKFold
+from xgboost import XGBClassifier
+from xgboost import XGBClassifier
 
 warnings.filterwarnings('ignore')
 colorama.init()
@@ -39,9 +37,7 @@ YELLOW = colorama.Fore.YELLOW
 class AnomalyDetector:
 
     @staticmethod
-    def anomaly_detector(X_train, y_train, X_test,
-        y_test_truth, X_val, y_val_truth, mode):
-
+    def anomaly_detector(X_train, y_train, X_test, y_test_truth, X_val, y_val_truth, mode):
 
         print("Starting model training process...")
         start_fit = time.time()
@@ -50,11 +46,10 @@ class AnomalyDetector:
             # ========================
             # 1. Base Models Initialization
             # ========================
-            model_xgb_tuning = XGBClassifier(use_label_encoder=False, eval_metric='logloss',
-                                             #n_jobs=-1, cpu
-                                            # tree_method="hist",  # modern tree builder
+            model_xgb_tuning = XGBClassifier(use_label_encoder=False, eval_metric='logloss',  # n_jobs=-1, cpu
+                                             # tree_method="hist",  # modern tree builder
                                              device="cuda",  # ✅ GPU
-                                             n_jobs=4 , # ✅ avoid CPU oversubscription during GPU training
+                                             n_jobs=4,  # ✅ avoid CPU oversubscription during GPU training
 
                                              random_state=42)
 
@@ -63,11 +58,11 @@ class AnomalyDetector:
             # ========================
             # 2. Hyperparameter Spaces
             # ========================
-            param_dist = {'xgb': {'max_depth': [ 5, 7, 10], 'n_estimators': randint(100, 250), # 500
-                'learning_rate': uniform(0.01, 0.3), 'subsample': uniform(0.7, 0.3),
-                'colsample_bytree': uniform(0.7, 0.3), },
-                'rf': {'max_depth': [ 10, 15, None], 'n_estimators': randint(100, 250), # 500
-                    'max_features': ['sqrt', 'log2'], 'min_samples_split': [2, 5, 10]}}
+            param_dist = {'xgb': {'max_depth': [5, 7, 10], 'n_estimators': randint(100, 250),  # 500
+                                  'learning_rate': uniform(0.01, 0.3), 'subsample': uniform(0.7, 0.3),
+                                  'colsample_bytree': uniform(0.7, 0.3), },
+                          'rf': {'max_depth': [10, 15, None], 'n_estimators': randint(100, 250),  # 500
+                                 'max_features': ['sqrt', 'log2'], 'min_samples_split': [2, 5, 10]}}
 
             cv_strategy = StratifiedKFold(n_splits=3, shuffle=True, random_state=42)  # 5
 
@@ -75,7 +70,8 @@ class AnomalyDetector:
             # 3. Randomized Search – XGBoost
             # ========================
             random_search_xgb = RandomizedSearchCV(estimator=model_xgb_tuning, param_distributions=param_dist['xgb'],
-                n_iter=10, cv=cv_strategy, scoring='f1', n_jobs=-1, verbose=4, random_state=42)
+                                                   n_iter=10, cv=cv_strategy, scoring='f1', n_jobs=-1, verbose=4,
+                                                   random_state=42)
 
             random_search_xgb.fit(X_train, y_train)
             best_params_xgb = random_search_xgb.best_params_
@@ -85,7 +81,8 @@ class AnomalyDetector:
             # 4. Randomized Search – Random Forest
             # ========================
             random_search_rf = RandomizedSearchCV(estimator=model_rf_tuning, param_distributions=param_dist['rf'],
-                n_iter=10, cv=cv_strategy, scoring='f1', n_jobs=-1, verbose=4, random_state=42)
+                                                  n_iter=10, cv=cv_strategy, scoring='f1', n_jobs=-1, verbose=4,
+                                                  random_state=42)
 
             random_search_rf.fit(X_train, y_train)
             best_params_rf = random_search_rf.best_params_
@@ -97,17 +94,16 @@ class AnomalyDetector:
             scale_pos_weight = len(y_train[y_train == 0]) / len(y_train[y_train == 1])
 
             model_final_xgb = XGBClassifier(**best_params_xgb, scale_pos_weight=scale_pos_weight, random_state=42,
-               # n_jobs=-1,
-           # tree_method="hist",
-            device="cuda",     # ✅ GPU
-            n_jobs=4   ,        # ✅ keep modest when using GPU
-            use_label_encoder=False,
-            eval_metric='logloss')
+                                            # n_jobs=-1,
+                                            # tree_method="hist",
+                                            device="cuda",  # ✅ GPU
+                                            n_jobs=4,  # ✅ keep modest when using GPU
+                                            use_label_encoder=False, eval_metric='logloss')
 
             model_final_rf = RandomForestClassifier(**best_params_rf, class_weight="balanced", random_state=42,
-                n_jobs=-1)
+                                                    n_jobs=-1)
 
-            model_lr = LogisticRegression( class_weight="balanced") # max_iter=500
+            model_lr = LogisticRegression(class_weight="balanced")  # max_iter=500
 
             # ========================
             # 6. Voting Classifier
@@ -118,7 +114,7 @@ class AnomalyDetector:
             # 7. Stacking Classifier
             # ========================
             stacking_clf = StackingClassifier(estimators=[('voting', voting_clf), ('rf2', model_final_rf), ],
-                final_estimator=LogisticRegression())
+                                              final_estimator=LogisticRegression())
 
             # ========================
             # 8. Probability Calibration
@@ -175,14 +171,14 @@ class AnomalyDetector:
             # 1. Base Model Initialization
             # ========================
             model_xgb = XGBClassifier(use_label_encoder=False, eval_metric='logloss', device="cuda", n_jobs=4,
-                random_state=42)
+                                      random_state=42)
 
             # ========================
             # 2. Hyperparameter Space
             # ========================
             param_dist_xgb = {'max_depth': [5, 7, 10], 'n_estimators': randint(100, 250),
-                'learning_rate': uniform(0.01, 0.3), 'subsample': uniform(0.7, 0.3),
-                'colsample_bytree': uniform(0.7, 0.3)}
+                              'learning_rate': uniform(0.01, 0.3), 'subsample': uniform(0.7, 0.3),
+                              'colsample_bytree': uniform(0.7, 0.3)}
 
             cv_strategy = StratifiedKFold(n_splits=3, shuffle=True, random_state=42)
 
@@ -190,7 +186,7 @@ class AnomalyDetector:
             # 3. Randomized Search – XGBoost
             # ========================
             random_search_xgb = RandomizedSearchCV(estimator=model_xgb, param_distributions=param_dist_xgb, n_iter=10,
-                cv=cv_strategy, scoring='f1', n_jobs=-1, verbose=4, random_state=42)
+                                                   cv=cv_strategy, scoring='f1', n_jobs=-1, verbose=4, random_state=42)
             random_search_xgb.fit(X_train, y_train)
             best_params_xgb = random_search_xgb.best_params_
             print("Optimal parameters for XGBoost:", best_params_xgb)
@@ -201,7 +197,7 @@ class AnomalyDetector:
             scale_pos_weight = len(y_train[y_train == 0]) / len(y_train[y_train == 1])
 
             model_final = XGBClassifier(**best_params_xgb, scale_pos_weight=scale_pos_weight, random_state=42,
-                use_label_encoder=False, eval_metric='logloss', device="cuda", n_jobs=4)
+                                        use_label_encoder=False, eval_metric='logloss', device="cuda", n_jobs=4)
 
             # ========================
             # 5. Train Final Model
@@ -241,5 +237,3 @@ class AnomalyDetector:
             print(f"Prediction completed in {predict_time:.2f} minutes")
 
             return y_test_truth, y_test_pred_adjusted, fit_time, predict_time
-
-

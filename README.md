@@ -11,7 +11,7 @@ Extensive experiments on real-world datasets, including BGL, HDFS, Thunderbird, 
 ## Project Structure
 <pre>
 ├─ datasets/               # Main entry point for NovaAD datasets  
-├─ drain_parser/           # Configuration and parser scripts for Drain  
+├─ drain_parser/           # Configuration and parser scripts for Drain  with its references
 ├─ src/  
 │  ├─ main.py              # Main script to trigger the full pipeline  
 │  ├─ logdata_read.py      # Reads parsed data and performs cleaning and column selection  
@@ -47,22 +47,29 @@ Steps to run NovaAD:
 
 1. Install all required libraries from the requirements file (e.g., NovaAD/requirements.txt).
 2. Create a dataset directory under `datasets` (e.g., `HDFS`, `BGL`,`TH_1G`, `TH_2G`, `SP_150MB`) and upload the (datasetname.log) to this directory.
-3. In main.py, set the dataset name to either BGL or HDFS.
+3. In main.py, set the dataset name (e.g., `HDFS`, `BGL`,`TH_1G`, `TH_2G`, `SP_150MB`)
 4. For Drain parser details, see [IBM Drain](https://github.com/logpai/logparser/tree/main/logparser/Drain).
 5. The parsing code is available in the `drain_parser` folder.
-6. Specify the dataset name in `demo.py` (e.g., BGL). The code is avaible for all datasets. Uncomment the lines of the dataset you need to use
+6. Specify the dataset name in `demo.py` (e.g., BGL). The code is available for all datasets. Uncomment the lines of the dataset you need to use
 
 ---
 
 ## 📌 Data Parsing
 1. For data parsing, all libraries are specified with their versions in the requirements file (e.g., drain_parser/requirements.txt). 
 2. To start the parsing process, run (drain_parser/demo.py). 
-3. The parsing output will be generated and saved in the datasets directory.
+3. The parsing output will be generated and saved in the datasets' directory.
 
 ---
 
 ## 🚨 Anomaly Detection 
 To apply the NovaAD pipeline on log data:
+* before start running you must specify the following parameters :
+    DATASET = 'BGL'  # (e.g., `HDFS`, `BGL`,`TH_1G`, `TH_2G`, `SP_150MB`) 
+    DATASETS_FOLDER = 'datasets'
+    Round= '1'   # we run the system three time. Round flag help to save the data with three versions
+    mode='M'  # M multi classifier - S single classifier # This flag is important for evaluation stage. Default is M
+    Mix_or_stable='0'  # 0 Full stable subset  / 1 mix subset  #  This flag is important for evaluation stage.
+* Decide you will run on CPU or GPU
 * Run the main function (`src/main.py`).
 * The main function executes all stages as one pipeline: data preprocessing, anomaly detection, and evaluation.
 
