@@ -63,7 +63,7 @@ Steps to run NovaAD:
 
 ## 🚨 Anomaly Detection 
 To apply the NovaAD pipeline on log data:
-* Before start running you must specify the following parameters :
+* Before start running, you must specify the following parameters :
 
     DATASET = 'BGL'  # (e.g., `HDFS`, `BGL`,`TH_1G`, `TH_2G`, `SP_150MB`) .
     DATASETS_FOLDER = 'datasets'.
