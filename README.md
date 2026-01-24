@@ -64,11 +64,13 @@ Steps to run NovaAD:
 ## 🚨 Anomaly Detection 
 To apply the NovaAD pipeline on log data:
 * before start running you must specify the following parameters :
-    DATASET = 'BGL'  # (e.g., `HDFS`, `BGL`,`TH_1G`, `TH_2G`, `SP_150MB`) 
-    DATASETS_FOLDER = 'datasets'
-    Round= '1'   # we run the system three time. Round flag help to save the data with three versions
-    mode='M'  # M multi classifier - S single classifier # This flag is important for evaluation stage. Default is M
+
+    DATASET = 'BGL'  # (e.g., `HDFS`, `BGL`,`TH_1G`, `TH_2G`, `SP_150MB`) .
+    DATASETS_FOLDER = 'datasets'.
+    Round= '1'   # we run the system three time. Round flag help to save the data with three versions.
+    mode='M'  # M multi classifier - S single classifier # This flag is important for evaluation stage. Default is M.
     Mix_or_stable='0'  # 0 Full stable subset  / 1 mix subset  #  This flag is important for evaluation stage.
+
 * Decide you will run on CPU or GPU
 * Run the main function (`src/main.py`).
 * The main function executes all stages as one pipeline: data preprocessing, anomaly detection, and evaluation.
