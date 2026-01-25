@@ -67,7 +67,7 @@ To apply the NovaAD pipeline on log data:
 
     DATASET = 'BGL'  # (e.g., `HDFS`, `BGL`,`TH_1G`, `TH_2G`, `SP_150MB`) .
     DATASETS_FOLDER = 'datasets'.
-    Round= '1'   # we run the system three time. Round flag help to save the data with three versions.
+    Round= '1'   # we run the system three time. Round flag helps to save the data with three versions.
     Mode='M'  # M multi classifier - S single classifier # This flag is important for evaluation stage. Default is M.
     Mix_or_stable='0'  # 0 Full stable subset  / 1 mix subset  #  This flag is important for evaluation stage.
 
