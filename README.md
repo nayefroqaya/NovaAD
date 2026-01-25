@@ -77,3 +77,16 @@ To apply the NovaAD pipeline on log data:
 
 ---
 
+## Contact & Author Information
+
+We are excited to see **NovaAD** being used in practical applications and are happy to support the community.  
+If you have any questions or need assistance, please don’t hesitate to reach out!
+
+### Authors
+
+| Name               | Email Address                     | Affiliation                               |
+|-------------------|----------------------------------|-------------------------------------------|
+| Nayef Roqaya       | roqaya@staff.uni-marburg.de       | Philipps University of Marburg, Germany  |
+| Hajira Jabeen      | hajira.jabeen@uk-koeln.de         | University of Cologne, Germany           |
+| Thorsten Papenbrock| papenbrock@informatik.uni-marburg.de | Philipps University of Marburg, Germany  |
+
