@@ -355,7 +355,6 @@ class LogdataRead:
 
             stable_equal_subset = pd.concat([stable_normal_sample, stable_anomaly_sample]).sample(frac=1,
                                                                                                   random_state=42)
-
             # ----------- Debug prints
             print(f"Rows in stable_equal_subset: {len(stable_equal_subset)}")
             print(f"Rows in mixed_subset: {len(mixed_subset)}")
