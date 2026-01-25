@@ -1,16 +1,16 @@
-# **NovaAD**
-This is the basic implementation of our submission in ACM UMAP 2026. NovaAD: Semi-Supervised Anomaly Detection in Log Series
+# **NovaADLS**
+This is the basic implementation of our submission in ACM UMAP 2026. NovaADLS: Semi-Supervised Anomaly Detection in Log Series
 
 ## 📌 Description
 
-In this paper, we propose NovaAD, an end-to-end semi-supervised anomaly detection system for textual event series that requires only a small set of normal logs to be trained. NovaAD eliminates manual configuration with its universal feature representation approach and automatic self-configuration mechanisms. To address log instability and semantic variations in the event stream, the system integrates semantic embedding features and uses a hierarchical ensemble of voting and stacking classifiers.
-Extensive experiments on real-world datasets, including BGL, HDFS, Thunderbird, and Spirit, demonstrate that NovaAD consistently outperforms state-of-the-art baselines in F1 score, precision, and recall; it also  offers fast training and inference times on both CPU and GPU platforms.
+In this paper, we propose NovaADLS, an end-to-end semi-supervised anomaly detection system for textual event series that requires only a small set of normal logs to be trained. NovaADLS eliminates manual configuration with its universal feature representation approach and automatic self-configuration mechanisms. To address log instability and semantic variations in the event stream, the system integrates semantic embedding features and uses a hierarchical ensemble of voting and stacking classifiers.
+Extensive experiments on real-world datasets, including BGL, HDFS, Thunderbird, and Spirit, demonstrate that NovaADLS consistently outperforms state-of-the-art baselines in F1 score, precision, and recall; it also  offers fast training and inference times on both CPU and GPU platforms.
 
 ---
 
 ## Project Structure
 <pre>
-├─ datasets/               # Main entry point for NovaAD datasets  
+├─ datasets/               # Main entry point for NovaADLS datasets  
 ├─ drain_parser/           # Configuration and parser scripts for Drain  with its references
 ├─ src/  
 │  ├─ main.py              # Main script to trigger the full pipeline  
@@ -43,7 +43,7 @@ All libraries are specified with their versions in the requirements file (e.g., 
 ---
 
 ## 🛠️ Preparation
-Steps to run NovaAD:
+Steps to run NovaADLS:
 
 1. Install all required libraries from the requirements file (e.g., NovaAD/requirements.txt).
 2. Create a dataset directory under `datasets` (e.g., `HDFS`, `BGL`,`TH_1G`, `TH_2G`, `SP_150MB`) and upload the (datasetname.log) to this directory.
@@ -62,7 +62,7 @@ Steps to run NovaAD:
 ---
 
 ## 🚨 Anomaly Detection 
-To apply the NovaAD pipeline on log data:
+To apply the NovaADLS pipeline on log data:
 * Before start running, you must specify the following parameters :
 
     DATASET = 'BGL'  # (e.g., `HDFS`, `BGL`,`TH_1G`, `TH_2G`, `SP_150MB`) .
