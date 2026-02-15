@@ -1,6 +1,4 @@
 # **NovaADLS**
-This is the basic implementation of our submission in ACM UMAP 2026. NovaADLS: Semi-Supervised Anomaly Detection in Log Series
-
 ## 📌 Description
 
 In this paper, we propose NovaADLS, an end-to-end semi-supervised anomaly detection system for textual event series that requires only a small set of normal logs to be trained. NovaADLS eliminates manual configuration with its universal feature representation approach and automatic self-configuration mechanisms. To address log instability and semantic variations in the event stream, the system integrates semantic embedding features and uses a hierarchical ensemble of voting and stacking classifiers.
