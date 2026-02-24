@@ -51,7 +51,7 @@ def main():
 
     # ---------------- Project configuration ----------------
 
-    DATASET = 'TH_1G'
+    DATASET = 'BGL'
     DATASETS_FOLDER = 'datasets'
     Round = '1'
     mode = 'M'  # M multi classifier - S single classifier
@@ -71,7 +71,7 @@ def main():
     anomaly_detection_obj = AnomalyDetector()
     model_evaluation_obj = ModelEvaluation()
     utilities_obj = Utilities()
-
+    '''
     # ---------------- Data as CSV ----------------
     logdata_read_obj.read_original_data_log_from_log_to_csv(DATASET, ALL_DATASET_CSV_PATH)
     print(' Reading the file was done successfully ')
@@ -103,43 +103,57 @@ def main():
 
     final_train_with_test_with_val = utilities_obj.processing_data_portion(train_df, val_df, test_df)
     # exit()
+    
 
     # ---------------- Features Extracting ----------------
     print(f"{GRAY}Extracting features for training and test datasets...{RESET}")
     number_component, best_topic_number = features_extracting_obj.features_extracting_configuring_tuning(
         features_extracting_obj, DOC_TOPIC_DF_PATH, SENTIMENT_DF_PATH, DATASET, PRE_FINAL_GLOBAL_FEATURES_PKL_PATH,
         final_train_with_test_with_val)
-
+    '''
     final_train_with_test_with_val = pd.read_pickle(PRE_FINAL_GLOBAL_FEATURES_PKL_PATH)
     # ---------------- Features Engineering: Aggregation/Transformation ----------------
     print(f"{GRAY}Aggregating and transforming features...{RESET}")
-    sequences_df, x_sequences_df, y_sequences_df = features_engineering_obj.features_aggregation_transformation(
+
+
+    #------- new
+    sequences_df, X_sequences_df, y_sequences_df, m_train_normal, m_train_unlabeled, m_val, m_test =features_engineering_obj.features_aggregation_transformation(
         final_train_with_test_with_val, DATASET)
+
+    x_train_normal_labelled = X_sequences_df[m_train_normal]
+    x_unlabeled_from_train = X_sequences_df[m_train_unlabeled]
+    ground_truth_unlabeled_data_from_train = sequences_df.loc[m_train_unlabeled, 'Label'].to_numpy()
+
+
+
+    '''
+    #sequences_df, x_sequences_df, y_sequences_df = features_engineering_obj.features_aggregation_transformation(
+    #    final_train_with_test_with_val, DATASET)
     # ---------------- Prepare datasets ----------------
-    print(f"{GRAY}Preparing training and evaluation datasets...{RESET}")
-    x_train_normal_labelled = x_sequences_df[y_sequences_df == 0]
-    X_train_all_data = x_sequences_df[y_sequences_df != 888]
-    x_unlabeled_from_train = x_sequences_df[y_sequences_df == 999]
+    #print(f"{GRAY}Preparing training and evaluation datasets...{RESET}")
+    #_train_normal_labelled = X_sequences_df[y_sequences_df == 0]
+    #X_train_all_data = x_sequences_df[y_sequences_df != 888]
+    #x_unlabeled_from_train = x_sequences_df[y_sequences_df == 999]#
 
-    labelled_df_from_train = sequences_df[sequences_df['Temp_label'] == 0]
-    ground_truth_labeled_data_from_train = labelled_df_from_train['Label']
+    #labelled_df_from_train = sequences_df[sequences_df['Temp_label'] == 0]
+    #ground_truth_labeled_data_from_train = labelled_df_from_train['Label']
 
-    labelled_df_from_train_all_data = sequences_df[sequences_df['Temp_label'] != 888]
-    ground_truth_train_all_data = labelled_df_from_train_all_data['Label']
+    #labelled_df_from_train_all_data = sequences_df[sequences_df['Temp_label'] != 888]
+    #ground_truth_train_all_data = labelled_df_from_train_all_data['Label']
 
-    unlabeled_df_from_train = sequences_df[sequences_df['Temp_label'] == 999]
-    ground_truth_unlabeled_data_from_train = unlabeled_df_from_train['Label']
+    #unlabeled_df_from_train = sequences_df[sequences_df['Temp_label'] == 999]
+    #ground_truth_unlabeled_data_from_train = unlabeled_df_from_train['Label']
 
-    unlabeled_df_from_test = sequences_df[sequences_df['Temp_label'] == 888]
-    ground_truth_unlabeled_data_from_test = unlabeled_df_from_test['Label']
+    #unlabeled_df_from_test = sequences_df[sequences_df['Temp_label'] == 888]
+    #ground_truth_unlabeled_data_from_test = unlabeled_df_from_test['Label']
 
-    labeled_df_from_val = sequences_df[sequences_df['Temp_label'] == 777]
-    ground_truth_labeled_data_from_val = labeled_df_from_val['Label']
-
+    #labeled_df_from_val = sequences_df[sequences_df['Temp_label'] == 777]
+    #ground_truth_labeled_data_from_val = labeled_df_from_val['Label']
+    '''
     # ---------------- Novelty detection and label establishment ----------------
     print(f"{GRAY}Performing novelty detection and establishing labels...{RESET}")
     X_train, y_train, X_test, y_test_truth, X_val, y_val_truth = features_engineering_obj.novelty_detection_label_establishment(
-        sequences_df, x_train_normal_labelled, x_unlabeled_from_train, ground_truth_unlabeled_data_from_train)
+        sequences_df, x_train_normal_labelled, x_unlabeled_from_train, ground_truth_unlabeled_data_from_train, m_train_normal, m_train_unlabeled)
     # ---------------- Anomaly Detection ----------------
     print(f"{GRAY}Running anomaly detection on test dataset...{RESET}")
     y_test_truth, y_test_pred, fit_time, predict_time = anomaly_detection_obj.anomaly_detector(X_train, y_train, X_test,

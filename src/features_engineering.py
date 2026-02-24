@@ -182,6 +182,65 @@ class FeaturesEngineering:
             dataset, final_train_with_test_with_val)
         sequences_df = FeaturesEngineering.summing_Train_test_val_together(dataset, df_train_with_test_with_val)
 
+        #-------new
+        # Convert features into numpy array (keeps same row order as sequences_df)
+        Train_Test_val_df_lst = np.vstack(sequences_df['features'].values)
+
+        # Convert ground-truth label to binary
+        sequences_df['Label'] = sequences_df['Label'].apply(lambda x: 0 if x == 'normal' else 1)
+
+        # Validation check
+        xx_0 = sequences_df[sequences_df['Label'] == 0]
+        xx_1 = sequences_df[sequences_df['Label'] == 1]
+        if len(xx_0) == 0 or len(xx_1) == 0:
+            print('Error: Truth label distribution issue')
+            exit()
+
+        # -------------------------
+        # Create masks
+        # -------------------------
+        m_train_normal = (sequences_df['Temp_label'] == 0).to_numpy()
+        m_train_unlabeled = (sequences_df['Temp_label'] == 999).to_numpy()
+        m_val = (sequences_df['Temp_label'] == 777).to_numpy()
+        m_test = (sequences_df['Temp_label'] == 888).to_numpy()
+
+        # Full train mask (for scaler fitting)
+        m_train = m_train_normal | m_train_unlabeled
+
+        # -------------------------
+        # Scale features
+        # -------------------------
+        scaler_data = StandardScaler()
+
+        # Fit ONLY on training data
+        scaled_train = scaler_data.fit_transform(Train_Test_val_df_lst[m_train])
+
+        # Transform val and test using train statistics
+        scaled_val = scaler_data.transform(Train_Test_val_df_lst[m_val])
+        scaled_test = scaler_data.transform(Train_Test_val_df_lst[m_test])
+
+        print('Feature scaling completed')
+
+        # Rebuild full scaled dataset (same row order)
+        scaled_Train_Test_val_df = np.empty_like(Train_Test_val_df_lst, dtype=float)
+
+        scaled_Train_Test_val_df[m_train] = scaled_train
+        scaled_Train_Test_val_df[m_val] = scaled_val
+        scaled_Train_Test_val_df[m_test] = scaled_test
+
+        # Final X and y
+        X_sequences_df = scaled_Train_Test_val_df
+        y_sequences_df = sequences_df['Temp_label']
+
+        # -------------------------
+        # Return everything
+        # -------------------------
+        return sequences_df, X_sequences_df, y_sequences_df, m_train_normal, m_train_unlabeled, m_val, m_test
+
+
+        return sequences_df, X_sequences_df, y_sequences_df
+
+        '''
         # Apply Standard Scaler to the summed feature vectors
         Train_Test_val_df_lst = np.vstack(sequences_df['features'].values)
         sequences_df['Label'] = sequences_df['Label'].apply(lambda x: 0 if x == 'normal' else 1)
@@ -202,10 +261,13 @@ class FeaturesEngineering:
         y_sequences_df = sequences_df['Temp_label']
 
         return sequences_df, X_sequences_df, y_sequences_df
+        '''
+
+
 
     @staticmethod
     def novelty_detection_label_establishment(sequences_df, X_train_normal_labelled, X_unlabeled_train,
-                                              ground_truth_unlabeled_data_from_train):
+                                              ground_truth_unlabeled_data_from_train, m_train_normal, m_train_unlabeled):
 
         # Parameter grid for One-Class SVM
         gamma_values = np.linspace(0.2, 0.5, 5)
