@@ -119,7 +119,7 @@ def main():
     print("Embedding dimension:", dim)
     number_component=dim
     print(number_component)
-    exit()
+    #exit()
 
 
     # ---------------- Features Engineering: Aggregation/Transformation ----------------
