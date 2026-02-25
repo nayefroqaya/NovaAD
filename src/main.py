@@ -111,8 +111,16 @@ def main():
         features_extracting_obj, DOC_TOPIC_DF_PATH, SENTIMENT_DF_PATH, DATASET, PRE_FINAL_GLOBAL_FEATURES_PKL_PATH,
         final_train_with_test_with_val)
     '''
+
+
     final_train_with_test_with_val = pd.read_pickle(PRE_FINAL_GLOBAL_FEATURES_PKL_PATH)
     final_train_with_test_with_val.info()
+    dim = len(final_train_with_test_with_val['reduced_embedding'].iloc[0])
+    print("Embedding dimension:", dim)
+    number_component=dim
+    print(number_component)
+    exit()
+
 
     # ---------------- Features Engineering: Aggregation/Transformation ----------------
     print(f"{GRAY}Aggregating and transforming features...{RESET}")
