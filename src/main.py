@@ -51,7 +51,7 @@ def main():
 
     # ---------------- Project configuration ----------------
 
-    DATASET = 'BGL'
+    DATASET = 'TH_1G'
     DATASETS_FOLDER = 'datasets'
     Round = '1'
     mode = 'M'  # M multi classifier - S single classifier
