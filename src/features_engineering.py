@@ -266,8 +266,8 @@ class FeaturesEngineering:
 
 
     @staticmethod
-    def novelty_detection_label_establishment(sequences_df, X_train_normal_labelled, X_unlabeled_train,
-                                              ground_truth_unlabeled_data_from_train, m_train_normal, m_train_unlabeled):
+    def novelty_detection_label_establishment(X_sequences_df, sequences_df, X_train_normal_labelled, X_unlabeled_train,
+                                              ground_truth_unlabeled_data_from_train, m_train_normal, m_train_unlabeled, m_val, m_test):
 
         # Parameter grid for One-Class SVM
         gamma_values = np.linspace(0.2, 0.5, 5)
@@ -336,6 +336,53 @@ class FeaturesEngineering:
                                     target_names=["Normal", "Anomaly"]))
 
         # Prepare the Training Data ----------------------------------------------------------------------------
+        # ---- build train normal df (keep ground truth + final label) ----
+        df_train_normal = sequences_df[sequences_df['Temp_label'] == 0][['Temp_label', 'Label']].copy()
+        df_train_normal['Final_Label'] = df_train_normal['Label'].values
+        df_train_normal['scaled_features'] = list(X_sequences_df[m_train_normal])
+
+        # ---- build train unlabeled df (pseudo labels) ----
+        df_train_unlabeled = sequences_df[sequences_df['Temp_label'] == 999][['Temp_label', 'Label']].copy()
+        df_train_unlabeled['Final_Label'] = pseudo_labels
+        df_train_unlabeled['scaled_features'] = list(X_sequences_df[m_train_unlabeled])
+
+        # ---- combine ----
+        df_final = pd.concat([df_train_normal, df_train_unlabeled], ignore_index=True)
+
+        # ---- evaluation on full train ----
+        y_true = df_final['Label'].values
+        y_pred = df_final['Final_Label'].values
+        print("\nFull Training Data Classification Report (One-Class SVM):")
+        print(classification_report(y_true, y_pred, target_names=["Normal", "Anomaly"]))
+
+        # ---- test df ----
+        df_test = sequences_df[sequences_df['Temp_label'] == 888][['Temp_label', 'Label']].copy()
+        df_test['scaled_features'] = list(X_sequences_df[m_test])
+
+        # ---- val df ----
+        df_val = sequences_df[sequences_df['Temp_label'] == 777][['Temp_label', 'Label']].copy()
+        df_val['scaled_features'] = list(X_sequences_df[m_val])
+
+        # ---- check test label distribution ----
+        xx_0 = df_test[df_test['Label'] == 0]
+        xx_1 = df_test[df_test['Label'] == 1]
+        if len(xx_0) == 0 or len(xx_1) == 0:
+            print('Error: Test data label distribution issue')
+            exit()
+
+        # ---- extract features and labels (SCALED) ----
+        X_train = df_final['scaled_features'].tolist()
+        y_train = df_final['Final_Label'].values
+
+        X_test = df_test['scaled_features'].tolist()
+        y_test_truth = df_test['Label'].values
+
+        X_val = df_val['scaled_features'].tolist()
+        y_val_truth = df_val['Label'].values
+
+        return X_train, y_train, X_test, y_test_truth, X_val, y_val_truth
+
+        '''
         df_train_normal = sequences_df[sequences_df['Temp_label'] == 0][['features', 'Temp_label', 'Label']].copy()
         df_train_normal['Final_Label'] = df_train_normal['Label']
         df_train_normal = df_train_normal[['features', 'Temp_label', 'Label', 'Final_Label']]
@@ -377,3 +424,4 @@ class FeaturesEngineering:
         X_val = df_val['features'].tolist()
         y_val_truth = df_val['Label'].values
         return X_train, y_train, X_test, y_test_truth, X_val, y_val_truth
+        '''

@@ -51,7 +51,7 @@ def main():
 
     # ---------------- Project configuration ----------------
 
-    DATASET = 'BGL'
+    DATASET = 'SP_150MB'
     DATASETS_FOLDER = 'datasets'
     Round = '1'
     mode = 'M'  # M multi classifier - S single classifier
@@ -162,8 +162,8 @@ def main():
     '''
     # ---------------- Novelty detection and label establishment ----------------
     print(f"{GRAY}Performing novelty detection and establishing labels...{RESET}")
-    X_train, y_train, X_test, y_test_truth, X_val, y_val_truth = features_engineering_obj.novelty_detection_label_establishment(
-        sequences_df, x_train_normal_labelled, x_unlabeled_from_train, ground_truth_unlabeled_data_from_train, m_train_normal, m_train_unlabeled)
+    X_train, y_train, X_test, y_test_truth, X_val, y_val_truth = features_engineering_obj.novelty_detection_label_establishment(X_sequences_df,
+        sequences_df, x_train_normal_labelled, x_unlabeled_from_train, ground_truth_unlabeled_data_from_train, m_train_normal, m_train_unlabeled, m_val, m_test)
     # ---------------- Anomaly Detection ----------------
     print(f"{GRAY}Running anomaly detection on test dataset...{RESET}")
     y_test_truth, y_test_pred, fit_time, predict_time = anomaly_detection_obj.anomaly_detector(X_train, y_train, X_test,
