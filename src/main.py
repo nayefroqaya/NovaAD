@@ -50,7 +50,7 @@ def main():
 
     # ---------------- Project configuration ----------------
 
-    DATASET = 'TH_2G'
+    DATASET = 'HDFS'
     DATASETS_FOLDER = 'datasets'
     Round = '1'
     mode = 'M'  # M multi classifier - S single classifier
