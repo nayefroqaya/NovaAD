@@ -50,7 +50,7 @@ def main():
 
     # ---------------- Project configuration ----------------
 
-    DATASET = 'HDFS'
+    DATASET = 'BGL'
     DATASETS_FOLDER = 'datasets'
     Round = '1'
     mode = 'M'  # M multi classifier - S single classifier
