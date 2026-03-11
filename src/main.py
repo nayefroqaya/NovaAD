@@ -1,5 +1,4 @@
 # os.environ["CUDA_VISIBLE_DEVICES"] = ""   # ⛔ Disable GPU completely
-import os
 import warnings
 
 import colorama
@@ -112,58 +111,30 @@ def main():
         final_train_with_test_with_val)
     '''
 
-
     final_train_with_test_with_val = pd.read_pickle(PRE_FINAL_GLOBAL_FEATURES_PKL_PATH)
     final_train_with_test_with_val.info()
     dim = len(final_train_with_test_with_val['reduced_embedding'].iloc[0])
     print("Embedding dimension:", dim)
-    number_component=dim
+    number_component = dim
     print(number_component)
-    #exit()
-
+    # exit()
 
     # ---------------- Features Engineering: Aggregation/Transformation ----------------
     print(f"{GRAY}Aggregating and transforming features...{RESET}")
 
-
-    #------- new
-    sequences_df, X_sequences_df, y_sequences_df, m_train_normal, m_train_unlabeled, m_val, m_test =features_engineering_obj.features_aggregation_transformation(
+    # ------- new
+    sequences_df, X_sequences_df, y_sequences_df, m_train_normal, m_train_unlabeled, m_val, m_test = features_engineering_obj.features_aggregation_transformation(
         final_train_with_test_with_val, DATASET)
 
     x_train_normal_labelled = X_sequences_df[m_train_normal]
     x_unlabeled_from_train = X_sequences_df[m_train_unlabeled]
     ground_truth_unlabeled_data_from_train = sequences_df.loc[m_train_unlabeled, 'Label'].to_numpy()
 
-
-
-    '''
-    #sequences_df, x_sequences_df, y_sequences_df = features_engineering_obj.features_aggregation_transformation(
-    #    final_train_with_test_with_val, DATASET)
-    # ---------------- Prepare datasets ----------------
-    #print(f"{GRAY}Preparing training and evaluation datasets...{RESET}")
-    #_train_normal_labelled = X_sequences_df[y_sequences_df == 0]
-    #X_train_all_data = x_sequences_df[y_sequences_df != 888]
-    #x_unlabeled_from_train = x_sequences_df[y_sequences_df == 999]#
-
-    #labelled_df_from_train = sequences_df[sequences_df['Temp_label'] == 0]
-    #ground_truth_labeled_data_from_train = labelled_df_from_train['Label']
-
-    #labelled_df_from_train_all_data = sequences_df[sequences_df['Temp_label'] != 888]
-    #ground_truth_train_all_data = labelled_df_from_train_all_data['Label']
-
-    #unlabeled_df_from_train = sequences_df[sequences_df['Temp_label'] == 999]
-    #ground_truth_unlabeled_data_from_train = unlabeled_df_from_train['Label']
-
-    #unlabeled_df_from_test = sequences_df[sequences_df['Temp_label'] == 888]
-    #ground_truth_unlabeled_data_from_test = unlabeled_df_from_test['Label']
-
-    #labeled_df_from_val = sequences_df[sequences_df['Temp_label'] == 777]
-    #ground_truth_labeled_data_from_val = labeled_df_from_val['Label']
-    '''
     # ---------------- Novelty detection and label establishment ----------------
     print(f"{GRAY}Performing novelty detection and establishing labels...{RESET}")
-    X_train, y_train, X_test, y_test_truth, X_val, y_val_truth = features_engineering_obj.novelty_detection_label_establishment(X_sequences_df,
-        sequences_df, x_train_normal_labelled, x_unlabeled_from_train, ground_truth_unlabeled_data_from_train, m_train_normal, m_train_unlabeled, m_val, m_test)
+    X_train, y_train, X_test, y_test_truth, X_val, y_val_truth = features_engineering_obj.novelty_detection_label_establishment(
+        X_sequences_df, sequences_df, x_train_normal_labelled, x_unlabeled_from_train,
+        ground_truth_unlabeled_data_from_train, m_train_normal, m_train_unlabeled, m_val, m_test)
     # ---------------- Anomaly Detection ----------------
     print(f"{GRAY}Running anomaly detection on test dataset...{RESET}")
     y_test_truth, y_test_pred, fit_time, predict_time = anomaly_detection_obj.anomaly_detector(X_train, y_train, X_test,
