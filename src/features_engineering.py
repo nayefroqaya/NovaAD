@@ -182,7 +182,7 @@ class FeaturesEngineering:
             dataset, final_train_with_test_with_val)
         sequences_df = FeaturesEngineering.summing_Train_test_val_together(dataset, df_train_with_test_with_val)
 
-        #-------new
+        # -------new
         # Convert features into numpy array (keeps same row order as sequences_df)
         Train_Test_val_df_lst = np.vstack(sequences_df['features'].values)
 
@@ -237,8 +237,7 @@ class FeaturesEngineering:
         # -------------------------
         return sequences_df, X_sequences_df, y_sequences_df, m_train_normal, m_train_unlabeled, m_val, m_test
 
-
-        #return sequences_df, X_sequences_df, y_sequences_df
+        # return sequences_df, X_sequences_df, y_sequences_df
 
         '''
         # Apply Standard Scaler to the summed feature vectors
@@ -263,11 +262,10 @@ class FeaturesEngineering:
         return sequences_df, X_sequences_df, y_sequences_df
         '''
 
-
-
     @staticmethod
     def novelty_detection_label_establishment(X_sequences_df, sequences_df, X_train_normal_labelled, X_unlabeled_train,
-                                              ground_truth_unlabeled_data_from_train, m_train_normal, m_train_unlabeled, m_val, m_test):
+                                              ground_truth_unlabeled_data_from_train, m_train_normal, m_train_unlabeled,
+                                              m_val, m_test):
 
         # Parameter grid for One-Class SVM
         gamma_values = np.linspace(0.2, 0.5, 5)
@@ -279,7 +277,7 @@ class FeaturesEngineering:
         best_params = None
         best_alpha = None
         best_score = -np.inf  # Higher hybrid score is better
-        '''
+
         # Grid Search Over Gamma, Nu, and Alpha
         for gamma, nu in product(gamma_values, nu_values):
             print(f'Testing parameters: Gamma={gamma}, Nu={nu}')
@@ -315,10 +313,10 @@ class FeaturesEngineering:
                     best_alpha = alpha
 
         print(f"Optimal parameters found: Gamma={best_params[0]}, Nu={best_params[1]}, Alpha={best_alpha}")
-        '''
+
         # Train final model with optimal Gamma & Nu
-        #oc_svm_final = OneClassSVM(kernel='rbf', gamma=best_params[0], nu=best_params[1])
-        oc_svm_final = OneClassSVM(kernel='rbf', gamma= 0.2, nu=0.01)
+        oc_svm_final = OneClassSVM(kernel='rbf', gamma=best_params[0], nu=best_params[1])
+        # oc_svm_final = OneClassSVM(kernel='rbf', gamma= 0.2, nu=0.01)
 
         oc_svm_final.fit(X_train_normal_labelled)
         # Make predictions

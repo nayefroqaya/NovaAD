@@ -52,7 +52,7 @@ def main():
 
     DATASET = 'HDFS'
     DATASETS_FOLDER = 'datasets'
-    Round = '2'
+    Round = '1'
     mode = 'M'  # M multi classifier - S single classifier
     Mix_or_stable = '0'  # 0 Full stable subset  / 1 mix subset
 
@@ -70,7 +70,7 @@ def main():
     anomaly_detection_obj = AnomalyDetector()
     model_evaluation_obj = ModelEvaluation()
     utilities_obj = Utilities()
-    '''
+
     # ---------------- Data as CSV ----------------
     logdata_read_obj.read_original_data_log_from_log_to_csv(DATASET, ALL_DATASET_CSV_PATH)
     print(' Reading the file was done successfully ')
@@ -79,7 +79,7 @@ def main():
     # ---------------- Dataset Splitting ----------------
     print(f"{GRAY}Splitting dataset into training, validation, and test sets...{RESET}")
     train_df, validate_df, test_df, df_features = utilities_obj.dataset_splitting(ALL_DATASET_CSV_PATH, DATASET, Round,
-        Mix_or_stable)
+                                                                                  Mix_or_stable)
     # exit()
     # ---------------- Process normal data ----------------
 
@@ -102,14 +102,12 @@ def main():
 
     final_train_with_test_with_val = utilities_obj.processing_data_portion(train_df, val_df, test_df)
     # exit()
-    
 
     # ---------------- Features Extracting ----------------
     print(f"{GRAY}Extracting features for training and test datasets...{RESET}")
     number_component, best_topic_number = features_extracting_obj.features_extracting_configuring_tuning(
         features_extracting_obj, DOC_TOPIC_DF_PATH, SENTIMENT_DF_PATH, DATASET, PRE_FINAL_GLOBAL_FEATURES_PKL_PATH,
         final_train_with_test_with_val)
-    '''
 
     final_train_with_test_with_val = pd.read_pickle(PRE_FINAL_GLOBAL_FEATURES_PKL_PATH)
     final_train_with_test_with_val.info()
