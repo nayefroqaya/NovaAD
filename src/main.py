@@ -1,4 +1,5 @@
-# os.environ["CUDA_VISIBLE_DEVICES"] = ""   # ⛔ Disable GPU completely
+import os
+os.environ["CUDA_VISIBLE_DEVICES"] = ""   # ⛔ Disable GPU completely
 import warnings
 
 import colorama
@@ -11,6 +12,8 @@ from features_extracting import FeaturesExtractor
 from logdata_read import LogdataRead
 from model_evaluation import ModelEvaluation
 from utility import Utilities
+import psutil
+import platform
 
 # ====================== Setup ======================
 warnings.filterwarnings('ignore')
@@ -24,11 +27,56 @@ YELLOW = colorama.Fore.YELLOW
 
 # ====================== Main ======================
 def main():
+
+
+
+
+    # -----------------------------
+    # System Info
+    # -----------------------------
+    vm = psutil.virtual_memory()
+    total_gb = vm.total / (1024 ** 3)
+    available_gb = vm.available / (1024 ** 3)
+    used_gb = vm.used / (1024 ** 3)
+    percent_used = vm.percent
+
+    logical_cores = psutil.cpu_count(logical=True)
+    physical_cores = psutil.cpu_count(logical=False)
+
+    print("=== System Info ===")
+    print(f"Total RAM:     {total_gb:.2f} GB")
+    print(f"Available RAM: {available_gb:.2f} GB")
+    print(f"Used RAM:      {used_gb:.2f} GB ({percent_used:.1f}%)")
+    print(f"CPU cores (physical/logical): {physical_cores} / {logical_cores}")
+    print(f"OS: {platform.platform()}")
+    print(f"Python version: {platform.python_version()}")
+
+    # -----------------------------
+    # Match Spark resource logic
+    # -----------------------------
+    python_memory_gb = max(4, int(available_gb * 0.8))
+    num_cores = logical_cores
+
+    print(f"Target sklearn memory budget: {python_memory_gb} GB")
+    print(f"Target sklearn CPU budget: {num_cores} logical cores")
+
+    # -----------------------------
+    # Thread control
+    # MUST be before numpy / sklearn imports
+    # -----------------------------
+    os.environ["OMP_NUM_THREADS"] = "1"
+    os.environ["MKL_NUM_THREADS"] = "1"
+    os.environ["OPENBLAS_NUM_THREADS"] = "1"
+    os.environ["NUMEXPR_NUM_THREADS"] = "1"
+    os.environ["JOBLIB_TEMP_FOLDER"] = "tmp/sklearn-spill"
+
+
+
     # ---------------- Device check ------------------
-    # if torch.cuda.is_available():
-    #    print(f"{GREEN}GPU detected. Using GPU for encoding.{RESET}")
-    # else:
-    #    print(f"{YELLOW}No GPU detected. Using CPU for encoding. Exiting program.{RESET}")
+    if torch.cuda.is_available():
+        print(f"{GREEN}GPU detected. Using GPU for encoding.{RESET}")
+    else:
+        print(f"{YELLOW}No GPU detected. Using CPU for encoding. Exiting program.{RESET}")
     #    exit()
     # ---------------- Device setup (CPU ONLY) ----------------
     # device = torch.device("cpu")
@@ -38,9 +86,9 @@ def main():
     #   torch.backends.cuda.enabled = False
     #   print(f"{YELLOW}Using device: CPU only{RESET}")
     #   print(f"{YELLOW}Using device: CPU (GPU disabled){RESET}")
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    #device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     # Enable cuDNN for GPU acceleration
-    torch.backends.cudnn.enabled = True
+    #torch.backends.cudnn.enabled = True
 
     # ---------------- Display options ----------------
     pd.set_option("display.max_columns", None)
