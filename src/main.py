@@ -27,9 +27,7 @@ YELLOW = colorama.Fore.YELLOW
 
 # ====================== Main ======================
 def main():
-
-
-
+    '''
 
     # -----------------------------
     # System Info
@@ -69,6 +67,7 @@ def main():
     os.environ["OPENBLAS_NUM_THREADS"] = "1"
     os.environ["NUMEXPR_NUM_THREADS"] = "1"
     os.environ["JOBLIB_TEMP_FOLDER"] = "tmp/sklearn-spill"
+    '''
 
 
 
