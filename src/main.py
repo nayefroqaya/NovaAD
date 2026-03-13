@@ -119,9 +119,11 @@ def main():
     model_evaluation_obj = ModelEvaluation()
     utilities_obj = Utilities()
 
+    '''
+
     # ---------------- Data as CSV ----------------
-    logdata_read_obj.read_original_data_log_from_log_to_csv(DATASET, ALL_DATASET_CSV_PATH)
-    print(' Reading the file was done successfully ')
+    #logdata_read_obj.read_original_data_log_from_log_to_csv(DATASET, ALL_DATASET_CSV_PATH)
+    #print(' Reading the file was done successfully ')
     # exit()
 
     # ---------------- Dataset Splitting ----------------
@@ -150,12 +152,14 @@ def main():
 
     final_train_with_test_with_val = utilities_obj.processing_data_portion(train_df, val_df, test_df)
     # exit()
+   
 
     # ---------------- Features Extracting ----------------
     print(f"{GRAY}Extracting features for training and test datasets...{RESET}")
     number_component, best_topic_number = features_extracting_obj.features_extracting_configuring_tuning(
         features_extracting_obj, DOC_TOPIC_DF_PATH, SENTIMENT_DF_PATH, DATASET, PRE_FINAL_GLOBAL_FEATURES_PKL_PATH,
         final_train_with_test_with_val)
+     '''
 
     final_train_with_test_with_val = pd.read_pickle(PRE_FINAL_GLOBAL_FEATURES_PKL_PATH)
     final_train_with_test_with_val.info()
@@ -164,6 +168,7 @@ def main():
     number_component = dim
     print(number_component)
     # exit()
+
 
     # ---------------- Features Engineering: Aggregation/Transformation ----------------
     print(f"{GRAY}Aggregating and transforming features...{RESET}")
