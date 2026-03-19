@@ -77,11 +77,10 @@ To apply the NovaADLS pipeline on log data:
 ## Reference
 @inproceedings{roqaya2026methodname,
   author    = {Nayef Roqaya and Hajira Jabeen and Thorsten Papenbrock},
-  title     = {{\methodname{}: Semi-Supervised Anomaly Detection in Log Series}},
-  booktitle = {Proceedings of the Artificial Intelligence Conference 2026.}, 
+  title     = {NovaADLS: Semi-Supervised Anomaly Detection in Log Series}},
+  booktitle = {Proceedings of the Artificial Intelligence Conference 2026},
   year      = {2026},
   publisher = {Springer},
   series    = {Lecture Notes in Computer Science},
-  address   = {Cham},
-  affiliation = {Philipps University of Marburg and University of Cologne}
+  address   = {Cham}
 }
