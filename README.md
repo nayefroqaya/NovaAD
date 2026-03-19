@@ -1,5 +1,6 @@
 # **NovaADLS**
 ## 📌 Description
+Paper was submitted in Artificial Intelligence Conference 2026.
 
 In this paper, we propose NovaADLS, an end-to-end semi-supervised anomaly detection system for textual event series that requires only a small set of normal logs to be trained. NovaADLS eliminates manual configuration with its universal feature representation approach and automatic self-configuration mechanisms. To address log instability and semantic variations in the event stream, the system integrates semantic embedding features and uses a hierarchical ensemble of voting and stacking classifiers.
 Extensive experiments on real-world datasets, including BGL, HDFS, Thunderbird, and Spirit, demonstrate that NovaADLS consistently outperforms state-of-the-art baselines in F1 score, precision, and recall; it also  offers fast training and inference times on both CPU and GPU platforms.
@@ -73,4 +74,14 @@ To apply the NovaADLS pipeline on log data:
 * Run the main function (`src/main.py`).
 * The main function executes all stages as one pipeline: data preprocessing, anomaly detection, and evaluation.
 
----
+## Reference
+@inproceedings{roqaya2026methodname,
+  author    = {Nayef Roqaya and Hajira Jabeen and Thorsten Papenbrock},
+  title     = {{\methodname{}: Semi-Supervised Anomaly Detection in Log Series}},
+  booktitle = {Proceedings of the Artificial Intelligence Conference 2026.}, 
+  year      = {2026},
+  publisher = {Springer},
+  series    = {Lecture Notes in Computer Science},
+  address   = {Cham},
+  affiliation = {Philipps University of Marburg and University of Cologne}
+}
