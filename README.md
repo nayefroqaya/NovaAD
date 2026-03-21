@@ -74,15 +74,24 @@ To apply the NovaADLS pipeline on log data:
 * Run the main function (`src/main.py`).
 * The main function executes all stages as one pipeline: data preprocessing, anomaly detection, and evaluation.
 
-## Reference
-@inproceedings{roqaya2026methodname,
-  author    = {Nayef Roqaya and Hajira Jabeen and Thorsten Papenbrock},
 
-  title     = {NovaADLS: Semi-Supervised Anomaly Detection in Log Series}},
+## 📬 Contact
+We are happy to answer your questions:   
 
-  booktitle = {Proceedings of the Artificial Intelligence Conference 2026},
-  year      = {2026},
-  publisher = {Springer},
-  series    = {Lecture Notes in Computer Science},
-  address   = {Cham}
+| Name               | Email Address                             |
+|--------------------|-------------------------------------------|
+| Nayef Roqaya       | roqaya@staff.uni-marburg.de               |
+| Thorsten Papenbrock| papenbrock@informatik.uni-marburg.de      |
+| Hajira Jabeen      | hajira.jabeen@uk-koeln.de                 |
+
+---
+
+## 📬 Citation
+```bibtex
+@inproceedings{roqaya2025LogSSAD,
+  title={NovaADLS: Semi-Supervised Anomaly Detection in Log Series},
+  author={Roqaya, Nayef and Papenbrock, Thorsten and Jabeen, Hajira},
+  booktitle={Proceedings of Intelligent Systems Conference (IntelliSys)2026},
+  year={2026},
+  publisher={IntelliSys2026}
 }
