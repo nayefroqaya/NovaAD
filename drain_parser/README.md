@@ -46,3 +46,11 @@ Running the benchmark script on Loghub_2k datasets, you could obtain the followi
 |  OpenStack  | 0.992536   | 0.7325   |
 |     Mac     | 0.975451   | 0.7865   |
 
+Industrial Adoption
+Researchers from IBM (@davidohana) made an upgrade version of Drain with additional features for production use: https://github.com/logpai/Drain3.
+
+🔥 Citation
+If you use the code or benchmarking results in your publication, please kindly cite the following papers.
+
+[ICWS'17] Pinjia He, Jieming Zhu, Zibin Zheng, and Michael R. Lyu. Drain: An Online Log Parsing Approach with Fixed Depth Tree, Proceedings of the 24th International Conference on Web Services (ICWS), 2017.
+[ICSE'19] Jieming Zhu, Shilin He, Jinyang Liu, Pinjia He, Qi Xie, Zibin Zheng, Michael R. Lyu. Tools and Benchmarks for Automated Log Parsing. International Conference on Software Engineering (ICSE), 2019.
