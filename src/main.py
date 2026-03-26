@@ -1,5 +1,5 @@
 import os
-#os.environ["CUDA_VISIBLE_DEVICES"] = ""   # ⛔ Disable GPU completely
+os.environ["CUDA_VISIBLE_DEVICES"] = ""   # ⛔ Disable GPU completely
 import warnings
 
 import colorama
