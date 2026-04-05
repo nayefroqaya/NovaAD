@@ -160,7 +160,7 @@ class Utilities:
         print(' Anomaly seq Test : ' + str(len(df4)))
 
         # exit()
-        return train_df, val_df, test_df, df_features
+        #return train_df, val_df, test_df, df_features
 
     @staticmethod
     def processing_data_portion(train_df, validate_df, test_df):
