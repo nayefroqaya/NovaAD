@@ -99,7 +99,7 @@ def main():
 
     DATASET = 'TH_2G'
     DATASETS_FOLDER = 'datasets'
-    Round = '3'
+    Round = '1'
     mode = 'M'  # M multi classifier - S single classifier
     Mix_or_stable = '0'  # 0 Full stable subset  / 1 mix subset
 
@@ -122,7 +122,7 @@ def main():
     model_evaluation_obj = ModelEvaluation()
     utilities_obj = Utilities()
 
-
+    '''
     # ---------------- Data as CSV ----------------
     #logdata_read_obj.read_original_data_log_from_log_to_csv(DATASET, ALL_DATASET_CSV_PATH)
     #print(' Reading the file was done successfully ')
@@ -162,6 +162,7 @@ def main():
 
     final_train_with_test_with_val = utilities_obj.processing_data_portion(train_df, val_df, test_df)
     # exit()
+    
    
 
     # ---------------- Features Extracting ----------------
@@ -171,6 +172,7 @@ def main():
         final_train_with_test_with_val)
 
     exit()
+    '''
 
 
 
