@@ -163,9 +163,13 @@ def main():
     #test_df = pd.read_pickle(os.path.join(save_path, "test_df.pkl"))
 
     # Second paper :************
-    train_df = f"../../NovaAD_Plus/{DATASETS_FOLDER}/{DATASET}/{Round}_{DATASET}_Splitted_Datasets/train_df.pkl"
-    test_df = f"../../NovaAD_Plus/{DATASETS_FOLDER}/{DATASET}/{Round}_{DATASET}_Splitted_Datasets/test_df.pkl"
-    val_df = f"../../NovaAD_Plus/{DATASETS_FOLDER}/{DATASET}/{Round}_{DATASET}_Splitted_Datasets/val_df.pkl"
+    train_df_path = f"../../NovaAD_Plus/{DATASETS_FOLDER}/{DATASET}/{Round}_{DATASET}_Splitted_Datasets/train_df.pkl"
+    test_df_path  = f"../../NovaAD_Plus/{DATASETS_FOLDER}/{DATASET}/{Round}_{DATASET}_Splitted_Datasets/test_df.pkl"
+    val_df_path  = f"../../NovaAD_Plus/{DATASETS_FOLDER}/{DATASET}/{Round}_{DATASET}_Splitted_Datasets/val_df.pkl"
+
+    train_df = pd.read_pickle(train_df_path)
+    test_df = pd.read_pickle(test_df_path)
+    val_df = pd.read_pickle(val_df_path)
 
     final_train_with_test_with_val = utilities_obj.processing_data_portion(train_df, val_df, test_df)
     # exit()
