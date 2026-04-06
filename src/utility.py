@@ -169,6 +169,7 @@ class Utilities:
         # Seq count  Train
         unique_normal_train = train_df[train_df['Label'] == 'Normal']['Node_block_id'].unique()
         unique_anomaly_train = train_df[train_df['Label'] == 'Anomaly']['Node_block_id'].unique()
+        exit()
         # Logs count Train 
         train_normal_logs = (train_df['Label'] == 'Normal').sum()
         train_anomaly_logs = (train_df['Label'] == 'Anomaly').sum()
