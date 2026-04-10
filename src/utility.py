@@ -60,7 +60,7 @@ class Utilities:
 
             print(f"Normal logs: {len(df1):,}")  # TGH_1G :
             print(f"Anomaly logs: {len(df2):,}")  # TGH_1G :
-            exit()
+            #exit()
 
         # Clean data
         df_features = Utilities.clean_up_df(df_features)
