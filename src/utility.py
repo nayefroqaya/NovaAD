@@ -55,6 +55,13 @@ class Utilities:
             df_features = pd.read_csv(All_dataset_path_as_csv, escapechar='\\')
             df_features.info()
 
+            df1 = df_features.query("Label == '-'").reset_index(drop=True)  # Normal logs
+            df2 = df_features.query("Label != '-'").reset_index(drop=True)  # Anomaly logs
+
+            print(f"Normal logs: {len(df1):,}")  # TGH_1G :
+            print(f"Anomaly logs: {len(df2):,}")  # TGH_1G :
+            exit()
+
         # Clean data
         df_features = Utilities.clean_up_df(df_features)
 
