@@ -1062,6 +1062,24 @@ class LogdataRead:
             print(f"Normal: {n_normal} ({n_normal / n_total:.2%})")
             print(f"Anomaly: {n_anomaly} ({n_anomaly / n_total:.2%})")
 
+            # Target ratio
+            r = 0.026
+
+            # Split
+            a = df[df['Label'] != '-']  # anomalies
+            n = df[df['Label'] == '-']  # normal
+
+            # Compute counts based on total size
+            n_a = int(len(df) * r)
+            n_n = len(df) - n_a
+
+            # Sample and combine
+            df_final = pd.concat([a.sample(n=n_a, random_state=42), n.sample(n=n_n, random_state=42)]).sample(frac=1,
+                                                                                                              random_state=42).reset_index(
+                drop=True)
+            print((df_final['Label'] != '-').mean())
+            print((df_final['Label'] == '-').mean())
+
             exit()
             #============================================================
 
