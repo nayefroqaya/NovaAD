@@ -1079,7 +1079,7 @@ class LogdataRead:
             print(f"Anomaly: {n_anomaly} ({n_anomaly / n_total:.2%})")
 
 
-            exit()
+            #exit()
             #============================================================
 
 
