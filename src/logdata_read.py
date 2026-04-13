@@ -640,7 +640,7 @@ class LogdataRead:
             print(f"Anomaly: {n_anomaly} ({n_anomaly / n_total:.2%})")
 
 
-            exit()
+            #exit()
 
             print(' length df before windows ' + str(len(df)))
 
@@ -1015,6 +1015,9 @@ class LogdataRead:
             print(' save as csv file ....')
             # Save Processed Dataset Efficiently
             df.to_csv(All_dataset_path_as_csv, escapechar='\\', index=False)
+
+
+
         elif dataset == 'SP_150MB_ratio' or dataset == 'SP_100MB_ratio':
             #  Define dtype mapping for efficient memory usage
             dtype_mapping = {"User": "str", "EventTemplate": "category", "Content": "str", "Date": "str", "Time": "str",
