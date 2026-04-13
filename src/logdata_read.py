@@ -1054,31 +1054,30 @@ class LogdataRead:
 
 
             #-------take anomaly ration and normal ration based on original dataset. In Spirit 2.6% Anomaly
-            n_total = len(df)
-            n_anomaly = (df['Label'] != '-').sum()
-            n_normal = (df['Label'] == '-').sum()
+            r = 0.026
+
+            a = df[df['Label'] != '-']  # anomaly
+            n = df[df['Label'] == '-']  # normal
+
+            # take all available normal rows
+            n_n = len(n)
+
+            # compute how many anomalies are needed so anomaly ratio becomes 2.6%
+            n_a = int(n_n * r / (1 - r))
+
+            # sample anomalies
+            df_final = pd.concat([a.sample(n=n_a, random_state=42), n]).sample(frac=1, random_state=42).reset_index(
+                drop=True)
+
+            # check
+            n_total = len(df_final)
+            n_anomaly = (df_final['Label'] != '-').sum()
+            n_normal = (df_final['Label'] == '-').sum()
 
             print(f"Total: {n_total}")
             print(f"Normal: {n_normal} ({n_normal / n_total:.2%})")
             print(f"Anomaly: {n_anomaly} ({n_anomaly / n_total:.2%})")
 
-            # Target ratio
-            r = 0.026
-
-            # Split
-            a = df[df['Label'] != '-']  # anomalies
-            n = df[df['Label'] == '-']  # normal
-
-            # Compute counts based on total size
-            n_a = int(len(df) * r)
-            n_n = len(df) - n_a
-
-            # Sample and combine
-            df_final = pd.concat([a.sample(n=n_a, random_state=42), n.sample(n=n_n, random_state=42)]).sample(frac=1,
-                                                                                                              random_state=42).reset_index(
-                drop=True)
-            print((df_final['Label'] != '-').mean())
-            print((df_final['Label'] == '-').mean())
 
             exit()
             #============================================================
