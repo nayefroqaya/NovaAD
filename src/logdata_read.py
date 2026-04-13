@@ -1054,36 +1054,14 @@ class LogdataRead:
 
 
             #-------take anomaly ration and normal ration based on original dataset. In Spirit 2.6% Anomaly
-            # Define normal vs anomaly
-            df_normal = df[df['Label'] == '-'].copy()
-            df_anomaly = df[df['Label'] != '-'].copy()
+            n_total = len(df)
+            n_anomaly = (df['Label'] != '-').sum()
+            n_normal = (df['Label'] == '-').sum()
 
-            target_anomaly_ratio = 0.026
+            print(f"Total: {n_total}")
+            print(f"Normal: {n_normal} ({n_normal / n_total:.2%})")
+            print(f"Anomaly: {n_anomaly} ({n_anomaly / n_total:.2%})")
 
-            # Option 1: keep all anomalies, sample normals to match 2.6%
-            n_anomaly = len(df_anomaly)
-            n_normal_needed = int(round(n_anomaly * (1 - target_anomaly_ratio) / target_anomaly_ratio))
-
-            if n_normal_needed <= len(df_normal):
-                df_normal_sampled = df_normal.sample(n=n_normal_needed, random_state=42)
-                df_final = pd.concat([df_anomaly, df_normal_sampled], ignore_index=True)
-            else:
-                # Not enough normal rows, so keep all normals and downsample anomalies instead
-                n_normal = len(df_normal)
-                n_anomaly_needed = int(round(n_normal * target_anomaly_ratio / (1 - target_anomaly_ratio)))
-                df_anomaly_sampled = df_anomaly.sample(n=n_anomaly_needed, random_state=42)
-                df_final = pd.concat([df_normal, df_anomaly_sampled], ignore_index=True)
-
-            # Shuffle rows
-            df_final = df_final.sample(frac=1, random_state=42).reset_index(drop=True)
-
-            # Check
-            print(df_final['Label'].apply(lambda x: 'Normal' if x == '-' else 'Anomaly').value_counts())
-            print(df_final['Label'].apply(lambda x: x != '-').mean())  # anomaly ratio
-
-            df_final.info()
-            df=df_final
-            print(df['Label'].value_counts(normalize=True) * 100)
             exit()
             #============================================================
 
