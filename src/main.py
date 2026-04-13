@@ -97,7 +97,7 @@ def main():
 
     # ---------------- Project configuration ----------------
 
-    DATASET = 'SP_150MB_ratio'
+    DATASET = 'TH_1G_ratio'
     DATASETS_FOLDER = 'datasets'
     Round = '1'
     mode = 'M'  # M multi classifier - S single classifier
