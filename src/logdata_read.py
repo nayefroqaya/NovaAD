@@ -1083,7 +1083,7 @@ class LogdataRead:
 
             df_final.info()
             df=df_final
-            print(df['Type'].value_counts(normalize=True) * 100)
+            print(df['Label'].value_counts(normalize=True) * 100)
             exit()
             #============================================================
 
