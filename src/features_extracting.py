@@ -470,10 +470,11 @@ class FeaturesExtractor:
         df_feature_full_dataset_all['processed_EventTemplate'] = df_feature_full_dataset_all[
             'processed_EventTemplate'].astype(str)
 
-        # Remove unnecessary columns
-        df_feature_full_dataset = df_feature_full_dataset_all.drop(columns=['Date', 'Time'])
-        gdf_feature_full_dataset = df_feature_full_dataset
+        # Remove unnecessary columns / Alreay removed
+       # df_feature_full_dataset = df_feature_full_dataset_all.drop(columns=['Date', 'Time'])
+       # gdf_feature_full_dataset = df_feature_full_dataset
 
+        gdf_feature_full_dataset =df_feature_full_dataset_all
         # ==================== TEMPORAL FEATURE EXTRACTION ====================
         print('[STATUS] Extracting temporal features from timestamps...')
         gdf_feature_full_dataset['Timestamp'] = pd.to_datetime(gdf_feature_full_dataset['Timestamp'])
