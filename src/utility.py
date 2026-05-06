@@ -55,6 +55,13 @@ class Utilities:
             df_features = pd.read_csv(All_dataset_path_as_csv, escapechar='\\')
             df_features.info()
 
+            df1 = df_features.query("Label == 'Normal'").reset_index(drop=True)  # Normal logs
+            df2 = df_features.query("Label != 'Normal'").reset_index(drop=True)  # Anomaly logs
+
+            print(f"Normal logs: {len(df1):,}")  # TGH_1G :
+            print(f"Anomaly logs: {len(df2):,}")  # TGH_1G :
+            #exit()
+
         # Clean data
         df_features = Utilities.clean_up_df(df_features)
 
@@ -160,7 +167,7 @@ class Utilities:
         print(' Anomaly seq Test : ' + str(len(df4)))
 
         # exit()
-        return train_df, val_df, test_df, df_features
+        #return train_df, val_df, test_df, df_features
 
     @staticmethod
     def processing_data_portion(train_df, validate_df, test_df):
@@ -169,6 +176,8 @@ class Utilities:
         # Seq count  Train
         unique_normal_train = train_df[train_df['Label'] == 'Normal']['Node_block_id'].unique()
         unique_anomaly_train = train_df[train_df['Label'] == 'Anomaly']['Node_block_id'].unique()
+        #print(train_df['Label'].unique())
+        #exit()
         # Logs count Train 
         train_normal_logs = (train_df['Label'] == 'Normal').sum()
         train_anomaly_logs = (train_df['Label'] == 'Anomaly').sum()

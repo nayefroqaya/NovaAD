@@ -1,5 +1,5 @@
 import os
-#os.environ["CUDA_VISIBLE_DEVICES"] = ""   # ⛔ Disable GPU completely
+os.environ["CUDA_VISIBLE_DEVICES"] = ""   # ⛔ Disable GPU completely
 import warnings
 
 import colorama
@@ -97,18 +97,29 @@ def main():
 
     # ---------------- Project configuration ----------------
 
-    DATASET = 'SP_150MB'
+    DATASET = 'SP_150MB_ratio'
     DATASETS_FOLDER = 'datasets'
-    Round = '1'
+    Round = '3'
     mode = 'M'  # M multi classifier - S single classifier
     Mix_or_stable = '0'  # 0 Full stable subset  / 1 mix subset
 
-    # Paths
+    # Paths first paper
     ALL_DATASET_LOG_PATH = f'../{DATASETS_FOLDER}/{DATASET}/{DATASET}.LOG'
-    ALL_DATASET_CSV_PATH = f'../{DATASETS_FOLDER}/{DATASET}/{DATASET}.csv'
-    DOC_TOPIC_DF_PATH = f'../{DATASETS_FOLDER}/{DATASET}/{DATASET}_All_doc_topic_df.pkl'
-    SENTIMENT_DF_PATH = f'../{DATASETS_FOLDER}/{DATASET}/{DATASET}_All_sentiment_df.pkl'
-    PRE_FINAL_GLOBAL_FEATURES_PKL_PATH = f'../{DATASETS_FOLDER}/{DATASET}/{DATASET}_All_pre_final_global_features.pkl'
+
+    # path for full data CSV file
+    #ALL_DATASET_CSV_PATH = f'../{DATASETS_FOLDER}/{DATASET}/{DATASET}.csv' # data first paper
+    ALL_DATASET_CSV_PATH = f'../../NovaAD_Plus/{DATASETS_FOLDER}/{DATASET}/{DATASET}.csv' # data second paper
+
+    # Path features results- paper1
+    #DOC_TOPIC_DF_PATH = f'../{DATASETS_FOLDER}/{DATASET}/{Round}_{DATASET}_All_doc_topic_df.pkl'
+    #SENTIMENT_DF_PATH = f'../{DATASETS_FOLDER}/{DATASET}/{Round}_{DATASET}_All_sentiment_df.pkl'
+    #PRE_FINAL_GLOBAL_FEATURES_PKL_PATH = f'../{DATASETS_FOLDER}/{DATASET}/{Round}_{DATASET}_All_pre_final_global_features.pkl'
+
+    # Path features results- paper2:
+    DOC_TOPIC_DF_PATH = f'../../NovaAD_Plus/{DATASETS_FOLDER}/{DATASET}/{Round}_{DATASET}_All_doc_topic_df.pkl'
+    SENTIMENT_DF_PATH = f'../../NovaAD_Plus/{DATASETS_FOLDER}/{DATASET}/{Round}_{DATASET}_All_sentiment_df.pkl'
+    PRE_FINAL_GLOBAL_FEATURES_PKL_PATH = f'../../NovaAD_Plus/{DATASETS_FOLDER}/{DATASET}/{Round}_{DATASET}_All_pre_final_global_features.pkl'
+
 
     # ---------------- Initialize classes ----------------
     logdata_read_obj = LogdataRead()
@@ -119,16 +130,18 @@ def main():
     utilities_obj = Utilities()
 
     '''
-
     # ---------------- Data as CSV ----------------
     #logdata_read_obj.read_original_data_log_from_log_to_csv(DATASET, ALL_DATASET_CSV_PATH)
     #print(' Reading the file was done successfully ')
-    # exit()
+    #exit()
+    
 
     # ---------------- Dataset Splitting ----------------
     print(f"{GRAY}Splitting dataset into training, validation, and test sets...{RESET}")
-    train_df, validate_df, test_df, df_features = utilities_obj.dataset_splitting(ALL_DATASET_CSV_PATH, DATASET, Round,
-                                                                                  Mix_or_stable)
+    ##*train_df, validate_df, test_df, df_features = utilities_obj.dataset_splitting(ALL_DATASET_CSV_PATH, DATASET, Round,
+    ##*                                                                              Mix_or_stable)
+    utilities_obj.dataset_splitting(ALL_DATASET_CSV_PATH, DATASET, Round, Mix_or_stable)
+
     # exit()
     # ---------------- Process normal data ----------------
 
@@ -144,13 +157,28 @@ def main():
 
         print(f"{GRAY}Processing normal data portion in the dataset...{RESET}")
         save_path = os.path.join(f"../datasets/{DATASET}", f"{Round}_{DATASET}_Splitted_Datasets")
+    '''
+    # first paper :*****************
+    #train_df = pd.read_pickle(os.path.join(save_path, "train_df.pkl"))
+    #val_df = pd.read_pickle(os.path.join(save_path, "val_df.pkl"))
+    #test_df = pd.read_pickle(os.path.join(save_path, "test_df.pkl"))
 
-    train_df = pd.read_pickle(os.path.join(save_path, "train_df.pkl"))
-    val_df = pd.read_pickle(os.path.join(save_path, "val_df.pkl"))
-    test_df = pd.read_pickle(os.path.join(save_path, "test_df.pkl"))
+    # Second paper :************
+    train_df_path = f"../../NovaAD_Plus/{DATASETS_FOLDER}/{DATASET}/{Round}_{DATASET}_Splitted_Datasets/{Round}_{DATASET}_train_df.pkl"
+    test_df_path  = f"../../NovaAD_Plus/{DATASETS_FOLDER}/{DATASET}/{Round}_{DATASET}_Splitted_Datasets/{Round}_{DATASET}_test_df.pkl"
+    val_df_path  = f"../../NovaAD_Plus/{DATASETS_FOLDER}/{DATASET}/{Round}_{DATASET}_Splitted_Datasets/{Round}_{DATASET}_val_df.pkl"
+
+
+
+
+    train_df = pd.read_pickle(train_df_path)
+    test_df = pd.read_pickle(test_df_path)
+    val_df = pd.read_pickle(val_df_path)
 
     final_train_with_test_with_val = utilities_obj.processing_data_portion(train_df, val_df, test_df)
     # exit()
+    
+    
    
 
     # ---------------- Features Extracting ----------------
@@ -158,7 +186,12 @@ def main():
     number_component, best_topic_number = features_extracting_obj.features_extracting_configuring_tuning(
         features_extracting_obj, DOC_TOPIC_DF_PATH, SENTIMENT_DF_PATH, DATASET, PRE_FINAL_GLOBAL_FEATURES_PKL_PATH,
         final_train_with_test_with_val)
-     '''
+
+    #exit()
+
+
+
+
 
     final_train_with_test_with_val = pd.read_pickle(PRE_FINAL_GLOBAL_FEATURES_PKL_PATH)
     final_train_with_test_with_val.info()
