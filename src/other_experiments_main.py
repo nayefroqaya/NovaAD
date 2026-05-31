@@ -1,7 +1,7 @@
 import os
 os.environ["CUDA_VISIBLE_DEVICES"] = ""   # ⛔ Disable GPU completely
 import warnings
-
+import numpy as np
 import colorama
 import pandas as pd
 import torch
@@ -175,9 +175,9 @@ def main():
 
 
     # Third paper :************
-    train_df_path = f"../../LWADLS/{DATASETS_FOLDER}/{DATASET}/{Round}_{DATASET}_Splitted_Datasets/train_df.pkl"
-    test_df_path  = f"../../LWADLS/{DATASETS_FOLDER}/{DATASET}/{Round}_{DATASET}_Splitted_Datasets/test_df.pkl"
-    val_df_path  = f"../../LWADLS/{DATASETS_FOLDER}/{DATASET}/{Round}_{DATASET}_Splitted_Datasets/val_df.pkl"
+    train_df_path = f"../../LWADLS/{DATASETS_FOLDER}/{DATASET}/{Round}_{DATASET}_Splitted_Datasets/{Round}_{DATASET}_train_df.pkl"
+    test_df_path  = f"../../LWADLS/{DATASETS_FOLDER}/{DATASET}/{Round}_{DATASET}_Splitted_Datasets/{Round}_{DATASET}_test_df.pkl"
+    val_df_path  = f"../../LWADLS/{DATASETS_FOLDER}/{DATASET}/{Round}_{DATASET}_Splitted_Datasets/{Round}_{DATASET}_val_df.pkl"
 
 
 
@@ -186,7 +186,202 @@ def main():
     test_df = pd.read_pickle(test_df_path)
     val_df = pd.read_pickle(val_df_path)
 
+    # ============================================================
+    # Configuration
+    # ============================================================
+
+    EXPERIMENT_TYPE = "in_domain"
+    # Options:
+    #   "in_domain"
+    #   "cross_dataset"
+
+    DATASETS_FOLDER = "datasets"
+    Round = 1
+
+    # Used only when EXPERIMENT_TYPE = "in_domain"
+    IN_DOMAIN_DATASET = "BGL"
+
+    # Used only when EXPERIMENT_TYPE = "cross_dataset"
+    SOURCE_DATASETS = ["BGL", "TH_1G"]
+    TARGET_DATASET = "SP_150MB_ratio"
+    TARGET_NORMAL_FRACTION = 0.2
+
+    SEED = 123
+
+    # ============================================================
+    # Dataset loader
+    # ============================================================
+
+    def load_novaadls_dataset(DATASETS_FOLDER, DATASET, Round):
+        train_df_path = (f"../../LWADLS/{DATASETS_FOLDER}/{DATASET}/"
+                         f"{Round}_{DATASET}_Splitted_Datasets/"
+                         f"train_df.pkl")
+
+        test_df_path = (f"../../LWADLS/{DATASETS_FOLDER}/{DATASET}/"
+                        f"{Round}_{DATASET}_Splitted_Datasets/"
+                        f"test_df.pkl")
+
+        val_df_path = (f"../../LWADLS/{DATASETS_FOLDER}/{DATASET}/"
+                       f"{Round}_{DATASET}_Splitted_Datasets/"
+                       f"val_df.pkl")
+
+        print(f"[INFO] Reading train: {train_df_path}")
+        print(f"[INFO] Reading val  : {val_df_path}")
+        print(f"[INFO] Reading test : {test_df_path}")
+
+        train_df = pd.read_pickle(train_df_path)
+        test_df = pd.read_pickle(test_df_path)
+        val_df = pd.read_pickle(val_df_path)
+
+        return train_df, val_df, test_df
+
+    # ============================================================
+    # Label normalization
+    # ============================================================
+
+    def normalize_label_column(df):
+        """
+        Keep this if some PKL files have Original_Label and Label.
+        It uses Original_Label as the real Label.
+        """
+        df = df.copy()
+
+        if "Original_Label" in df.columns:
+            if "Label" in df.columns:
+                df = df.drop(columns=["Label"])
+            df = df.rename(columns={"Original_Label": "Label"})
+
+        return df
+
+    # ============================================================
+    # Select fraction of normal target training blocks
+    # ============================================================
+
+    def select_target_normal_fraction(target_train_df, fraction, seed=123):
+        """
+        Select fraction of normal target TRAINING sequences.
+        A sequence is one Node_block_id.
+        """
+        if fraction < 0 or fraction > 1:
+            raise ValueError("TARGET_NORMAL_FRACTION must be between 0 and 1.")
+
+        unique_normal_blocks = target_train_df[target_train_df["Label"] == "Normal"]["Node_block_id"].unique()
+
+        print(f"[INFO] Target normal blocks available: {len(unique_normal_blocks)}")
+
+        if len(unique_normal_blocks) == 0 or fraction == 0:
+            print("[INFO] No target normal blocks selected.")
+            return target_train_df.iloc[0:0].copy()
+
+        sample_size = int(round(len(unique_normal_blocks) * fraction))
+        sample_size = max(1, sample_size)
+        sample_size = min(sample_size, len(unique_normal_blocks))
+
+        rng = np.random.default_rng(seed)
+
+        selected_blocks = rng.choice(unique_normal_blocks, size=sample_size, replace=False)
+
+        target_normal_fraction_df = target_train_df[target_train_df["Node_block_id"].isin(selected_blocks)].copy()
+
+        print(f"[INFO] Target normal fraction: {fraction}")
+        print(f"[INFO] Selected target normal blocks: {sample_size}")
+        print(f"[INFO] Selected target normal rows: {len(target_normal_fraction_df)}")
+
+        return target_normal_fraction_df
+
+    # ============================================================
+    # Build train_df, val_df, test_df
+    # ============================================================
+
+    if EXPERIMENT_TYPE == "in_domain":
+
+        print("[INFO] Running in-domain experiment")
+        print(f"[INFO] Dataset: {IN_DOMAIN_DATASET}")
+
+        train_df, val_df, test_df = load_novaadls_dataset(DATASETS_FOLDER, IN_DOMAIN_DATASET, Round)
+
+        train_df = normalize_label_column(train_df)
+        val_df = normalize_label_column(val_df)
+        test_df = normalize_label_column(test_df)
+
+
+    elif EXPERIMENT_TYPE == "cross_dataset":
+
+        print("[INFO] Running cross-dataset experiment")
+        print(f"[INFO] Source datasets: {SOURCE_DATASETS}")
+        print(f"[INFO] Target dataset: {TARGET_DATASET}")
+        print(f"[INFO] Target normal fraction: {TARGET_NORMAL_FRACTION}")
+
+        # --------------------------------------------------------
+        # Load source train datasets
+        # --------------------------------------------------------
+        source_train_list = []
+
+        for src_dataset in SOURCE_DATASETS:
+            src_train_df, _, _ = load_novaadls_dataset(DATASETS_FOLDER, src_dataset, Round)
+
+            src_train_df = normalize_label_column(src_train_df)
+            src_train_df = src_train_df.copy()
+
+            # IMPORTANT:
+            # Prevent Node_block_id collision between different source datasets
+            # and between source data and sampled target-normal data.
+            # This does not delete rows. It only makes block IDs unique.
+            src_train_df["Node_block_id"] = (src_dataset + "__train__" + src_train_df["Node_block_id"].astype(str))
+
+            source_train_list.append(src_train_df)
+
+            print(f"[INFO] Source {src_dataset}: "
+                  f"{len(src_train_df)} rows, "
+                  f"{src_train_df['Node_block_id'].nunique()} blocks")
+
+        source_train_df = pd.concat(source_train_list, ignore_index=True)
+
+        # --------------------------------------------------------
+        # Load target train, validation, and test
+        # --------------------------------------------------------
+        target_train_df, val_df, test_df = load_novaadls_dataset(DATASETS_FOLDER, TARGET_DATASET, Round)
+
+        target_train_df = normalize_label_column(target_train_df)
+        val_df = normalize_label_column(val_df)
+        test_df = normalize_label_column(test_df)
+
+        # --------------------------------------------------------
+        # Select fraction of normal target train blocks
+        # --------------------------------------------------------
+        target_normal_fraction_df = select_target_normal_fraction(target_train_df, TARGET_NORMAL_FRACTION, seed=SEED)
+
+        target_normal_fraction_df = target_normal_fraction_df.copy()
+
+        # IMPORTANT:
+        # Prevent Node_block_id collision between target-normal fraction
+        # and source datasets.
+        target_normal_fraction_df["Node_block_id"] = (
+                TARGET_DATASET + "__target_train_normal__" + target_normal_fraction_df["Node_block_id"].astype(str))
+
+        # --------------------------------------------------------
+        # Final cross-dataset split
+        # --------------------------------------------------------
+        train_df = pd.concat([source_train_df, target_normal_fraction_df], ignore_index=True)
+
+        print("[INFO] Cross-dataset split created")
+        print(f"[INFO] Train rows : {len(train_df)}")
+        print(f"[INFO] Val rows   : {len(val_df)}")
+        print(f"[INFO] Test rows  : {len(test_df)}")
+        print(f"[INFO] Train blocks: {train_df['Node_block_id'].nunique()}")
+        print(f"[INFO] Val blocks  : {val_df['Node_block_id'].nunique()}")
+        print(f"[INFO] Test blocks : {test_df['Node_block_id'].nunique()}")
+
+
+    else:
+        raise ValueError("EXPERIMENT_TYPE must be 'in_domain' or 'cross_dataset'.")
+
+    # ============================================================
+    # Keep your original function unchanged
+    # ============================================================
+
     final_train_with_test_with_val = utilities_obj.processing_data_portion(train_df, val_df, test_df)
+    #final_train_with_test_with_val = utilities_obj.processing_data_portion(train_df, val_df, test_df)
     # exit()
     
     
