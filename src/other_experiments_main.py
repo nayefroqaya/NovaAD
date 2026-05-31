@@ -97,9 +97,9 @@ def main():
 
     # ---------------- Project configuration ----------------
 
-    DATASET = 'SP_150MB_ratio'
+    DATASET = 'BGL'
     DATASETS_FOLDER = 'datasets'
-    Round = '3'
+    Round = '1'
     mode = 'M'  # M multi classifier - S single classifier
     Mix_or_stable = '0'  # 0 Full stable subset  / 1 mix subset
 
@@ -169,9 +169,9 @@ def main():
     #test_df = pd.read_pickle(os.path.join(save_path, "test_df.pkl"))
 
     # Second paper :************
-    train_df_path = f"../../NovaAD_Plus/{DATASETS_FOLDER}/{DATASET}/{Round}_{DATASET}_Splitted_Datasets/{Round}_{DATASET}_train_df.pkl"
-    test_df_path  = f"../../NovaAD_Plus/{DATASETS_FOLDER}/{DATASET}/{Round}_{DATASET}_Splitted_Datasets/{Round}_{DATASET}_test_df.pkl"
-    val_df_path  = f"../../NovaAD_Plus/{DATASETS_FOLDER}/{DATASET}/{Round}_{DATASET}_Splitted_Datasets/{Round}_{DATASET}_val_df.pkl"
+    #train_df_path = f"../../NovaAD_Plus/{DATASETS_FOLDER}/{DATASET}/{Round}_{DATASET}_Splitted_Datasets/{Round}_{DATASET}_train_df.pkl"
+    #test_df_path  = f"../../NovaAD_Plus/{DATASETS_FOLDER}/{DATASET}/{Round}_{DATASET}_Splitted_Datasets/{Round}_{DATASET}_test_df.pkl"
+    #val_df_path  = f"../../NovaAD_Plus/{DATASETS_FOLDER}/{DATASET}/{Round}_{DATASET}_Splitted_Datasets/{Round}_{DATASET}_val_df.pkl"
 
 
     # Third paper :************
@@ -196,7 +196,6 @@ def main():
     #   "cross_dataset"
 
     DATASETS_FOLDER = "datasets"
-    Round = 1
 
     # Used only when EXPERIMENT_TYPE = "in_domain"
     IN_DOMAIN_DATASET = "BGL"
