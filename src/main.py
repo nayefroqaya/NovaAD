@@ -99,7 +99,7 @@ def main():
 
     DATASET = 'SP_150MB_ratio'
     DATASETS_FOLDER = 'datasets'
-    Round = '3'
+    Round = '1'
     mode = 'M'  # M multi classifier - S single classifier
     Mix_or_stable = '0'  # 0 Full stable subset  / 1 mix subset
 
@@ -121,9 +121,9 @@ def main():
     #PRE_FINAL_GLOBAL_FEATURES_PKL_PATH = f'../../NovaAD_Plus/{DATASETS_FOLDER}/{DATASET}/{Round}_{DATASET}_All_pre_final_global_features.pkl'
 
     # Path features results- paper3:
-    DOC_TOPIC_DF_PATH = f'../../LWADLS/{DATASETS_FOLDER}/{DATASET}/{Round}_{DATASET}_All_doc_topic_df.pkl'
-    SENTIMENT_DF_PATH = f'../../LWADLS/{DATASETS_FOLDER}/{DATASET}/{Round}_{DATASET}_All_sentiment_df.pkl'
-    PRE_FINAL_GLOBAL_FEATURES_PKL_PATH = f'../../LWADLS/{DATASETS_FOLDER}/{DATASET}/{Round}_{DATASET}_All_pre_final_global_features.pkl'
+    DOC_TOPIC_DF_PATH = f'../../LWADLS/{DATASETS_FOLDER}/{DATASET}/All_doc_topic_df.pkl'
+    SENTIMENT_DF_PATH = f'../../LWADLS/{DATASETS_FOLDER}/{DATASET}/ll_sentiment_df.pkl'
+    PRE_FINAL_GLOBAL_FEATURES_PKL_PATH = f'../../LWADLS/{DATASETS_FOLDER}/{DATASET}/All_pre_final_global_features.pkl'
 
 
     # ---------------- Initialize classes ----------------
@@ -169,9 +169,9 @@ def main():
     #test_df = pd.read_pickle(os.path.join(save_path, "test_df.pkl"))
 
     # Second paper :************
-    train_df_path = f"../../NovaAD_Plus/{DATASETS_FOLDER}/{DATASET}/{Round}_{DATASET}_Splitted_Datasets/{Round}_{DATASET}_train_df.pkl"
-    test_df_path  = f"../../NovaAD_Plus/{DATASETS_FOLDER}/{DATASET}/{Round}_{DATASET}_Splitted_Datasets/{Round}_{DATASET}_test_df.pkl"
-    val_df_path  = f"../../NovaAD_Plus/{DATASETS_FOLDER}/{DATASET}/{Round}_{DATASET}_Splitted_Datasets/{Round}_{DATASET}_val_df.pkl"
+    #train_df_path = f"../../NovaAD_Plus/{DATASETS_FOLDER}/{DATASET}/{Round}_{DATASET}_Splitted_Datasets/{Round}_{DATASET}_train_df.pkl"
+    #test_df_path  = f"../../NovaAD_Plus/{DATASETS_FOLDER}/{DATASET}/{Round}_{DATASET}_Splitted_Datasets/{Round}_{DATASET}_test_df.pkl"
+    #val_df_path  = f"../../NovaAD_Plus/{DATASETS_FOLDER}/{DATASET}/{Round}_{DATASET}_Splitted_Datasets/{Round}_{DATASET}_val_df.pkl"
 
 
     # Third paper :************
