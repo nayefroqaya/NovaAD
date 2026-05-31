@@ -201,8 +201,8 @@ def main():
     IN_DOMAIN_DATASET = "BGL"
 
     # Used only when EXPERIMENT_TYPE = "cross_dataset"
-    SOURCE_DATASETS = ["BGL", "TH_1G"]
-    TARGET_DATASET = "SP_150MB_ratio"
+    SOURCE_DATASETS = ["HDFS", "TH_1G"]
+    TARGET_DATASET = "BGL"
     TARGET_NORMAL_FRACTION = 0.2
 
     SEED = 123
