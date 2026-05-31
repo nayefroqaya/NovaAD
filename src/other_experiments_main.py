@@ -97,7 +97,7 @@ def main():
 
     # ---------------- Project configuration ----------------
 
-    DATASET = 'BGL'
+    DATASET = 'SP_150MB_ratio'
     DATASETS_FOLDER = 'datasets'
     Round = '1'
     mode = 'M'  # M multi classifier - S single classifier
@@ -198,11 +198,11 @@ def main():
     DATASETS_FOLDER = "datasets"
 
     # Used only when EXPERIMENT_TYPE = "in_domain"
-    IN_DOMAIN_DATASET = "BGL"
+    IN_DOMAIN_DATASET = "SP_150MB_ratio"
 
     # Used only when EXPERIMENT_TYPE = "cross_dataset"
     SOURCE_DATASETS = ["HDFS", "TH_1G"]
-    TARGET_DATASET = "BGL"
+    TARGET_DATASET = "SP_150MB_ratio"
     TARGET_NORMAL_FRACTION = 0.2
 
     SEED = 123
