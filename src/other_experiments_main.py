@@ -175,16 +175,16 @@ def main():
 
 
     # Third paper :************
-    train_df_path = f"../../LWADLS/{DATASETS_FOLDER}/{DATASET}/{Round}_{DATASET}_Splitted_Datasets/{Round}_{DATASET}_train_df.pkl"
-    test_df_path  = f"../../LWADLS/{DATASETS_FOLDER}/{DATASET}/{Round}_{DATASET}_Splitted_Datasets/{Round}_{DATASET}_test_df.pkl"
-    val_df_path  = f"../../LWADLS/{DATASETS_FOLDER}/{DATASET}/{Round}_{DATASET}_Splitted_Datasets/{Round}_{DATASET}_val_df.pkl"
+    #train_df_path = f"../../LWADLS/{DATASETS_FOLDER}/{DATASET}/{Round}_{DATASET}_Splitted_Datasets/{Round}_{DATASET}_train_df.pkl"
+    #test_df_path  = f"../../LWADLS/{DATASETS_FOLDER}/{DATASET}/{Round}_{DATASET}_Splitted_Datasets/{Round}_{DATASET}_test_df.pkl"
+    #val_df_path  = f"../../LWADLS/{DATASETS_FOLDER}/{DATASET}/{Round}_{DATASET}_Splitted_Datasets/{Round}_{DATASET}_val_df.pkl"#
 
 
 
 
-    train_df = pd.read_pickle(train_df_path)
-    test_df = pd.read_pickle(test_df_path)
-    val_df = pd.read_pickle(val_df_path)
+    #train_df = pd.read_pickle(train_df_path)
+    #test_df = pd.read_pickle(test_df_path)
+    #val_df = pd.read_pickle(val_df_path)
 
     # ============================================================
     # Configuration
