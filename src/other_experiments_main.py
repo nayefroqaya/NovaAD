@@ -196,6 +196,7 @@ def main():
 
     DATASETS_FOLDER = "datasets"
     Round = "1"
+    mode = 'M'
 
     SOURCE_DATASETS = ["BGL"]        # example: ["BGL"], ["BGL", "TH_1G"]
     TARGET_DATASET = "HDFS"          # example: "HDFS", "SP_150MB_ratio"
