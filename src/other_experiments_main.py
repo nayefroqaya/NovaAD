@@ -198,7 +198,7 @@ def main():
     Round = "1"
     mode = 'M'
 
-    SOURCE_DATASETS = ["BGL"]        # example: ["BGL"], ["BGL", "TH_1G"]
+    SOURCE_DATASETS = ["BGL", "HDFS"]        # example: ["BGL"], ["BGL", "TH_1G"]
     TARGET_DATASET = "TH_1G"          # example: "HDFS", "SP_150MB_ratio"
     TARGET_NORMAL_FRACTION = 0.2     # fraction of normal target-train blocks
     SEED = 123
