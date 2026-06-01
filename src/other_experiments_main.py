@@ -97,18 +97,18 @@ def main():
 
     # ---------------- Project configuration ----------------
 
-    DATASET = 'SP_150MB_ratio'
-    DATASETS_FOLDER = 'datasets'
-    Round = '1'
-    mode = 'M'  # M multi classifier - S single classifier
-    Mix_or_stable = '0'  # 0 Full stable subset  / 1 mix subset
+    #DATASET = 'SP_150MB_ratio'
+    #DATASETS_FOLDER = 'datasets'
+    #Round = '1'
+    #mode = 'M'  # M multi classifier - S single classifier
+    #Mix_or_stable = '0'  # 0 Full stable subset  / 1 mix subset
 
     # Paths first paper
-    ALL_DATASET_LOG_PATH = f'../{DATASETS_FOLDER}/{DATASET}/{DATASET}.LOG'
+    #ALL_DATASET_LOG_PATH = f'../{DATASETS_FOLDER}/{DATASET}/{DATASET}.LOG'
 
     # path for full data CSV file
     #ALL_DATASET_CSV_PATH = f'../{DATASETS_FOLDER}/{DATASET}/{DATASET}.csv' # data first paper
-    ALL_DATASET_CSV_PATH = f'../../NovaAD_Plus/{DATASETS_FOLDER}/{DATASET}/{DATASET}.csv' # data second paper
+    #ALL_DATASET_CSV_PATH = f'../../NovaAD_Plus/{DATASETS_FOLDER}/{DATASET}/{DATASET}.csv' # data second paper
 
     # Path features results- paper1
     #DOC_TOPIC_DF_PATH = f'../{DATASETS_FOLDER}/{DATASET}/{Round}_{DATASET}_All_doc_topic_df.pkl'
@@ -121,9 +121,9 @@ def main():
     #PRE_FINAL_GLOBAL_FEATURES_PKL_PATH = f'../../NovaAD_Plus/{DATASETS_FOLDER}/{DATASET}/{Round}_{DATASET}_All_pre_final_global_features.pkl'
 
     # Path features results- paper3:
-    DOC_TOPIC_DF_PATH = f'../../LWADLS/{DATASETS_FOLDER}/{DATASET}/{Round}_{DATASET}_All_doc_topic_df.pkl'
-    SENTIMENT_DF_PATH = f'../../LWADLS/{DATASETS_FOLDER}/{DATASET}/{Round}_{DATASET}_All_sentiment_df.pkl'
-    PRE_FINAL_GLOBAL_FEATURES_PKL_PATH = f'../../LWADLS/{DATASETS_FOLDER}/{DATASET}/{Round}_{DATASET}_All_pre_final_global_features.pkl'
+    #DOC_TOPIC_DF_PATH = f'../../LWADLS/{DATASETS_FOLDER}/{DATASET}/{Round}_{DATASET}_All_doc_topic_df.pkl'
+    #SENTIMENT_DF_PATH = f'../../LWADLS/{DATASETS_FOLDER}/{DATASET}/{Round}_{DATASET}_All_sentiment_df.pkl'
+    #PRE_FINAL_GLOBAL_FEATURES_PKL_PATH = f'../../LWADLS/{DATASETS_FOLDER}/{DATASET}/{Round}_{DATASET}_All_pre_final_global_features.pkl'
 
 
     # ---------------- Initialize classes ----------------
@@ -190,39 +190,79 @@ def main():
     # Configuration
     # ============================================================
 
-    EXPERIMENT_TYPE = "cross_dataset"
-    # Options:
-    #   "in_domain"
-    #   "cross_dataset"
+    # ============================================================
+    # Cross-dataset configuration only
+    # ============================================================
 
     DATASETS_FOLDER = "datasets"
+    Round = "1"
 
-    ## Used only when EXPERIMENT_TYPE = "in_domain"
-    IN_DOMAIN_DATASET = "xxxx"
-
-    # Used only when EXPERIMENT_TYPE = "cross_dataset"
-    SOURCE_DATASETS = ["BGL"]
-    TARGET_DATASET = "HDFS"
-    TARGET_NORMAL_FRACTION = 0.2
-
+    SOURCE_DATASETS = ["BGL"]        # example: ["BGL"], ["BGL", "TH_1G"]
+    TARGET_DATASET = "HDFS"          # example: "HDFS", "SP_150MB_ratio"
+    TARGET_NORMAL_FRACTION = 0.2     # fraction of normal target-train blocks
     SEED = 123
 
+    # Cross-dataset experiment name
+    # Example: BGL_To_HDFS, BGL_TH_1G_To_SP_150MB_ratio
+    EXPERIMENT_NAME = "_".join(SOURCE_DATASETS) + "_To_" + TARGET_DATASET
+
+    # Use EXPERIMENT_NAME as DATASET name for saving outputs/results
+    DATASET = EXPERIMENT_NAME
+
     # ============================================================
-    # Dataset loader
+    # Feature output paths - paper3 / cross dataset
     # ============================================================
 
-    def load_novaadls_dataset(DATASETS_FOLDER, DATASET, Round):
-        train_df_path = (f"../../LWADLS/{DATASETS_FOLDER}/{DATASET}/"
-                         f"{Round}_{DATASET}_Splitted_Datasets/"
-                         f"train_df.pkl")
+    CROSS_RESULT_DIR = (
+        f"../../LWADLS/{DATASETS_FOLDER}/Cross_Dataset_Results/"
+        f"{EXPERIMENT_NAME}"
+    )
 
-        test_df_path = (f"../../LWADLS/{DATASETS_FOLDER}/{DATASET}/"
-                        f"{Round}_{DATASET}_Splitted_Datasets/"
-                        f"test_df.pkl")
+    os.makedirs(CROSS_RESULT_DIR, exist_ok=True)
 
-        val_df_path = (f"../../LWADLS/{DATASETS_FOLDER}/{DATASET}/"
-                       f"{Round}_{DATASET}_Splitted_Datasets/"
-                       f"val_df.pkl")
+    DOC_TOPIC_DF_PATH = (
+        f"{CROSS_RESULT_DIR}/"
+        f"{Round}_{EXPERIMENT_NAME}_All_doc_topic_df.pkl"
+    )
+
+    SENTIMENT_DF_PATH = (
+        f"{CROSS_RESULT_DIR}/"
+        f"{Round}_{EXPERIMENT_NAME}_All_sentiment_df.pkl"
+    )
+
+    PRE_FINAL_GLOBAL_FEATURES_PKL_PATH = (
+        f"{CROSS_RESULT_DIR}/"
+        f"{Round}_{EXPERIMENT_NAME}_All_pre_final_global_features.pkl"
+    )
+
+    print(f"[INFO] Cross-dataset experiment name: {EXPERIMENT_NAME}")
+    print(f"[INFO] Feature output folder: {CROSS_RESULT_DIR}")
+    print(f"[INFO] DOC_TOPIC_DF_PATH: {DOC_TOPIC_DF_PATH}")
+    print(f"[INFO] SENTIMENT_DF_PATH: {SENTIMENT_DF_PATH}")
+    print(f"[INFO] PRE_FINAL_GLOBAL_FEATURES_PKL_PATH: {PRE_FINAL_GLOBAL_FEATURES_PKL_PATH}")
+
+    # ============================================================
+    # Dataset loader - Third paper / NovaADLS path
+    # ============================================================
+
+    def load_novaadls_dataset(DATASETS_FOLDER, DATASET_NAME, Round):
+        train_df_path = (
+            f"../../LWADLS/{DATASETS_FOLDER}/{DATASET_NAME}/"
+            f"{Round}_{DATASET_NAME}_Splitted_Datasets/"
+            f"{Round}_{DATASET_NAME}_train_df.pkl"
+        )
+
+        test_df_path = (
+            f"../../LWADLS/{DATASETS_FOLDER}/{DATASET_NAME}/"
+            f"{Round}_{DATASET_NAME}_Splitted_Datasets/"
+            f"{Round}_{DATASET_NAME}_test_df.pkl"
+        )
+
+        val_df_path = (
+            f"../../LWADLS/{DATASETS_FOLDER}/{DATASET_NAME}/"
+            f"{Round}_{DATASET_NAME}_Splitted_Datasets/"
+            f"{Round}_{DATASET_NAME}_val_df.pkl"
+        )
 
         print(f"[INFO] Reading train: {train_df_path}")
         print(f"[INFO] Reading val  : {val_df_path}")
@@ -240,8 +280,8 @@ def main():
 
     def normalize_label_column(df):
         """
-        Keep this if some PKL files have Original_Label and Label.
-        It uses Original_Label as the real Label.
+        If the PKL has Original_Label, use it as Label.
+        This keeps the rest of the pipeline unchanged.
         """
         df = df.copy()
 
@@ -259,12 +299,14 @@ def main():
     def select_target_normal_fraction(target_train_df, fraction, seed=123):
         """
         Select fraction of normal target TRAINING sequences.
-        A sequence is one Node_block_id.
+        One sequence = one Node_block_id.
         """
         if fraction < 0 or fraction > 1:
             raise ValueError("TARGET_NORMAL_FRACTION must be between 0 and 1.")
 
-        unique_normal_blocks = target_train_df[target_train_df["Label"] == "Normal"]["Node_block_id"].unique()
+        unique_normal_blocks = target_train_df[
+            target_train_df["Label"] == "Normal"
+        ]["Node_block_id"].unique()
 
         print(f"[INFO] Target normal blocks available: {len(unique_normal_blocks)}")
 
@@ -278,9 +320,15 @@ def main():
 
         rng = np.random.default_rng(seed)
 
-        selected_blocks = rng.choice(unique_normal_blocks, size=sample_size, replace=False)
+        selected_blocks = rng.choice(
+            unique_normal_blocks,
+            size=sample_size,
+            replace=False
+        )
 
-        target_normal_fraction_df = target_train_df[target_train_df["Node_block_id"].isin(selected_blocks)].copy()
+        target_normal_fraction_df = target_train_df[
+            target_train_df["Node_block_id"].isin(selected_blocks)
+        ].copy()
 
         print(f"[INFO] Target normal fraction: {fraction}")
         print(f"[INFO] Selected target normal blocks: {sample_size}")
@@ -289,97 +337,109 @@ def main():
         return target_normal_fraction_df
 
     # ============================================================
-    # Build train_df, val_df, test_df
+    # Build cross-dataset train_df, val_df, test_df
     # ============================================================
 
-    if EXPERIMENT_TYPE == "in_domain":
+    print("[INFO] Running cross-dataset experiment")
+    print(f"[INFO] Source datasets: {SOURCE_DATASETS}")
+    print(f"[INFO] Target dataset: {TARGET_DATASET}")
+    print(f"[INFO] Target normal fraction: {TARGET_NORMAL_FRACTION}")
 
-        print("[INFO] Running in-domain experiment")
-        print(f"[INFO] Dataset: {IN_DOMAIN_DATASET}")
+    # ------------------------------------------------------------
+    # Load source train datasets
+    # ------------------------------------------------------------
 
-        train_df, val_df, test_df = load_novaadls_dataset(DATASETS_FOLDER, IN_DOMAIN_DATASET, Round)
+    source_train_list = []
 
-        train_df = normalize_label_column(train_df)
-        val_df = normalize_label_column(val_df)
-        test_df = normalize_label_column(test_df)
+    for src_dataset in SOURCE_DATASETS:
+        src_train_df, _, _ = load_novaadls_dataset(
+            DATASETS_FOLDER,
+            src_dataset,
+            Round
+        )
 
+        src_train_df = normalize_label_column(src_train_df)
+        src_train_df = src_train_df.copy()
 
-    elif EXPERIMENT_TYPE == "cross_dataset":
+        # Prevent Node_block_id collision between datasets.
+        # This does not delete rows. It only makes block IDs unique.
+        src_train_df["Node_block_id"] = (
+            src_dataset
+            + "__train__"
+            + src_train_df["Node_block_id"].astype(str)
+        )
 
-        print("[INFO] Running cross-dataset experiment")
-        print(f"[INFO] Source datasets: {SOURCE_DATASETS}")
-        print(f"[INFO] Target dataset: {TARGET_DATASET}")
-        print(f"[INFO] Target normal fraction: {TARGET_NORMAL_FRACTION}")
+        source_train_list.append(src_train_df)
 
-        # --------------------------------------------------------
-        # Load source train datasets
-        # --------------------------------------------------------
-        source_train_list = []
+        print(
+            f"[INFO] Source {src_dataset}: "
+            f"{len(src_train_df)} rows, "
+            f"{src_train_df['Node_block_id'].nunique()} blocks"
+        )
 
-        for src_dataset in SOURCE_DATASETS:
-            src_train_df, _, _ = load_novaadls_dataset(DATASETS_FOLDER, src_dataset, Round)
+    source_train_df = pd.concat(source_train_list, ignore_index=True)
 
-            src_train_df = normalize_label_column(src_train_df)
-            src_train_df = src_train_df.copy()
+    # ------------------------------------------------------------
+    # Load target train, validation, and test
+    # ------------------------------------------------------------
 
-            # IMPORTANT:
-            # Prevent Node_block_id collision between different source datasets
-            # and between source data and sampled target-normal data.
-            # This does not delete rows. It only makes block IDs unique.
-            src_train_df["Node_block_id"] = (src_dataset + "__train__" + src_train_df["Node_block_id"].astype(str))
+    target_train_df, val_df, test_df = load_novaadls_dataset(
+        DATASETS_FOLDER,
+        TARGET_DATASET,
+        Round
+    )
 
-            source_train_list.append(src_train_df)
+    target_train_df = normalize_label_column(target_train_df)
+    val_df = normalize_label_column(val_df)
+    test_df = normalize_label_column(test_df)
 
-            print(f"[INFO] Source {src_dataset}: "
-                  f"{len(src_train_df)} rows, "
-                  f"{src_train_df['Node_block_id'].nunique()} blocks")
+    # ------------------------------------------------------------
+    # Select fraction of normal target-train blocks
+    # ------------------------------------------------------------
 
-        source_train_df = pd.concat(source_train_list, ignore_index=True)
+    target_normal_fraction_df = select_target_normal_fraction(
+        target_train_df,
+        TARGET_NORMAL_FRACTION,
+        seed=SEED
+    )
 
-        # --------------------------------------------------------
-        # Load target train, validation, and test
-        # --------------------------------------------------------
-        target_train_df, val_df, test_df = load_novaadls_dataset(DATASETS_FOLDER, TARGET_DATASET, Round)
+    target_normal_fraction_df = target_normal_fraction_df.copy()
 
-        target_train_df = normalize_label_column(target_train_df)
-        val_df = normalize_label_column(val_df)
-        test_df = normalize_label_column(test_df)
+    # Prevent Node_block_id collision between target-normal fraction and sources.
+    target_normal_fraction_df["Node_block_id"] = (
+        TARGET_DATASET
+        + "__target_train_normal__"
+        + target_normal_fraction_df["Node_block_id"].astype(str)
+    )
 
-        # --------------------------------------------------------
-        # Select fraction of normal target train blocks
-        # --------------------------------------------------------
-        target_normal_fraction_df = select_target_normal_fraction(target_train_df, TARGET_NORMAL_FRACTION, seed=SEED)
+    # ------------------------------------------------------------
+    # Final cross-dataset split
+    # ------------------------------------------------------------
 
-        target_normal_fraction_df = target_normal_fraction_df.copy()
+    train_df = pd.concat(
+        [source_train_df, target_normal_fraction_df],
+        ignore_index=True
+    )
 
-        # IMPORTANT:
-        # Prevent Node_block_id collision between target-normal fraction
-        # and source datasets.
-        target_normal_fraction_df["Node_block_id"] = (
-                TARGET_DATASET + "__target_train_normal__" + target_normal_fraction_df["Node_block_id"].astype(str))
-
-        # --------------------------------------------------------
-        # Final cross-dataset split
-        # --------------------------------------------------------
-        train_df = pd.concat([source_train_df, target_normal_fraction_df], ignore_index=True)
-
-        print("[INFO] Cross-dataset split created")
-        print(f"[INFO] Train rows : {len(train_df)}")
-        print(f"[INFO] Val rows   : {len(val_df)}")
-        print(f"[INFO] Test rows  : {len(test_df)}")
-        print(f"[INFO] Train blocks: {train_df['Node_block_id'].nunique()}")
-        print(f"[INFO] Val blocks  : {val_df['Node_block_id'].nunique()}")
-        print(f"[INFO] Test blocks : {test_df['Node_block_id'].nunique()}")
-
-
-    else:
-        raise ValueError("EXPERIMENT_TYPE must be 'in_domain' or 'cross_dataset'.")
+    print("[INFO] Cross-dataset split created")
+    print(f"[INFO] Train rows : {len(train_df)}")
+    print(f"[INFO] Val rows   : {len(val_df)}")
+    print(f"[INFO] Test rows  : {len(test_df)}")
+    print(f"[INFO] Train blocks: {train_df['Node_block_id'].nunique()}")
+    print(f"[INFO] Val blocks  : {val_df['Node_block_id'].nunique()}")
+    print(f"[INFO] Test blocks : {test_df['Node_block_id'].nunique()}")
 
     # ============================================================
     # Keep your original function unchanged
     # ============================================================
 
-    final_train_with_test_with_val = utilities_obj.processing_data_portion(train_df, val_df, test_df)
+    final_train_with_test_with_val = utilities_obj.processing_data_portion(
+        train_df,
+        val_df,
+        test_df
+    )
+
+
     #final_train_with_test_with_val = utilities_obj.processing_data_portion(train_df, val_df, test_df)
     # exit()
     
@@ -389,8 +449,13 @@ def main():
     # ---------------- Features Extracting ----------------
     print(f"{GRAY}Extracting features for training and test datasets...{RESET}")
     number_component, best_topic_number = features_extracting_obj.features_extracting_configuring_tuning(
-        features_extracting_obj, DOC_TOPIC_DF_PATH, SENTIMENT_DF_PATH, DATASET, PRE_FINAL_GLOBAL_FEATURES_PKL_PATH,
-        final_train_with_test_with_val)
+        features_extracting_obj,
+        DOC_TOPIC_DF_PATH,
+        SENTIMENT_DF_PATH,
+        DATASET,
+        PRE_FINAL_GLOBAL_FEATURES_PKL_PATH,
+        final_train_with_test_with_val
+    )
 
     #exit()
 
