@@ -249,19 +249,19 @@ def main():
         train_df_path = (
             f"../../LWADLS/{DATASETS_FOLDER}/{DATASET_NAME}/"
             f"{Round}_{DATASET_NAME}_Splitted_Datasets/"
-            f"{Round}_{DATASET_NAME}_train_df.pkl"
+            f"train_df.pkl"
         )
 
         test_df_path = (
             f"../../LWADLS/{DATASETS_FOLDER}/{DATASET_NAME}/"
             f"{Round}_{DATASET_NAME}_Splitted_Datasets/"
-            f"{Round}_{DATASET_NAME}_test_df.pkl"
+            f"test_df.pkl"
         )
 
         val_df_path = (
             f"../../LWADLS/{DATASETS_FOLDER}/{DATASET_NAME}/"
             f"{Round}_{DATASET_NAME}_Splitted_Datasets/"
-            f"{Round}_{DATASET_NAME}_val_df.pkl"
+            f"val_df.pkl"
         )
 
         print(f"[INFO] Reading train: {train_df_path}")
