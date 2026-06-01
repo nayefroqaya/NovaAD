@@ -190,19 +190,19 @@ def main():
     # Configuration
     # ============================================================
 
-    EXPERIMENT_TYPE = "in_domain"
+    EXPERIMENT_TYPE = "cross_dataset"
     # Options:
     #   "in_domain"
     #   "cross_dataset"
 
     DATASETS_FOLDER = "datasets"
 
-    # Used only when EXPERIMENT_TYPE = "in_domain"
-    IN_DOMAIN_DATASET = "SP_150MB_ratio"
+    ## Used only when EXPERIMENT_TYPE = "in_domain"
+    IN_DOMAIN_DATASET = "xxxx"
 
     # Used only when EXPERIMENT_TYPE = "cross_dataset"
-    SOURCE_DATASETS = ["HDFS", "TH_1G"]
-    TARGET_DATASET = "SP_150MB_ratio"
+    SOURCE_DATASETS = ["BGL"]
+    TARGET_DATASET = "HDFS"
     TARGET_NORMAL_FRACTION = 0.2
 
     SEED = 123
