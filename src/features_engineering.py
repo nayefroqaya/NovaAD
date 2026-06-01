@@ -98,7 +98,7 @@ class FeaturesEngineering:
 
         if len(xx_anomaly) == 0 or len(yy_normal) == 0:
             print('Error in summing_Train_test_together function: Unlabeled data validation failed')
-            #exit()
+            exit()
 
         summed_df_train = pd.concat([summed_df_normal_labelled_train, summed_df_combine_unlabelled_train])
 
@@ -318,7 +318,7 @@ class FeaturesEngineering:
 
         # Train final model with optimal Gamma & Nu
         #oc_svm_final = OneClassSVM(kernel='rbf', gamma=best_params[0], nu=best_params[1])
-        oc_svm_final = OneClassSVM(kernel='rbf', gamma= 0.425, nu=0.01)
+        oc_svm_final = OneClassSVM(kernel='rbf', gamma= 0.2, nu=0.01)
 
         oc_svm_final.fit(X_train_normal_labelled)
         # Make predictions
