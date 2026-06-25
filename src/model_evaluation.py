@@ -1,5 +1,8 @@
 import os
+import json
 import pandas as pd
+import numpy as np
+
 from sklearn.feature_selection import mutual_info_classif
 from sklearn.metrics import (
     classification_report,
@@ -14,8 +17,6 @@ from sklearn.metrics import (
     roc_auc_score,
     average_precision_score,
 )
-import numpy as np
-import json
 
 
 class ModelEvaluation:
@@ -32,21 +33,28 @@ class ModelEvaluation:
         DATASET,
         X_test,
         y_test_score=None,
-        dataset_root="datasets",
+        dataset_root="Nova/datasets",
         method_name="StackingClassifier",
         fp_unit_cost=10.0,
         fn_unit_cost=20.0,
         delay_unit_cost=5.0,
     ):
         """
-        Evaluate model performance and save results inside each dataset folder.
+        Evaluate model performance and compute feature importance.
 
-        Results will be saved to:
-            datasets/{DATASET}/StackingClassifier_results/
+        Results are saved to:
+            Nova/datasets/{DATASET}/{method_name}_results/
+
+        Example:
+            Nova/datasets/BGL/StackingClassifier_results/
+            Nova/datasets/HDFS/StackingClassifier_results/
+            Nova/datasets/TH_1G/StackingClassifier_results/
+            Nova/datasets/SP_150MB/StackingClassifier_results/
+            Nova/datasets/SP_150MB_ratio/StackingClassifier_results/
         """
 
         # ========================
-        # 0. Output path
+        # 0. Output directory
         # ========================
         output_dir = os.path.join(dataset_root, DATASET, f"{method_name}_results")
         os.makedirs(output_dir, exist_ok=True)
@@ -55,7 +63,7 @@ class ModelEvaluation:
         y_test_pred = np.asarray(y_test_pred)
 
         # ========================
-        # 1. Classification Report
+        # 1. Classification report
         # ========================
         print(f"\n{method_name} - Classification Report:")
         print(
@@ -69,7 +77,7 @@ class ModelEvaluation:
         )
 
         # ========================
-        # 2. Confusion Matrix
+        # 2. Confusion matrix
         # ========================
         cm = confusion_matrix(y_test_truth, y_test_pred, labels=[0, 1])
         tn, fp, fn, tp = cm.ravel()
@@ -79,7 +87,7 @@ class ModelEvaluation:
         detected_anomalies = int(tp)
 
         # ========================
-        # 3. Classification Metrics
+        # 3. Classification metrics
         # ========================
         accuracy = accuracy_score(y_test_truth, y_test_pred)
         balanced_accuracy = balanced_accuracy_score(y_test_truth, y_test_pred)
@@ -96,7 +104,8 @@ class ModelEvaluation:
 
         mcc = matthews_corrcoef(y_test_truth, y_test_pred)
 
-        # AUROC / AUPRC need anomaly scores, not only labels
+        # AUROC and AUPRC require anomaly scores/probabilities.
+        # If y_test_score is not provided, they are reported as N/A.
         if y_test_score is not None:
             y_test_score = np.asarray(y_test_score)
             try:
@@ -110,37 +119,49 @@ class ModelEvaluation:
             auprc = None
 
         # ========================
-        # 4. Early Detection Metrics
-        # Static models predict after the full sequence
+        # 4. Early-detection metrics
+        # Static models predict after full sequence.
         # ========================
         detection_coverage = recall
 
-        avg_detection_step = X_test.shape[1] if hasattr(X_test, "shape") and len(X_test.shape) > 1 else 1
-        avg_detection_ratio = 1.0 if detected_anomalies > 0 else 0.0
-        median_detection_ratio = 1.0 if detected_anomalies > 0 else 0.0
+        if hasattr(X_test, "shape") and len(X_test.shape) > 1:
+            avg_detection_step = X_test.shape[1]
+        else:
+            avg_detection_step = 1
+
+        if detected_anomalies > 0:
+            avg_detection_ratio = 1.0
+            median_detection_ratio = 1.0
+        else:
+            avg_detection_ratio = 0.0
+            median_detection_ratio = 0.0
 
         edr_25 = 0.0
         edr_50 = 0.0
         edr_75 = 0.0
 
         # ========================
-        # 5. RL Behavior Metrics
+        # 5. RL behavior metrics
+        # For static models, average reward is N/A.
+        # Alert rate can still be calculated.
         # ========================
         average_reward = None
         alert_rate = np.mean(y_test_pred == 1)
 
         # ========================
-        # 6. Cost Metrics
+        # 6. Cost metrics
         # ========================
         fp_total_cost = fp * fp_unit_cost
         fn_total_cost = fn * fn_unit_cost
+
+        # Static models detect at the full sequence, so detection ratio = 1.0
         delay_total_cost = detected_anomalies * delay_unit_cost * avg_detection_ratio
 
         total_cost = fp_total_cost + fn_total_cost + delay_total_cost
         avg_cost_per_sequence = total_cost / total_sequences if total_sequences > 0 else 0.0
 
         # ========================
-        # 7. Save Metrics
+        # 7. Store metrics
         # ========================
         metrics = {
             "Dataset": DATASET,
@@ -148,6 +169,7 @@ class ModelEvaluation:
             "Method": method_name,
             "Number of sequences": int(total_sequences),
 
+            # Classification metrics
             "Accuracy": float(accuracy),
             "Balanced Accuracy": float(balanced_accuracy),
             "Precision": float(precision),
@@ -161,12 +183,14 @@ class ModelEvaluation:
             "AUROC": None if auroc is None else float(auroc),
             "AUPRC": None if auprc is None else float(auprc),
 
+            # Confusion matrix
             "TN": int(tn),
             "FP": int(fp),
             "FN": int(fn),
             "TP": int(tp),
             "Confusion Matrix": cm.tolist(),
 
+            # Early-detection metrics
             "Total anomalies": int(total_anomalies),
             "Detected anomalies": int(detected_anomalies),
             "Detection coverage": float(detection_coverage),
@@ -177,9 +201,11 @@ class ModelEvaluation:
             "EDR@50": float(edr_50),
             "EDR@75": float(edr_75),
 
+            # RL behavior metrics
             "Average reward": average_reward,
             "Alert rate": float(alert_rate),
 
+            # Cost metrics
             "FP unit cost": float(fp_unit_cost),
             "FN unit cost": float(fn_unit_cost),
             "Delay unit cost": float(delay_unit_cost),
@@ -192,9 +218,18 @@ class ModelEvaluation:
 
         metrics_df = pd.DataFrame([metrics])
 
-        metrics_csv = os.path.join(output_dir, f"{Round}_{DATASET}_{method_name}_metrics.csv")
-        metrics_json = os.path.join(output_dir, f"{Round}_{DATASET}_{method_name}_metrics.json")
-        metrics_txt = os.path.join(output_dir, f"{Round}_{DATASET}_{method_name}_metrics.txt")
+        metrics_csv = os.path.join(
+            output_dir,
+            f"{Round}_{DATASET}_{method_name}_metrics.csv"
+        )
+        metrics_json = os.path.join(
+            output_dir,
+            f"{Round}_{DATASET}_{method_name}_metrics.json"
+        )
+        metrics_txt = os.path.join(
+            output_dir,
+            f"{Round}_{DATASET}_{method_name}_metrics.txt"
+        )
 
         metrics_df.to_csv(metrics_csv, index=False)
 
@@ -252,7 +287,7 @@ class ModelEvaluation:
         print(f"Evaluation metrics TXT saved to: {metrics_txt}")
 
         # ========================
-        # 8. Feature Names
+        # 8. Feature names
         # ========================
         feature_names = (
             [f"component_{i + 1}" for i in range(number_component)]
@@ -276,7 +311,10 @@ class ModelEvaluation:
         # ========================
         if not isinstance(X_train, pd.DataFrame):
             X_train = np.asarray(X_train)
-            X_train = pd.DataFrame(X_train, columns=feature_names[: X_train.shape[1]])
+            X_train = pd.DataFrame(
+                X_train,
+                columns=feature_names[: X_train.shape[1]]
+            )
 
         # ========================
         # 10. Mutual Information
