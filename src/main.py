@@ -180,7 +180,7 @@ def main():
     val_df_path  = f"../../LWADLS/{DATASETS_FOLDER}/{DATASET}/{Round}_{DATASET}_Splitted_Datasets/val_df.pkl"
 
 
-
+    '''
 
     train_df = pd.read_pickle(train_df_path)
     test_df = pd.read_pickle(test_df_path)
@@ -200,7 +200,7 @@ def main():
 
     #exit()
 
-
+    '''
     final_train_with_test_with_val = pd.read_pickle(PRE_FINAL_GLOBAL_FEATURES_PKL_PATH)
     final_train_with_test_with_val.info()
     dim = len(final_train_with_test_with_val['reduced_embedding'].iloc[0])
@@ -208,6 +208,7 @@ def main():
     number_component = dim
     print(number_component)
     # exit()
+
 
 
     # ---------------- Features Engineering: Aggregation/Transformation ----------------
