@@ -1,3 +1,4 @@
+import os
 import pandas as pd
 from sklearn.feature_selection import mutual_info_classif
 from sklearn.metrics import (
@@ -14,6 +15,7 @@ from sklearn.metrics import (
     average_precision_score,
 )
 import numpy as np
+import json
 
 
 class ModelEvaluation:
@@ -30,31 +32,23 @@ class ModelEvaluation:
         DATASET,
         X_test,
         y_test_score=None,
-        output_dir=".",
+        dataset_root="datasets",
+        method_name="StackingClassifier",
         fp_unit_cost=10.0,
         fn_unit_cost=20.0,
         delay_unit_cost=5.0,
     ):
         """
-        Evaluate model performance and compute feature importance metrics.
+        Evaluate model performance and save results inside each dataset folder.
 
-        Parameters:
-        Round: Experiment round/name
-        X_train: Training features
-        y_train: Training labels
-        number_component: Number of PCA/components used
-        y_test_truth: Ground truth labels
-        y_test_pred: Predicted labels
-        DATASET: Dataset name
-        X_test: Test features
-        y_test_score: Optional anomaly score/probability for AUROC/AUPRC
-        output_dir: Folder to save results
-        fp_unit_cost: Cost for one false positive
-        fn_unit_cost: Cost for one false negative
-        delay_unit_cost: Cost for late detection
+        Results will be saved to:
+            datasets/{DATASET}/StackingClassifier_results/
         """
 
-        import os
+        # ========================
+        # 0. Output path
+        # ========================
+        output_dir = os.path.join(dataset_root, DATASET, f"{method_name}_results")
         os.makedirs(output_dir, exist_ok=True)
 
         y_test_truth = np.asarray(y_test_truth)
@@ -63,7 +57,7 @@ class ModelEvaluation:
         # ========================
         # 1. Classification Report
         # ========================
-        print("\nStackingClassifier - Classification Report:")
+        print(f"\n{method_name} - Classification Report:")
         print(
             classification_report(
                 y_test_truth,
@@ -117,7 +111,7 @@ class ModelEvaluation:
 
         # ========================
         # 4. Early Detection Metrics
-        # Static/normal models predict after full sequence
+        # Static models predict after the full sequence
         # ========================
         detection_coverage = recall
 
@@ -140,9 +134,6 @@ class ModelEvaluation:
         # ========================
         fp_total_cost = fp * fp_unit_cost
         fn_total_cost = fn * fn_unit_cost
-
-        # For static models, detected anomalies are assumed detected at full sequence:
-        # detection ratio = 1.0
         delay_total_cost = detected_anomalies * delay_unit_cost * avg_detection_ratio
 
         total_cost = fp_total_cost + fn_total_cost + delay_total_cost
@@ -154,6 +145,7 @@ class ModelEvaluation:
         metrics = {
             "Dataset": DATASET,
             "Round": Round,
+            "Method": method_name,
             "Number of sequences": int(total_sequences),
 
             "Accuracy": float(accuracy),
@@ -200,21 +192,21 @@ class ModelEvaluation:
 
         metrics_df = pd.DataFrame([metrics])
 
-        metrics_csv = os.path.join(output_dir, f"{Round}_{DATASET}_evaluation_metrics.csv")
-        metrics_json = os.path.join(output_dir, f"{Round}_{DATASET}_evaluation_metrics.json")
-        metrics_txt = os.path.join(output_dir, f"{Round}_{DATASET}_evaluation_metrics.txt")
+        metrics_csv = os.path.join(output_dir, f"{Round}_{DATASET}_{method_name}_metrics.csv")
+        metrics_json = os.path.join(output_dir, f"{Round}_{DATASET}_{method_name}_metrics.json")
+        metrics_txt = os.path.join(output_dir, f"{Round}_{DATASET}_{method_name}_metrics.txt")
 
         metrics_df.to_csv(metrics_csv, index=False)
 
         with open(metrics_json, "w") as f:
-            import json
             json.dump(metrics, f, indent=4)
 
         with open(metrics_txt, "w") as f:
-            f.write(f"{DATASET} - {Round} Evaluation Metrics\n")
-            f.write("=" * 60 + "\n\n")
+            f.write(f"{DATASET} - {Round} - {method_name} Evaluation Metrics\n")
+            f.write("=" * 70 + "\n\n")
 
             f.write("[Classification Metrics]\n")
+            f.write(f"Number of sequences   : {total_sequences}\n")
             f.write(f"Accuracy              : {accuracy:.4f}\n")
             f.write(f"Balanced Accuracy     : {balanced_accuracy:.4f}\n")
             f.write(f"Precision             : {precision:.4f}\n")
@@ -300,9 +292,13 @@ class ModelEvaluation:
             }
         ).sort_values(by="MI_Score", ascending=False)
 
-        output_filename = os.path.join(output_dir, f"{Round}_{DATASET}_evaluation_mi_scores.csv")
-        mi_df.to_csv(output_filename, index=False)
+        mi_output_filename = os.path.join(
+            output_dir,
+            f"{Round}_{DATASET}_{method_name}_mi_scores.csv"
+        )
 
-        print(f"Mutual Information scores saved to: {output_filename}")
+        mi_df.to_csv(mi_output_filename, index=False)
+
+        print(f"Mutual Information scores saved to: {mi_output_filename}")
 
         return mi_df, metrics_df
