@@ -33,34 +33,11 @@ YELLOW = colorama.Fore.YELLOW
 
 
 class FeaturesExtractor:
-    """
-    A comprehensive feature extraction class for processing log data with multiple feature types:
-    - Sentiment analysis.
-    - Topic modeling (LDA) : Dominant Topic and Entropy. 
-    - Semantic embeddings (SBERT).
-    - Temporal features : Month, day, hour, minut, second.
-    - Text statistics : Word count and characters count.
-    """
 
     @staticmethod
     def features_extracting_configuring_tuning(features_extracting_obj, doc_topic_df_path, sentiment_df_path,
                                                Dataset_name, pre_final_global_features_pkl_path, df_features):
-        """
-        Main pipeline for feature extraction and configuration
 
-        Parameters:
-        -----------
-        features_extracting_obj : FeaturesExtractor instance
-        doc_topic_df_path : str, path to save document-topic dataframe
-        sentiment_df_path : str, path to save sentiment analysis results
-        Dataset_name : str, name of the dataset being processed
-        pre_final_global_features_pkl_path : str, path for intermediate feature storage
-        df_features : DataFrame, input data containing log messages
-
-        Returns:
-        --------
-        tuple: (number_of_components, best_topic_number)
-        """
         # Data validation and preparation
         df_features.info()
         df_features.sort_values(by=['Node_block_id', 'Timestamp'], inplace=True)
@@ -89,18 +66,7 @@ class FeaturesExtractor:
 
     @staticmethod
     def preparing_corpus_for_TM(text_features_content_list, counts=None):
-        """
-        Prepare text corpus for topic modeling using TF-IDF vectorization
 
-        Parameters:
-        -----------
-        text_features_content_list : list of str, text documents to process
-        counts : list of int, optional, frequency counts for weighted processing
-
-        Returns:
-        --------
-        scipy.sparse matrix: TF-IDF transformed document-term matrix
-        """
         tf_vectorizer = TfidfVectorizer(stop_words='english')
         tf_vectorizer.fit(text_features_content_list)
 
@@ -119,18 +85,7 @@ class FeaturesExtractor:
         return news_matrix
 
     def start_topics_extracting(self, sentiment_df_path, doc_topic_df_path):
-        """
-        Perform topic modeling using Latent Dirichlet Allocation (LDA)
 
-        Parameters:
-        -----------
-        sentiment_df_path : str, path to sentiment analysis results
-        doc_topic_df_path : str, path to save topic modeling results
-
-        Returns:
-        --------
-        int: Optimal number of topics determined by grid search
-        """
         # Load preprocessed data
         df_features = pd.read_pickle(sentiment_df_path)
         df_features.info()
@@ -186,18 +141,7 @@ class FeaturesExtractor:
 
     @staticmethod
     def bert_text_embedding(Dataset, sentences):
-        """
-        Generate BERT embeddings for text sentences
 
-        Parameters:
-        -----------
-        Dataset : dataset class for creating data loader
-        sentences : list of str, texts to embed
-
-        Returns:
-        --------
-        dict: Mapping of sentences to their BERT embeddings
-        """
         model = SentenceTransformer('bert-base-nli-mean-tokens')
         device_sent = torch.device('cpu')  # Force CPU usage
         print("[INFO] Using CPU for BERT encoding")
@@ -231,17 +175,7 @@ class FeaturesExtractor:
         return embeddings
 
     def start_semantic_extraction(self, pre_final_global_features_pkl_path):
-        """
-        Extract semantic features using BERT embeddings and dimensionality reduction
 
-        Parameters:
-        -----------
-        pre_final_global_features_pkl_path : str, path to feature dataframe
-
-        Returns:
-        --------
-        int: Number of components after dimensionality reduction
-        """
         print('[STATUS] Starting semantic feature extraction...')
         df_features = pd.read_pickle(pre_final_global_features_pkl_path)
         df_features.info()
@@ -282,17 +216,7 @@ class FeaturesExtractor:
 
     @staticmethod
     def get_best_topic_number(cv_matrix):
-        """
-        Determine optimal number of topics using grid search with LDA
 
-        Parameters:
-        -----------
-        cv_matrix : scipy.sparse matrix, document-term matrix for topic modeling
-
-        Returns:
-        --------
-        int: Optimal number of topics
-        """
         search_params = {'n_components': [2, 3, 5, 7, 9, 13, 15]}
 
         # Initialize LDA model
@@ -315,17 +239,7 @@ class FeaturesExtractor:
 
     @staticmethod
     def get_reduce_dim_on_embedding(embeddings):
-        """
-        Apply dimensionality reduction to embeddings using PCA
 
-        Parameters:
-        -----------
-        embeddings : numpy array, high-dimensional embeddings
-
-        Returns:
-        --------
-        tuple: (reduced_embeddings, number_of_components)
-        """
         print('[STATUS] Standardizing embeddings for dimensionality reduction...')
         scaler_train_semantic = StandardScaler()
         scaler_train_semantic.fit(embeddings)
@@ -367,18 +281,7 @@ class FeaturesExtractor:
 
     @staticmethod
     def get_lda_topics(best_topic_number, cv_matrix):
-        """
-        Perform LDA topic modeling with specified number of topics
 
-        Parameters:
-        -----------
-        best_topic_number : int, number of topics to extract
-        cv_matrix : scipy.sparse matrix, document-term matrix
-
-        Returns:
-        --------
-        numpy array: Document-topic distribution matrix
-        """
         lda = LatentDirichletAllocation(n_components=best_topic_number, learning_method='online', max_iter=100,
             random_state=0)
         doc_topic_matrix = lda.fit_transform(cv_matrix)
@@ -387,17 +290,7 @@ class FeaturesExtractor:
 
     @staticmethod
     def calculation_entropy(topic_distribution):
-        """
-        Calculate entropy of topic distribution
 
-        Parameters:
-        -----------
-        topic_distribution : list or array, probability distribution over topics
-
-        Returns:
-        --------
-        float: Entropy value of the distribution
-        """
         # import torch
         if torch.cuda.is_available():
             import cupy as xp
@@ -413,17 +306,7 @@ class FeaturesExtractor:
 
     @staticmethod
     def get_sentiment_lst_dataframe(df_features):
-        """
-        Perform sentiment analysis on text data with batch processing
 
-        Parameters:
-        -----------
-        df_features : DataFrame, contains text data for sentiment analysis
-
-        Returns:
-        --------
-        list: Sentiment labels for each text entry
-        """
         batch_size = 512
 
         # Extract unique texts to avoid redundant processing
@@ -455,15 +338,7 @@ class FeaturesExtractor:
 
     def features_extracted_different_features(self, best_topic_number, doc_topic_df_path,
                                               pre_final_global_features_pkl_path):
-        """
-        Extract additional features including temporal, statistical, and entropy features
 
-        Parameters:
-        -----------
-        best_topic_number : int, number of topics for feature naming
-        doc_topic_df_path : str, path to topic modeling results
-        pre_final_global_features_pkl_path : str, path to save enhanced features
-        """
         # Load topic modeling results
         df_feature_full_dataset_all = pd.read_pickle(doc_topic_df_path)
         df_feature_full_dataset_all.info()
@@ -532,14 +407,7 @@ class FeaturesExtractor:
         print('[SUCCESS] Additional feature extraction completed')
 
     def start_sentiment_extracting(self, df_features, sentiment_df_path):
-        """
-        Execute sentiment analysis pipeline and save results
 
-        Parameters:
-        -----------
-        df_features : DataFrame, input data for sentiment analysis
-        sentiment_df_path : str, path to save sentiment results
-        """
         print('[STATUS] Starting sentiment analysis pipeline...')
         lst_label_sentiment = self.get_sentiment_lst_dataframe(df_features)
 

@@ -14,7 +14,6 @@ from sklearn.metrics import (
 
 
 class ModelEvaluation:
-    """Evaluate classification, early detection, and cost-sensitive metrics."""
 
     @staticmethod
     def _normalize_binary_labels(labels):
@@ -43,13 +42,7 @@ class ModelEvaluation:
         detection_steps=None,
         sequence_lengths=None,
     ):
-        """
-        Calculate the most important early-detection metrics.
 
-        If detection_steps and sequence_lengths are not provided, the model is
-        treated as a static/full-sequence classifier. In that case, detected
-        anomalies are assumed to be detected at the end of the sequence.
-        """
 
         y_true = np.asarray(y_true, dtype=int)
         y_pred = np.asarray(y_pred, dtype=int)
@@ -154,37 +147,7 @@ class ModelEvaluation:
         detection_steps=None,
         sequence_lengths=None,
     ):
-        """
-        Save a compact selected-metrics report to:
 
-            NovaADLS/datasets/{DATASET}/{Round}_{DATASET}_{method_name}_selected_metrics.txt
-
-        The TXT report includes:
-
-        1. Classification summary:
-            - Precision
-            - Recall / TPR
-            - F1-score
-
-        2. Full classification report:
-            - Class 0 = Normal
-            - Class 1 = Anomaly
-
-        3. Early detection:
-            - Total anomalies
-            - Detected anomalies
-            - Detection coverage
-            - Avg detection step
-            - Avg detection ratio
-            - EDR@25
-            - EDR@50
-            - EDR@75
-
-        4. Cost-sensitive:
-            - False-positive cost
-            - False-negative cost
-            - Delay cost
-        """
 
         # ========================
         # 0. Output directory

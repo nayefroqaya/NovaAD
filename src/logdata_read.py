@@ -113,22 +113,7 @@ class LogdataRead:
             return None  # Returning None allows the calling code to handle the error
 
     def read_original_data_log_from_log_to_csv(self, dataset, All_dataset_path_as_csv):
-        '''
-        def fill_unknown_node_block_id(df):
-            prev_valid_id = None  # Store the last valid Node_block_id
-            prev_label = None  # Store the last Label
 
-            for i in tqdm(range(len(df)), desc="Processing Rows", unit="row"):
-
-                if df.loc[i, 'Node_block_id'] == 'UNKNOWN':
-                    if prev_valid_id is not None and df.loc[i, 'Label'] == prev_label:
-                        df.loc[i, 'Node_block_id'] = prev_valid_id  # Assign previous Node_block_id
-                else:
-                    prev_valid_id = df.loc[i, 'Node_block_id']  # Update previous valid ID
-                    prev_label = df.loc[i, 'Label']  # Update previous Label
-
-            return df
-        '''
         def fill_unknown_node_block_id(df):
 
               prev_valid_id = None
