@@ -199,7 +199,7 @@ def main():
     mode = 'M'
 
     SOURCE_DATASETS = ["BGL"]        # example: ["BGL"], ["BGL", "TH_1G"]
-    TARGET_DATASET = "TH_1G"          # example: "HDFS", "SP_150MB_ratio"
+    TARGET_DATASET = "HDFS"          # example: "HDFS", "SP_150MB_ratio"
     TARGET_ADAPTATION_FRACTION = 0.2 # fraction of normal AND anomaly target-train blocks
     SEED = 123
 
