@@ -10,7 +10,7 @@ from anomaly_detection import AnomalyDetector
 from features_engineering import FeaturesEngineering
 from features_extracting import FeaturesExtractor
 from logdata_read import LogdataRead
-from model_evaluation import ModelEvaluation
+from model_evaluation_selected_metrics_with_class_report import ModelEvaluation
 from utility import Utilities
 import psutil
 import platform
