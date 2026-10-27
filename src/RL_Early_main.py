@@ -99,7 +99,7 @@ def main():
 
     # ---------------- Project configuration ----------------
 
-    DATASET = 'SP_150MB_ratio'
+    DATASET = 'BGL'
     DATASETS_FOLDER = 'datasets'
     Round = '1'
     mode = 'M'  # M multi classifier - S single classifier
@@ -296,12 +296,12 @@ def main():
         method_name="NovaADLS-Early",
         detection_steps=detection_steps,
         sequence_lengths=sequence_lengths,
-        training_time_min=fit_time,
-        evaluation_time_min=predict_time,
+       # training_time_min=fit_time,
+       # evaluation_time_min=predict_time,
     )
 
-    print(f"Model training completed in {fit_time:.2f} minutes")
-    print(f"Sequential prefix prediction completed in {predict_time:.2f} minutes")
+    #print(f"Model training completed in {fit_time:.2f} minutes")
+   # print(f"Sequential prefix prediction completed in {predict_time:.2f} minutes")
 
 
 if __name__ == "__main__":
