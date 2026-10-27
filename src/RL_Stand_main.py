@@ -242,12 +242,12 @@ def main():
         Round, X_train, y_train, number_component,
         y_test_truth, y_test_pred, DATASET, X_test,
         method_name="NovaADLS-Standard",
-        training_time_min=fit_time,
+      #  training_time_min=fit_time,
         evaluation_time_min=predict_time,
     )
 
-    print(f"Model training completed in {fit_time:.2f} minutes")
-    print(f"Prediction completed in {predict_time:.2f} minutes")
+    #print(f"Model training completed in {fit_time:.2f} minutes")
+    #print(f"Prediction completed in {predict_time:.2f} minutes")
 
 
 if __name__ == "__main__":
