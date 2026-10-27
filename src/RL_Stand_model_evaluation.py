@@ -372,10 +372,10 @@ class ModelEvaluation:
         print(f"False-negative Cost : {false_negative_cost:.4f}")
         print(f"Delay Cost          : {delay_cost:.4f}")
         print(f"Total Cost          : {total_cost:.4f}")
-        if evaluation_time_min is not None:
-            print(f"Evaluation Time     : {float(evaluation_time_min):.4f} min")
-        if training_time_min is not None:
-            print(f"Training Time       : {float(training_time_min):.4f} min")
+        #if evaluation_time_min is not None:
+        #    print(f"Evaluation Time     : {float(evaluation_time_min):.4f} min")
+        #if training_time_min is not None:
+        #    print(f"Training Time       : {float(training_time_min):.4f} min")
         print("=" * 80)
 
         print(f"Selected metrics TXT saved to: {metrics_txt}")
