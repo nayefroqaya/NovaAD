@@ -1,3 +1,5 @@
+# RL_Stand: NovaADLS Standard baseline. Minimal-change copy of the original implementation.
+
 import os
 import json
 import pandas as pd
@@ -14,6 +16,7 @@ from sklearn.metrics import (
 
 
 class ModelEvaluation:
+    """Evaluate classification, early detection, and cost-sensitive metrics."""
 
     @staticmethod
     def _normalize_binary_labels(labels):
@@ -41,8 +44,16 @@ class ModelEvaluation:
         X_test,
         detection_steps=None,
         sequence_lengths=None,
+        training_time_min=None,
+        evaluation_time_min=None,
     ):
+        """
+        Calculate the most important early-detection metrics.
 
+        If detection_steps and sequence_lengths are not provided, the model is
+        treated as a static/full-sequence classifier. In that case, detected
+        anomalies are assumed to be detected at the end of the sequence.
+        """
 
         y_true = np.asarray(y_true, dtype=int)
         y_pred = np.asarray(y_pred, dtype=int)
@@ -147,7 +158,37 @@ class ModelEvaluation:
         detection_steps=None,
         sequence_lengths=None,
     ):
+        """
+        Save a compact selected-metrics report to:
 
+            NovaADLS/datasets/{DATASET}/{Round}_{DATASET}_{method_name}_selected_metrics.txt
+
+        The TXT report includes:
+
+        1. Classification summary:
+            - Precision
+            - Recall / TPR
+            - F1-score
+
+        2. Full classification report:
+            - Class 0 = Normal
+            - Class 1 = Anomaly
+
+        3. Early detection:
+            - Total anomalies
+            - Detected anomalies
+            - Detection coverage
+            - Avg detection step
+            - Avg detection ratio
+            - EDR@25
+            - EDR@50
+            - EDR@75
+
+        4. Cost-sensitive:
+            - False-positive cost
+            - False-negative cost
+            - Delay cost
+        """
 
         # ========================
         # 0. Output directory
@@ -201,7 +242,6 @@ class ModelEvaluation:
         precision = precision_score(y_test_truth, y_test_pred, zero_division=0)
         recall = recall_score(y_test_truth, y_test_pred, zero_division=0)
         f1 = f1_score(y_test_truth, y_test_pred, zero_division=0)
-        accuracy = float((tp + tn) / max(1, len(y_test_truth)))
 
         # ========================
         # 4. Selected early-detection metrics
@@ -229,15 +269,7 @@ class ModelEvaluation:
             * delay_unit_cost
             * early_metrics["Avg detection ratio"]
         )
-
-        total_cost = float(
-            false_positive_cost
-            + false_negative_cost
-            + delay_cost
-        )
-        avg_cost_per_sequence = float(
-            total_cost / max(1, len(y_test_truth))
-        )
+        total_cost = float(false_positive_cost + false_negative_cost + delay_cost)
 
         # ========================
         # 6. Store only selected metrics
@@ -249,7 +281,6 @@ class ModelEvaluation:
             "Number of sequences": int(len(y_test_truth)),
 
             # Selected classification metrics for anomaly class
-            "Accuracy": float(accuracy),
             "Precision": float(precision),
             "Recall / TPR": float(recall),
             "F1-score": float(f1),
@@ -275,7 +306,6 @@ class ModelEvaluation:
             "False-negative cost": float(false_negative_cost),
             "Delay cost": float(delay_cost),
             "Total cost": float(total_cost),
-            "Avg cost per sequence": float(avg_cost_per_sequence),
         }
 
         metrics_df = pd.DataFrame([metrics])
@@ -295,7 +325,6 @@ class ModelEvaluation:
 
             f.write("[Classification Metrics - Anomaly Class]\n")
             f.write("Positive class        : 1 = anomaly\n")
-            f.write(f"Accuracy              : {accuracy:.4f}\n")
             f.write(f"Precision             : {precision:.4f}\n")
             f.write(f"Recall / TPR          : {recall:.4f}\n")
             f.write(f"F1-score              : {f1:.4f}\n\n")
@@ -326,52 +355,27 @@ class ModelEvaluation:
             f.write(f"False-negative cost   : {false_negative_cost:.4f}\n")
             f.write(f"Delay cost            : {delay_cost:.4f}\n")
             f.write(f"Total cost            : {total_cost:.4f}\n")
-            f.write(f"Avg cost per sequence : {avg_cost_per_sequence:.4f}\n")
 
-        # ========================
-        # 7b. Print the SAME full metric report to the console
-        # ========================
-        print("\n" + "=" * 80)
-        print(f"{DATASET} - {Round} - {method_name} SELECTED EVALUATION METRICS")
+        # Compact paper-ready block used by all RLADLS baselines
+        print("")
+        print(f"{method_name} - COMPACT PAPER RESULTS  # {DATASET}")
         print("=" * 80)
-
-        print("\n[Classification Metrics - Anomaly Class]")
-        print("Positive class        : 1 = anomaly")
-        print(f"Accuracy              : {accuracy:.4f}")
-        print(f"Precision             : {precision:.4f}")
-        print(f"Recall / TPR          : {recall:.4f}")
-        print(f"F1-score              : {f1:.4f}")
-
-        print("\n[Classification Report - Class 0 and Class 1]")
-        print("Class 0               : Normal")
-        print("Class 1               : Anomaly")
-        print()
-        print(class_report_text)
-
-        print("[Confusion Matrix]")
-        print("Labels: 0=normal, 1=anomaly")
-        print(cm)
-        print(f"TP={tp} TN={tn} FP={fp} FN={fn}")
-
-        print("\n[Early Detection Metrics]")
-        print(f"Total anomalies       : {early_metrics['Total anomalies']}")
-        print(f"Detected anomalies    : {early_metrics['Detected anomalies']}")
-        print(f"Detection coverage    : {early_metrics['Detection coverage']:.4f}")
-        print(f"Avg detection step    : {early_metrics['Avg detection step']:.4f}")
-        print(f"Avg detection ratio   : {early_metrics['Avg detection ratio']:.4f}")
-        print(f"EDR@25                : {early_metrics['EDR@25']:.4f}")
-        print(f"EDR@50                : {early_metrics['EDR@50']:.4f}")
-        print(f"EDR@75                : {early_metrics['EDR@75']:.4f}")
-
-        print("\n[Cost-Sensitive Metrics]")
-        print(f"FP unit cost          : {fp_unit_cost:.4f}")
-        print(f"FN unit cost          : {fn_unit_cost:.4f}")
-        print(f"Delay unit cost       : {delay_unit_cost:.4f}")
-        print(f"False-positive cost   : {false_positive_cost:.4f}")
-        print(f"False-negative cost   : {false_negative_cost:.4f}")
-        print(f"Delay cost            : {delay_cost:.4f}")
-        print(f"Total cost            : {total_cost:.4f}")
-        print(f"Avg cost per sequence : {avg_cost_per_sequence:.4f}")
+        print(f"Precision           : {precision:.4f}")
+        print(f"Recall              : {recall:.4f}")
+        print(f"F1                  : {f1:.4f}")
+        print(f"Detection Coverage  : {early_metrics['Detection coverage']:.4f}")
+        print(f"Avg Det. Ratio      : {early_metrics['Avg detection ratio']:.4f}")
+        print(f"EDR@25              : {early_metrics['EDR@25']:.4f}")
+        print(f"EDR@50              : {early_metrics['EDR@50']:.4f}")
+        print(f"EDR@75              : {early_metrics['EDR@75']:.4f}")
+        print(f"False-positive Cost : {false_positive_cost:.4f}")
+        print(f"False-negative Cost : {false_negative_cost:.4f}")
+        print(f"Delay Cost          : {delay_cost:.4f}")
+        print(f"Total Cost          : {total_cost:.4f}")
+        if evaluation_time_min is not None:
+            print(f"Evaluation Time     : {float(evaluation_time_min):.4f} min")
+        if training_time_min is not None:
+            print(f"Training Time       : {float(training_time_min):.4f} min")
         print("=" * 80)
 
         print(f"Selected metrics TXT saved to: {metrics_txt}")

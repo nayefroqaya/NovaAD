@@ -1,3 +1,5 @@
+# RL_Stand: NovaADLS Standard baseline. Minimal-change copy of the original implementation.
+
 import os
 os.environ["CUDA_VISIBLE_DEVICES"] = ""   # ⛔ Disable GPU completely
 import warnings
@@ -6,12 +8,12 @@ import colorama
 import pandas as pd
 import torch
 
-from anomaly_detection import AnomalyDetector
-from features_engineering import FeaturesEngineering
-from features_extracting import FeaturesExtractor
-from logdata_read import LogdataRead
-from RL_model_evaluation_selected_metrics_with_class_report import ModelEvaluation
-from utility import Utilities
+from RL_Stand_anomaly_detection import AnomalyDetector
+from RL_Stand_features_engineering import FeaturesEngineering
+from RL_Stand_features_extracting import FeaturesExtractor
+from RL_Stand_logdata_read import LogdataRead
+from RL_Stand_model_evaluation import ModelEvaluation
+from RL_Stand_utility import Utilities
 import psutil
 import platform
 
@@ -97,7 +99,7 @@ def main():
 
     # ---------------- Project configuration ----------------
 
-    DATASET = 'HDFS'
+    DATASET = 'BGL'
     DATASETS_FOLDER = 'datasets'
     Round = '1'
     mode = 'M'  # M multi classifier - S single classifier
@@ -132,7 +134,6 @@ def main():
     features_engineering_obj = FeaturesEngineering()
     anomaly_detection_obj = AnomalyDetector()
     model_evaluation_obj = ModelEvaluation()
-    rl_model_evaluation_obj = ModelEvaluation()
 
     utilities_obj = Utilities()
 
@@ -237,8 +238,13 @@ def main():
 
     # ---------------- Model Evaluation ----------------
     print(f"{GRAY}Evaluating model performance...{RESET}")
-    rl_model_evaluation_obj.evaluation(Round, X_train, y_train, number_component, y_test_truth, y_test_pred, DATASET,
-                                    X_test)
+    model_evaluation_obj.evaluation(
+        Round, X_train, y_train, number_component,
+        y_test_truth, y_test_pred, DATASET, X_test,
+        method_name="NovaADLS-Standard",
+        training_time_min=fit_time,
+        evaluation_time_min=predict_time,
+    )
 
     print(f"Model training completed in {fit_time:.2f} minutes")
     print(f"Prediction completed in {predict_time:.2f} minutes")
