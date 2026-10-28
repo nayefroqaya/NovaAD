@@ -99,7 +99,7 @@ def main():
 
     # ---------------- Project configuration ----------------
 
-    DATASET = 'HDFS'
+    DATASET = 'SP_150MB_ratio'
     DATASETS_FOLDER = 'datasets'
     Round = '1'
     mode = 'M'  # M multi classifier - S single classifier
