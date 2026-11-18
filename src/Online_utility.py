@@ -9,8 +9,25 @@ def load_splits(root,dataset,round_id,seed):
         df=pd.read_pickle(base/f'{name}_df.pkl').copy()
         req=['Node_block_id','Label','Timestamp','processed_EventTemplate']
         if not set(req)<=set(df): raise ValueError(f'{name}: missing {set(req)-set(df)}')
-        if df[req].isna().any().any(): raise ValueError(f'{name}: null required values')
+        missing=df[req].isna().sum()
+        print(f'{name}: missing required values: {missing.to_dict()}',flush=True)
+        for col in ('Node_block_id','Label','Timestamp'):
+            if missing[col]:
+                raise ValueError(f'{name}: {missing[col]} null {col} values; cannot safely infer IDs, labels or chronology')
+        text=df['processed_EventTemplate'].astype('string')
+        absent=text.isna() | text.str.strip().eq('').fillna(False)
+        if absent.any():
+            if 'EventTemplate' in df:
+                fallback=df['EventTemplate'].astype('string')
+                fallback=fallback.mask(fallback.str.strip().eq('').fillna(False))
+                text=text.mask(absent,fallback)
+            else:
+                text=text.mask(absent)
+            text=text.fillna('missing log template')
+            print(f'{name}: repaired {int(absent.sum())} missing/empty templates without dropping events',flush=True)
+        df['processed_EventTemplate']=text.astype(str)
         df['Node_block_id']=df.Node_block_id.astype(str)
+        if df.Node_block_id.str.strip().eq('').any(): raise ValueError(f'{name}: empty block IDs')
         ids=set(df.Node_block_id)
         if seen & ids: raise ValueError(f'{name}: overlapping block IDs')
         seen.update(ids)
